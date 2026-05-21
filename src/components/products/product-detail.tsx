@@ -39,11 +39,11 @@ export function ProductDetail({ product }: ProductDetailProps) {
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-        <Card className="overflow-hidden border-slate-200/70 bg-white/95">
-          <div className="aspect-[4/3] bg-gradient-to-br from-slate-100 via-white to-blue-50 p-5 sm:p-8">
-            <div className="relative flex h-full items-center justify-center overflow-hidden rounded-[2rem] bg-white/80 shadow-[0_20px_70px_-35px_rgba(15,23,42,0.35)]">
+    <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        <Card className="overflow-hidden border-slate-200/70 bg-white/95 xl:sticky xl:top-24">
+          <div className="aspect-[4/3] bg-gradient-to-br from-slate-100 via-white to-blue-50 p-4 sm:p-6 lg:p-8">
+            <div className="relative flex h-full min-h-[18rem] items-center justify-center overflow-hidden rounded-[1.5rem] bg-white/80 shadow-[0_20px_70px_-35px_rgba(15,23,42,0.35)] sm:min-h-[24rem] lg:rounded-[2rem]">
               <Image
                 src={product.imageUrl}
                 alt={product.title}
@@ -56,9 +56,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
           </div>
         </Card>
 
-        <div className="space-y-6">
+        <div className="space-y-6 lg:space-y-8">
           <Card className="border-slate-200/70 bg-white/95">
-            <CardHeader className="space-y-4">
+            <CardHeader className="space-y-4 p-5 sm:p-6 lg:p-7">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="accent">Producto destacado</Badge>
                 {product.category ? <Badge variant="secondary">{product.category.name}</Badge> : null}
@@ -76,18 +76,18 @@ export function ProductDetail({ product }: ProductDetailProps) {
               </div>
             </CardHeader>
 
-            <CardContent className="space-y-6">
-              <div className="flex flex-wrap items-end gap-4">
+            <CardContent className="space-y-6 p-5 sm:p-6 lg:p-7">
+              <div className="flex flex-wrap items-end gap-3 sm:gap-4">
                 <div className="space-y-1">
-                  <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Precio actual</p>
-                  <p className="text-4xl font-semibold tracking-tight text-slate-950">
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 sm:text-sm">Precio actual</p>
+                  <p className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
                     {formatCurrency(product.discountedPrice)}
                   </p>
                 </div>
                 {hasDiscount ? (
                   <div className="space-y-1 pb-1">
-                    <p className="text-sm uppercase tracking-[0.24em] text-slate-500">Antes</p>
-                    <p className="text-lg text-slate-500 line-through">
+                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 sm:text-sm">Antes</p>
+                    <p className="text-base text-slate-500 line-through sm:text-lg">
                       {formatCurrency(product.price)}
                     </p>
                   </div>
@@ -102,10 +102,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
               <Separator />
 
               <div className="space-y-4">
-                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 sm:text-sm">
                   Talles
                 </p>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2 sm:gap-3">
                   {availableSizes.length > 0 ? (
                     availableSizes.map((size) => {
                       const isSelected = selectedSize === size.name;
@@ -119,7 +119,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                           size="sm"
                           disabled={isDisabled}
                           onClick={() => setSelectedSize(size.name)}
-                          className="min-w-16 rounded-full"
+                          className="min-w-14 rounded-full sm:min-w-16"
                         >
                           {size.name}
                         </Button>
@@ -132,10 +132,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
               </div>
 
               <div className="space-y-4">
-                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-slate-500">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 sm:text-sm">
                   Cantidad
                 </p>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                   <div className="flex items-center rounded-full border border-slate-200 bg-slate-50 p-1">
                     <Button
                       type="button"
@@ -193,11 +193,11 @@ export function ProductDetail({ product }: ProductDetailProps) {
           </Card>
 
           <Card className="border-slate-200/70 bg-white/95">
-            <CardHeader>
-              <CardTitle className="text-xl text-slate-950">Información ampliada</CardTitle>
+            <CardHeader className="p-5 sm:p-6 lg:p-7">
+              <CardTitle className="text-xl text-slate-950 sm:text-2xl">Información ampliada</CardTitle>
               <CardDescription>Todo lo que el detalle necesita para la navegación profunda.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 text-sm leading-7 text-slate-600">
+            <CardContent className="space-y-4 p-5 text-sm leading-7 text-slate-600 sm:p-6 lg:p-7">
               <p>{product.description}</p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">

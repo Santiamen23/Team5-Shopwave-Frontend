@@ -38,3 +38,42 @@ export interface ProductCardData {
 	color: string;
 	quantity: number;
 }
+
+export interface CreateReviewPayload {
+	productId: number;
+	review: string;
+}
+
+export interface CreateRatingPayload {
+	productId: number;
+	rating: number;
+}
+
+export interface AdminCreateProductPayload {
+	title: string;
+	description: string;
+	price: number;
+	discountedPrice: number;
+	discountPersent: number;
+	quantity: number;
+	brand: string;
+	color: string;
+	size: ProductSize[];
+	imageUrl: string;
+	topLevelCategory: string;
+	secondLevelCategory: string;
+	thirdLevelCategory: string;
+}
+
+export interface ProductQueryFilters {
+	category?: string;
+	colors?: string[];
+	sizes?: string[];
+	minPrice?: number;
+	maxPrice?: number;
+	minDiscount?: number;
+	sort?: string;
+	stock?: string;
+	pageNumber?: number;
+	pageSize?: number;
+}

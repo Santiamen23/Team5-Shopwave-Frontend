@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 
-import { Check, Minus, Plus, ShoppingCart, ShieldCheck, Truck } from "lucide-react";
+import { Minus, Plus, ShoppingCart } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,15 +20,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const availableSizes = product.sizes ?? [];
   const [selectedSize, setSelectedSize] = useState(availableSizes[0]?.name ?? "");
   const [quantity, setQuantity] = useState(1);
-  const [addedToCart, setAddedToCart] = useState(false);
 
   const hasDiscount = product.discountedPrice < product.price;
   const remainingStock = Math.max(product.quantity, 0);
-
-  function handleAddToCart() {
-    setAddedToCart(true);
-    window.setTimeout(() => setAddedToCart(false), 2200);
-  }
 
   function decrementQuantity() {
     setQuantity((current) => Math.max(1, current - 1));
@@ -168,7 +162,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
-                <Button type="button" size="lg" className="w-full" onClick={handleAddToCart}>
+                <Button type="button" size="lg" className="w-full">
                   <ShoppingCart className="h-4 w-4" />
                   Agregar al carrito
                 </Button>
@@ -176,29 +170,18 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   Comprar ahora
                 </Button>
               </div>
-
-              <div
-                className={`flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm transition-colors ${
-                  addedToCart
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                    : "border-slate-200 bg-slate-50 text-slate-600"
-                }`}
-              >
-                <Check className="h-4 w-4" />
-                {addedToCart
-                  ? "Producto listo para sincronizarse con el carrito global."
-                  : "El botón ya está preparado para conectarse al estado global del carrito."}
-              </div>
             </CardContent>
           </Card>
 
           <Card className="border-slate-200/70 bg-white/95">
-            <CardHeader className="p-5 sm:p-6 lg:p-7">
+            <CardHeader className="p-3 sm:p-4 lg:p-5">
               <CardTitle className="text-xl text-slate-950 sm:text-2xl">Información ampliada</CardTitle>
-              <CardDescription>Todo lo que el detalle necesita para la navegación profunda.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 p-5 text-sm leading-7 text-slate-600 sm:p-6 lg:p-7">
-              <p>{product.description}</p>
+            <CardContent className="space-y-4 p-2 text-sm leading-7 text-slate-600 sm:p-3 lg:p-4">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Descripcion</p>
+                <p className="mt-1 font-medium text-slate-950">{product.description}</p>
+              </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                   <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Marca</p>
@@ -215,17 +198,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                   <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Existencias</p>
                   <p className="mt-1 font-medium text-slate-950">{product.quantity} unidades</p>
-                </div>
-              </div>
-
-              <div className="grid gap-3 text-slate-600 sm:grid-cols-2">
-                <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <ShieldCheck className="mt-0.5 h-4 w-4 text-blue-600" />
-                  <span>Detalle preparado para integrarse con autenticación, reseñas y stock real.</span>
-                </div>
-                <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <Truck className="mt-0.5 h-4 w-4 text-blue-600" />
-                  <span>La estructura ya queda lista para conectar envío, carrito y compra posterior.</span>
                 </div>
               </div>
             </CardContent>

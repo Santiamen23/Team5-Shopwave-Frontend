@@ -24,7 +24,7 @@ export default async function ProductsPage() {
         ) : (
           <Card className="border-slate-200/70 bg-white/95">
             <CardContent className="p-6 text-sm leading-7 text-slate-600">
-              No se pudieron cargar productos desde el backend por ahora.
+              No se pudieron cargar productos.
             </CardContent>
           </Card>
         )}

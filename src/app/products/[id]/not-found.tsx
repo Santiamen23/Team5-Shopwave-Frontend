@@ -11,7 +11,7 @@ export default function ProductNotFound() {
           <CardTitle className="text-2xl text-slate-950 sm:text-3xl">Producto no encontrado</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 p-5 text-slate-600 sm:p-6">
-          <p>El identificador solicitado no devolvió un producto válido desde el backend.</p>
+          <p>Cargando Productos</p>
           <Button asChild>
             <Link href="/products">Volver al catálogo</Link>
           </Button>

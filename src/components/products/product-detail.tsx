@@ -126,7 +126,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       );
                     })
                   ) : (
-                    <p className="text-sm text-slate-500">Este producto no tiene talles cargados.</p>
+                    <p className="text-sm text-slate-500">Este producto no tiene detalles cargados.</p>
                   )}
                 </div>
               </div>

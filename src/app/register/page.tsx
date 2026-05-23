@@ -88,6 +88,7 @@ export default function RegisterPage() {
                   value={formData.firstName}
                   onChange={handleChange}
                   className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition-all focus:border-slate-900 focus:ring-1 focus:ring-slate-900 disabled:opacity-50"
+                  placeholder="Ej: Juan"
                   disabled={isLoading}
                 />
               </div>
@@ -102,6 +103,7 @@ export default function RegisterPage() {
                   value={formData.lastName}
                   onChange={handleChange}
                   className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-950 outline-none transition-all focus:border-slate-900 focus:ring-1 focus:ring-slate-900 disabled:opacity-50"
+                  placeholder="Ej: Pérez"
                   disabled={isLoading}
                 />
               </div>

@@ -14,7 +14,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  async function handleSubmit(e: React.SubmitEvent) {
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
@@ -37,7 +37,24 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mb-4 w-full max-w-md text-left">
+        <Link 
+          href="/" 
+          className="inline-flex items-center text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors gap-1 group"
+        >
+          <svg 
+            className="h-4 w-4 transform transition-transform group-hover:-translate-x-1" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Volver a la tienda
+        </Link>
+      </div>
+
       <Card className="w-full max-w-md border-slate-200/70 bg-white/95 shadow-sm">
         <CardHeader className="text-center space-y-2">
           <CardTitle className="text-3xl font-bold tracking-tight text-slate-950">

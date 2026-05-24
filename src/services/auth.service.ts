@@ -1,36 +1,47 @@
-import type { AuthPayload, SignInPayload, SignInResult } from "@/models/auth.model";
+import type {
+	AuthPayload,
+	SessionResponse,
+	SignInPayload,
+} from "@/models/auth.model";
 import type { UserProfile } from "@/models/user.model";
 
-import {
-	apiBasicAuthJsonFetch,
-	apiJsonFetch,
-	apiProtectedJsonFetch,
-	createBearerToken,
-	createJsonRequestInit,
-} from "./api.service";
+import { apiProtectedJsonFetch, createJsonRequestInit } from "./api.service";
 
-export async function signUp(payload: AuthPayload): Promise<UserProfile> {
-	return apiJsonFetch<UserProfile>(
-		"/auth/signup",
-		createJsonRequestInit("POST", payload),
-	);
+async function parseJsonResponse<T>(response: Response): Promise<T> {
+	if (!response.ok) {
+		const body = await response.json().catch(() => null);
+		const message =
+			body && typeof body === "object" && "message" in body && typeof body.message === "string"
+				? body.message
+				: `Request failed with status ${response.status}`;
+		throw new Error(message);
+	}
+
+	return response.json() as Promise<T>;
 }
 
-export async function signIn(payload: SignInPayload): Promise<SignInResult> {
-	const { data, response } = await apiBasicAuthJsonFetch<UserProfile>(
-		"/auth/signin",
-		payload,
-		{
-			cache: "no-store",
-		},
-	);
-	const jwt = response.headers.get("Authorization");
+export async function signUp(payload: AuthPayload): Promise<UserProfile> {
+	const response = await fetch("/api/auth/register", createJsonRequestInit("POST", payload));
+	return parseJsonResponse<UserProfile>(response);
+}
 
-	return {
-		user: data,
-		jwt,
-		authorizationHeader: jwt ? createBearerToken(jwt) : null,
-	};
+export async function signIn(payload: SignInPayload): Promise<SessionResponse> {
+	const response = await fetch("/api/auth/login", createJsonRequestInit("POST", payload));
+	return parseJsonResponse<SessionResponse>(response);
+}
+
+export async function getSession(): Promise<SessionResponse> {
+	const response = await fetch("/api/auth/session", {
+		cache: "no-store",
+	});
+	return parseJsonResponse<SessionResponse>(response);
+}
+
+export async function signOut() {
+	const response = await fetch("/api/auth/logout", {
+		method: "POST",
+	});
+	return parseJsonResponse<{ success: boolean }>(response);
 }
 
 export async function signUpAdmin(payload: AuthPayload, jwt: string): Promise<UserProfile> {

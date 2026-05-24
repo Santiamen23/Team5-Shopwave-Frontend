@@ -16,3 +16,7 @@ export interface SignInResult {
 	jwt: string | null;
 	authorizationHeader: string | null;
 }
+
+export interface SessionResponse {
+	user: import("./user.model").UserProfile | null;
+}

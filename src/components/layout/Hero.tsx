@@ -53,10 +53,11 @@ export default function Hero() {
           <div className="grid gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-4 backdrop-blur-xl sm:p-6">
             <div className="relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/10">
               <Image
-                src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9"
+                src="https://cdn.thewirecutter.com/wp-content/media/2026/03/BG-IPHONE-5334-2X1.jpg?width=2048&quality=75&crop=2:1&auto=webp"
                 alt="Productos destacados"
                 width={1200}
                 height={900}
+                unoptimized
                 sizes="(max-width: 1024px) 100vw, 45vw"
                 className="h-64 w-full object-cover sm:h-72 lg:h-80"
               />

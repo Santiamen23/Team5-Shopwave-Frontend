@@ -133,6 +133,15 @@ export default function Navbar() {
                       Cerrar sesión
                     </Button>
                   </div>
+                ) : !isLoading ? (
+                  <div className="mt-2 flex flex-col gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <Button className="w-full" asChild>
+                      <Link href="/login">Entrar</Link>
+                    </Button>
+                    <Button className="w-full" variant="outline" asChild>
+                      <Link href="/register">Crear cuenta</Link>
+                    </Button>
+                  </div>
                 ) : null}
               </div>
             </SheetContent>

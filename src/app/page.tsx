@@ -14,15 +14,17 @@ export default async function HomePage() {
       <Navbar />
       <Hero />
 
-      <section className="px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-14">
+      <section className="px-4 pt-0 pb-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
         <div className="mx-auto w-full max-w-7xl">
           <div className="mx-auto">
             <ProductsSection
               products={products}
               title="Productos destacados"
+              description="Una selección rápida para empezar a comprar sin recorrer todo el catálogo."
               limit={3}
               ctaHref="/products"
               ctaLabel="Ver catálogo completo"
+              emptyMessage="Todavía no hay destacados cargados. Revisa el catálogo completo en unos momentos."
             />
           </div>
         </div>
@@ -38,7 +40,7 @@ export default async function HomePage() {
               </div>
               <div>
                 <div className="text-lg font-medium">Celulares</div>
-                <div className="text-sm text-slate-500">Explora celulares</div>
+                <div className="text-sm text-slate-500">Modelos para trabajo, estudio y uso diario</div>
               </div>
             </Link>
 
@@ -48,7 +50,7 @@ export default async function HomePage() {
               </div>
               <div>
                 <div className="text-lg font-medium">Tablets</div>
-                <div className="text-sm text-slate-500">Explora tablets</div>
+                <div className="text-sm text-slate-500">Pantalla, batería y portabilidad en equilibrio</div>
               </div>
             </Link>
 
@@ -58,7 +60,7 @@ export default async function HomePage() {
               </div>
               <div>
                 <div className="text-lg font-medium">Laptops</div>
-                <div className="text-sm text-slate-500">Explora laptops</div>
+                <div className="text-sm text-slate-500">Equipos para rendimiento, clases o oficina</div>
               </div>
             </Link>
 
@@ -68,7 +70,7 @@ export default async function HomePage() {
               </div>
               <div>
                 <div className="text-lg font-medium">Accesorios</div>
-                <div className="text-sm text-slate-500">Explora accesorios</div>
+                <div className="text-sm text-slate-500">Complementos para completar tu setup</div>
               </div>
             </Link>
           </div>
@@ -77,8 +79,10 @@ export default async function HomePage() {
 
       <section className="px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
-          <h2 className="mb-6 text-2xl font-semibold">Populares</h2>
-          <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-600">No hay productos disponibles.</div>
+          <h2 className="mb-6 text-2xl font-semibold">Lo más buscado</h2>
+          <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-600">
+            Aún no hay productos destacados en esta sección. Mientras tanto, puedes explorar todo el catálogo.
+          </div>
         </div>
       </section>
 

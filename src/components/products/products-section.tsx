@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useDeferredValue, useState } from "react";
+import { useDeferredValue, useEffect, useState } from "react";
 
 import type { ProductCardData } from "@/models/product.model";
 
@@ -32,6 +32,8 @@ export function ProductsSection({
   enableSearch = false,
 }: ProductsSectionProps) {
   const [query, setQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize, setPageSize] = useState(3);
   const deferredQuery = useDeferredValue(query);
   const normalizedQuery = deferredQuery.trim().toLowerCase();
 
@@ -42,10 +44,62 @@ export function ProductsSection({
       })
     : products;
 
-  const visibleProducts = limit ? filteredProducts.slice(0, limit) : filteredProducts.slice(0, 20);
+  const isCarousel = Boolean(limit);
+  const carouselLimit = limit ? Math.min(limit, 12) : 0;
+  const visibleProducts = isCarousel
+    ? filteredProducts.slice(0, carouselLimit)
+    : filteredProducts.slice(0, 20);
+  const totalPages = isCarousel ? Math.ceil(visibleProducts.length / pageSize) : 1;
+  const activePage = totalPages > 0 ? Math.min(currentPage, totalPages - 1) : 0;
+  const productPages = isCarousel
+    ? Array.from({ length: totalPages }, (_, pageIndex) =>
+        visibleProducts.slice(pageIndex * pageSize, pageIndex * pageSize + pageSize),
+      )
+    : [];
   const effectiveEmptyMessage = enableSearch && normalizedQuery
     ? "No hay productos que coincidan con tu búsqueda."
     : emptyMessage;
+
+  useEffect(() => {
+    const updatePageSize = () => {
+      if (window.innerWidth >= 1024) {
+        setPageSize(3);
+        return;
+      }
+
+      if (window.innerWidth >= 640) {
+        setPageSize(2);
+        return;
+      }
+
+      setPageSize(1);
+    };
+
+    updatePageSize();
+    window.addEventListener("resize", updatePageSize);
+
+    return () => window.removeEventListener("resize", updatePageSize);
+  }, []);
+
+  useEffect(() => {
+    if (!isCarousel || totalPages <= 1) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setCurrentPage((previousPage) => (previousPage + 1) % totalPages);
+    }, 5000);
+
+    return () => window.clearInterval(intervalId);
+  }, [isCarousel, totalPages]);
+
+  const handlePreviousPage = () => {
+    setCurrentPage((previousPage) => (previousPage - 1 + totalPages) % totalPages);
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((previousPage) => (previousPage + 1) % totalPages);
+  };
 
   return (
     <Card className="mx-auto max-w-6xl gap-0 overflow-hidden border border-slate-300/80 bg-slate-100/90 py-0 shadow-sm">
@@ -74,11 +128,56 @@ export function ProductsSection({
         ) : null}
 
         {visibleProducts.length > 0 ? (
-          <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {visibleProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </section>
+          isCarousel ? (
+            <section className="space-y-4">
+              <div className="overflow-hidden">
+                <div
+                  className="flex transition-transform duration-500 ease-out"
+                  style={{ transform: `translateX(-${activePage * 100}%)` }}
+                >
+                  {productPages.map((page, pageIndex) => (
+                    <div key={pageIndex} className="w-full shrink-0">
+                      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                        {page.map((product) => (
+                          <ProductCard key={product.id} product={product} />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {totalPages > 1 ? (
+                <div className="flex items-center justify-between gap-3">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handlePreviousPage}
+                    className="h-9 px-3 text-xs sm:h-10 sm:px-4 sm:text-sm"
+                  >
+                    Anterior
+                  </Button>
+                  <span className="flex-1 text-center text-sm font-medium text-slate-500">
+                    {activePage + 1} / {totalPages}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleNextPage}
+                    className="h-9 px-3 text-xs sm:h-10 sm:px-4 sm:text-sm"
+                  >
+                    Siguiente
+                  </Button>
+                </div>
+              ) : null}
+            </section>
+          ) : (
+            <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+              {visibleProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </section>
+          )
         ) : (
           <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-600">
             {effectiveEmptyMessage}

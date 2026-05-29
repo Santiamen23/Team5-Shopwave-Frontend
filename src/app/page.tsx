@@ -21,7 +21,7 @@ export default async function HomePage() {
               products={products}
               title="Productos destacados"
               description="Una selección rápida para empezar a comprar sin recorrer todo el catálogo."
-              limit={3}
+              limit={12}
               ctaHref="/products"
               ctaLabel="Ver catálogo completo"
               emptyMessage="Todavía no hay destacados cargados. Revisa el catálogo completo en unos momentos."

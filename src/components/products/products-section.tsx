@@ -1,10 +1,14 @@
+"use client";
+
 import Link from "next/link";
+import { useDeferredValue, useState } from "react";
 
 import type { ProductCardData } from "@/models/product.model";
 
 import { ProductCard } from "@/components/products/product-card";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SearchBar } from "@/components/ui/search-bar";
 
 interface ProductsSectionProps {
   products: ProductCardData[];
@@ -14,6 +18,7 @@ interface ProductsSectionProps {
   limit?: number;
   ctaHref?: string;
   ctaLabel?: string;
+  enableSearch?: boolean;
 }
 
 export function ProductsSection({
@@ -24,8 +29,23 @@ export function ProductsSection({
   limit,
   ctaHref,
   ctaLabel,
+  enableSearch = false,
 }: ProductsSectionProps) {
-  const visibleProducts = limit ? products.slice(0, limit) : products.slice(0, 20);
+  const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
+  const normalizedQuery = deferredQuery.trim().toLowerCase();
+
+  const filteredProducts = enableSearch
+    ? products.filter((product) => {
+        const searchableText = [product.title, product.brand, product.color].join(" ").toLowerCase();
+        return searchableText.includes(normalizedQuery);
+      })
+    : products;
+
+  const visibleProducts = limit ? filteredProducts.slice(0, limit) : filteredProducts.slice(0, 20);
+  const effectiveEmptyMessage = enableSearch && normalizedQuery
+    ? "No hay productos que coincidan con tu búsqueda."
+    : emptyMessage;
 
   return (
     <Card className="mx-auto max-w-6xl gap-0 overflow-hidden border border-slate-300/80 bg-slate-100/90 py-0 shadow-sm">
@@ -43,6 +63,16 @@ export function ProductsSection({
       ) : null}
 
       <CardContent className="space-y-6 p-4 sm:p-6 lg:p-8">
+        {enableSearch ? (
+          <SearchBar
+            label="Buscar producto"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Busca por nombre, marca o color"
+            resultText={`${filteredProducts.length} resultado${filteredProducts.length === 1 ? "" : "s"}`}
+          />
+        ) : null}
+
         {visibleProducts.length > 0 ? (
           <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {visibleProducts.map((product) => (
@@ -51,7 +81,7 @@ export function ProductsSection({
           </section>
         ) : (
           <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm text-slate-600">
-            {emptyMessage}
+            {effectiveEmptyMessage}
           </div>
         )}
 

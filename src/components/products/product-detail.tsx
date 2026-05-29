@@ -33,7 +33,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+    <section className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <Card className="overflow-hidden border-slate-200/70 bg-white/95 xl:sticky xl:top-24">
           <div className="aspect-[4/3] bg-gradient-to-br from-slate-100 via-white to-blue-50 p-4 sm:p-6 lg:p-8">
@@ -204,6 +204,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
           </Card>
         </div>
       </div>
-    </main>
+    </section>
   );
 }

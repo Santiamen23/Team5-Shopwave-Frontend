@@ -10,7 +10,7 @@ export default async function ProductsPage() {
       <Navbar />
       <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
         <div className="mx-auto">
-          <ProductsSection products={products} title="Catálogo de productos" />
+          <ProductsSection products={products} title="Catálogo de productos" enableSearch />
         </div>
       </div>
     </main>

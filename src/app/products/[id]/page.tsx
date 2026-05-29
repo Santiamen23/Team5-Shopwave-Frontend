@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import Navbar from "@/components/layout/Navbar";
 import { ProductDetail } from "@/components/products/product-detail";
 import { getProductById } from "@/services/product.service";
 
@@ -17,5 +18,10 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  return <ProductDetail product={product} />;
+  return (
+    <main className="min-h-screen">
+      <Navbar />
+      <ProductDetail product={product} />
+    </main>
+  );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useDeferredValue, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 
 import type { ProductCardData } from "@/models/product.model";
 
@@ -32,20 +32,54 @@ export function ProductsSection({
   enableSearch = false,
 }: ProductsSectionProps) {
   const [query, setQuery] = useState("");
+  const [sortBy, setSortBy] = useState < "name" | "price" | null > (null);
+  const [sortDirection, setSortDirection] = useState < "asc" | "desc" | null > (null);
   const deferredQuery = useDeferredValue(query);
   const normalizedQuery = deferredQuery.trim().toLowerCase();
 
   const filteredProducts = enableSearch
     ? products.filter((product) => {
-        const searchableText = [product.title, product.brand, product.color].join(" ").toLowerCase();
-        return searchableText.includes(normalizedQuery);
-      })
+      const searchableText = [product.title, product.brand, product.color].join(" ").toLowerCase();
+      return searchableText.includes(normalizedQuery);
+    })
     : products;
 
-  const visibleProducts = limit ? filteredProducts.slice(0, limit) : filteredProducts.slice(0, 20);
+  const sortedProducts = useMemo(() => {
+    if (!sortBy || !sortDirection) {
+      return filteredProducts;
+    }
+
+    return [...filteredProducts].sort((a, b) => {
+      const direction = sortDirection === "asc" ? 1 : -1;
+
+      if (sortBy === "name") {
+        return a.title.toLowerCase().localeCompare(b.title.toLowerCase()) * direction;
+      }
+
+      return (a.price - b.price) * direction;
+    });
+  }, [filteredProducts, sortBy, sortDirection]);
+
+  const visibleProducts = limit ? sortedProducts.slice(0, limit) : sortedProducts.slice(0, 20);
   const effectiveEmptyMessage = enableSearch && normalizedQuery
     ? "No hay productos que coincidan con tu búsqueda."
     : emptyMessage;
+
+  const handleSort = (field: "name" | "price") => {
+    if (sortBy !== field) {
+      setSortBy(field);
+      setSortDirection("asc");
+      return;
+    }
+
+    if (sortDirection === "asc") {
+      setSortDirection("desc");
+      return;
+    }
+
+    setSortBy(null);
+    setSortDirection(null);
+  };
 
   return (
     <Card className="mx-auto max-w-6xl gap-0 overflow-hidden border border-slate-300/80 bg-slate-100/90 py-0 shadow-sm">
@@ -72,6 +106,26 @@ export function ProductsSection({
             resultText={`${filteredProducts.length} resultado${filteredProducts.length === 1 ? "" : "s"}`}
           />
         ) : null}
+
+        <div className="flex flex-col gap-3 rounded-3xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-medium text-slate-600">Ordenar por:</span>
+            <Button
+              size="sm"
+              variant={sortBy === "name" ? "secondary" : "outline"}
+              onClick={() => handleSort("name")}
+            >
+              Nombre {sortBy === "name" ? (sortDirection === "asc" ? "▲" : "▼") : ""}
+            </Button>
+            <Button
+              size="sm"
+              variant={sortBy === "price" ? "secondary" : "outline"}
+              onClick={() => handleSort("price")}
+            >
+              Precio {sortBy === "price" ? (sortDirection === "asc" ? "▲" : "▼") : ""}
+            </Button>
+          </div>
+        </div>
 
         {visibleProducts.length > 0 ? (
           <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">

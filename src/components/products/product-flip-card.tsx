@@ -31,13 +31,11 @@ export function ProductFlipCard({ product, onAddToCart, onBuyNow }: ProductFlipC
 
   return (
     <div className="mx-auto w-full max-w-lg px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-      {/* Flip Container */}
       <div
         className="flip-container h-[500px] sm:h-[550px] cursor-pointer"
         onClick={toggleFlip}
       >
         <div className={`flip-inner ${isFlipped ? "flipped" : ""}`}>
-          {/* Front - Imagen + Título + Botón */}
           <div className="flip-front">
             <Card className="h-full overflow-hidden border-slate-200/70 bg-white/95 flex flex-col">
               <div className="flex-1 aspect-[4/3] bg-gradient-to-br from-slate-100 via-white to-blue-50 p-4 sm:p-6 flex items-center justify-center">
@@ -79,7 +77,6 @@ export function ProductFlipCard({ product, onAddToCart, onBuyNow }: ProductFlipC
             </Card>
           </div>
 
-          {/* Back - Información Completa */}
           <div className="flip-back">
             <Card className="h-full overflow-hidden border-slate-200/70 bg-white/95 flex flex-col">
               <CardHeader className="space-y-3 p-5 sm:p-6 lg:p-7 border-b border-slate-200/70 flex-shrink-0">
@@ -96,7 +93,6 @@ export function ProductFlipCard({ product, onAddToCart, onBuyNow }: ProductFlipC
               </CardHeader>
 
               <CardContent className="flex-1 overflow-y-auto space-y-6 p-5 sm:p-6 lg:p-7">
-                {/* Precios */}
                 <div className="flex flex-wrap items-end gap-3 sm:gap-4">
                   <div className="space-y-1">
                     <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 sm:text-sm">
@@ -125,7 +121,6 @@ export function ProductFlipCard({ product, onAddToCart, onBuyNow }: ProductFlipC
 
                 <Separator />
 
-                {/* Información Ampliada */}
                 <div className="space-y-3">
                   <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
                     <p className="text-xs uppercase tracking-[0.24em] text-slate-500 font-semibold">
@@ -168,7 +163,6 @@ export function ProductFlipCard({ product, onAddToCart, onBuyNow }: ProductFlipC
                   </div>
                 </div>
 
-                {/* Talles */}
                 {availableSizes.length > 0 ? (
                   <div className="space-y-3">
                     <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 sm:text-sm">
@@ -189,7 +183,6 @@ export function ProductFlipCard({ product, onAddToCart, onBuyNow }: ProductFlipC
                 ) : null}
               </CardContent>
 
-              {/* Botones de Acción */}
               <div className="flex-shrink-0 border-t border-slate-200/70 p-5 sm:p-6 lg:p-7">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <Button

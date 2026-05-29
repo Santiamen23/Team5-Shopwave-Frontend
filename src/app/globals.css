@@ -151,7 +151,7 @@ body {
   color: var(--foreground);
 }
 
-/* Product Flip Card 3D Styles */
+
 .flip-container {
   perspective: 1000px;
   transition: transform 0.3s ease;

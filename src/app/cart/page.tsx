@@ -1,3 +1,8 @@
-export default function CartPage() {
-  return <main>Cart</main>;
+import CartPageClient from "@/components/cart/CartPageClient";
+import { requireAuthenticatedUser } from "@/lib/auth/session";
+
+export default async function CartPage() {
+  await requireAuthenticatedUser();
+
+  return <CartPageClient />;
 }

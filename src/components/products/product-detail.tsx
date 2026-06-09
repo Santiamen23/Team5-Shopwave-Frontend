@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useCart } from "@/hooks/useCart";
 import type { Product } from "@/models/product.model";
 import { formatCurrency } from "@/utils/currency.util";
 
@@ -20,14 +21,19 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const availableSizes = product.sizes ?? [];
   const [selectedSize, setSelectedSize] = useState(availableSizes[0]?.name ?? "");
   const [quantity, setQuantity] = useState(1);
-  const [addedToCart, setAddedToCart] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { addItem, isLoading: isCartLoading } = useCart();
 
   const hasDiscount = product.discountedPrice < product.price;
-  const remainingStock = Math.max(product.quantity, 0);
+  const remainingStock = Math.max(
+    availableSizes.find((size) => size.name === selectedSize)?.quantity ?? product.quantity,
+    0,
+  );
 
-  function handleAddToCart() {
-    setAddedToCart(true);
-    window.setTimeout(() => setAddedToCart(false), 2200);
+  function clampQuantity(value: number) {
+    return Math.min(Math.max(remainingStock, 1), value);
   }
 
   function decrementQuantity() {
@@ -35,8 +41,40 @@ export function ProductDetail({ product }: ProductDetailProps) {
   }
 
   function incrementQuantity() {
-    setQuantity((current) => Math.min(Math.max(remainingStock, 1), current + 1));
+    setQuantity((current) => clampQuantity(current + 1));
   }
+
+  async function handleAddToCart() {
+    setSubmitError(null);
+    setSubmitSuccess(null);
+
+    if (!selectedSize) {
+      setSubmitError("Selecciona un talle antes de agregar el producto.");
+      return;
+    }
+
+    if (remainingStock <= 0) {
+      setSubmitError("Este talle no tiene stock disponible.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await addItem({
+        product,
+        size: selectedSize,
+        quantity: clampQuantity(quantity),
+      });
+      setSubmitSuccess("Producto agregado al carrito correctamente.");
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "No se pudo agregar el producto.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  const isAddDisabled = isCartLoading || isSubmitting || remainingStock <= 0;
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
@@ -168,27 +206,28 @@ export function ProductDetail({ product }: ProductDetailProps) {
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
-                <Button type="button" size="lg" className="w-full" onClick={handleAddToCart}>
+                <Button
+                  type="button"
+                  size="lg"
+                  className="w-full"
+                  onClick={() => void handleAddToCart()}
+                  disabled={isAddDisabled}
+                >
                   <ShoppingCart className="h-4 w-4" />
-                  Agregar al carrito
+                  {isSubmitting ? "Agregando..." : "Agregar al carrito"}
                 </Button>
                 <Button type="button" size="lg" variant="secondary" className="w-full">
                   Comprar ahora
                 </Button>
               </div>
 
-              <div
-                className={`flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm transition-colors ${
-                  addedToCart
-                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                    : "border-slate-200 bg-slate-50 text-slate-600"
-                }`}
-              >
-                <Check className="h-4 w-4" />
-                {addedToCart
-                  ? "Producto listo para sincronizarse con el carrito global."
-                  : "El botón ya está preparado para conectarse al estado global del carrito."}
-              </div>
+              {submitError ? (
+                <p className="text-sm font-medium text-red-600">{submitError}</p>
+              ) : null}
+
+              {submitSuccess ? (
+                <p className="text-sm font-medium text-emerald-700">{submitSuccess}</p>
+              ) : null}
             </CardContent>
           </Card>
 

@@ -1,20 +1,27 @@
 import { notFound } from "next/navigation";
 
+import Navbar from "@/components/layout/Navbar";
 import { ProductDetail } from "@/components/products/product-detail";
 import { getProductById } from "@/services/product.service";
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function ProductDetailPage({ params }: ProductPageProps) {
-  const product = await getProductById(params.id);
+  const { id } = await params;
+  const product = await getProductById(id);
 
   if (!product) {
     notFound();
   }
 
-  return <ProductDetail product={product} />;
+  return (
+    <main className="min-h-screen">
+      <Navbar />
+      <ProductDetail product={product} />
+    </main>
+  );
 }

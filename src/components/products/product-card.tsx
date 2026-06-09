@@ -16,7 +16,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   return (
     <Card className="overflow-hidden border-slate-200/70 transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_24px_90px_-35px_rgba(15,23,42,0.4)]">
-      <div className="relative aspect-[4/5] bg-gradient-to-br from-slate-100 via-white to-slate-50 p-4 sm:aspect-square sm:p-5 lg:p-6">
+      <div className="relative aspect-[4/5] p-4 sm:aspect-square sm:p-5 lg:p-6">
         <div className="relative h-full w-full overflow-hidden rounded-2xl bg-white/70">
           <Image
             src={product.imageUrl}

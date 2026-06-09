@@ -3,9 +3,7 @@ import Link from "next/link";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/layout/Hero";
 import Navbar from "@/components/layout/Navbar";
-import { ProductCard } from "@/components/products/product-card";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ProductsSection } from "@/components/products/products-section";
 import { getProducts } from "@/services/product.service";
 
 export default async function HomePage() {
@@ -16,37 +14,19 @@ export default async function HomePage() {
       <Navbar />
       <Hero />
 
-      <section className="px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-14">
+      <section className="px-4 pt-0 pb-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
         <div className="mx-auto w-full max-w-7xl">
-          <Card className="overflow-hidden border-slate-200/70 bg-white/95">
-            <CardHeader className="space-y-3 border-b border-slate-200/60 bg-gradient-to-r from-slate-950 to-slate-800 px-5 py-6 text-white sm:px-6 sm:py-8 lg:px-8">
-              <CardTitle className="text-2xl sm:text-3xl lg:text-4xl">Productos destacados</CardTitle>
-              <CardDescription className="max-w-2xl text-sm text-slate-200 sm:text-base">
-                Una selección inicial usando la misma tarjeta y jerarquía visual que el catálogo.
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent className="space-y-6 p-4 sm:p-6 lg:p-8">
-              {products.length > 0 ? (
-                <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                  {products.slice(0, 3).map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </div>
-              ) : (
-                <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-600">
-                  No se pudieron cargar productos.
-                </div>
-              )}
-
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                
-                <Button asChild variant="outline" className="w-full sm:w-auto">
-                  <Link href="/products">Ver catálogo completo</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="mx-auto">
+            <ProductsSection
+              products={products}
+              title="Productos destacados"
+              description="Una selección rápida para empezar a comprar sin recorrer todo el catálogo."
+              limit={12}
+              ctaHref="/products"
+              ctaLabel="Ver catálogo completo"
+              emptyMessage="Todavía no hay destacados cargados. Revisa el catálogo completo en unos momentos."
+            />
+          </div>
         </div>
       </section>
 
@@ -54,53 +34,55 @@ export default async function HomePage() {
         <div className="mx-auto w-full max-w-7xl">
           <h2 className="mb-6 text-2xl font-semibold">Categorías</h2>
           <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
-            <a className="group flex items-center gap-4 rounded-2xl border bg-white p-4 transition-shadow hover:shadow-lg" href="/products?category=celulares">
+            <Link className="group flex items-center gap-4 rounded-2xl border bg-white p-4 transition-shadow hover:shadow-lg" href="/products?category=celulares">
                 <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-slate-100 overflow-hidden">
                 <img alt="Celulares" className="h-full w-full object-cover" src="https://www.apple.com/la/iphone/home/images/overview/consider_modals/innovation/modal_second__d9lhbe9ouu82_large.jpg" />
               </div>
               <div>
                 <div className="text-lg font-medium">Celulares</div>
-                <div className="text-sm text-slate-500">Explora celulares</div>
+                <div className="text-sm text-slate-500">Modelos para trabajo, estudio y uso diario</div>
               </div>
-            </a>
+            </Link>
 
-            <a className="group flex items-center gap-4 rounded-2xl border bg-white p-4 transition-shadow hover:shadow-lg" href="/products?category=tablets">
+            <Link className="group flex items-center gap-4 rounded-2xl border bg-white p-4 transition-shadow hover:shadow-lg" href="/products?category=tablets">
                 <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-slate-100 overflow-hidden">
                 <img alt="Tablets" className="h-full w-full object-cover" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEhAQERIQFRUVFxIVFRMXEhUVGBcQFRUWFxUWFRcZHSghGBolGxUVITEhJSktLi4vFx8zODMtNygwLisBCgoKDg0OGhAQGy0lICUtLS0tLy0rMC0tLS0tLS0tLS0tLzIyLy8tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAOEA4QMBEQACEQEDEQH/xAAcAAEAAQUBAQAAAAAAAAAAAAAABAECAwUHCAb/xABLEAABAwICAgwIDAUDBQEAAAABAAIDBBEFEiExBhMiQVFhcYGRkqHRFDJSU3KxssEVFiQzQkRUc4KT0uEHI0Nis2ODohc0lKPiVf/EABkBAQADAQEAAAAAAAAAAAAAAAABAgMEBf/EADoRAAIBAgEHCgUDBAMBAAAAAAABAgMRBBIhMYGRodETFDJBQlFScbHhBRUiwfBDU2EjgpKiM2KyJP/aAAwDAQACEQMRAD8A7igCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAICmYcIQC6AXQC6AXQFUAQBAEAQBAEAQFLoCqAIAgCAIAgCAIAgCAIAgCAIDmf8AEPZZtBfmLsjXbW1jTbM/fJKkHxeH7NNucxjYw0uc1m7lLQ1ziAMx1AaQbo82kaT6CgxNsolH0onOY7LIXNuDa7XDWONQDkeyvZLPNPK1skjI2Oc1rWuIvlNszrHTcjmQGi8Ol87L13d6AqK2Xz0nXepSJM8U0h+tW5ZJR6gto0crtLfwNY0lLtJed+BKbDMdVYz86XuXRHAOWicdvsbrBX0VI7XwMgoqg/WmH/fk7lqvhVR9uG32LfLp9Uo7S7wKp+0s/Pk6FPyir44bfYn5dU8Udpb4FUD60wf78ncofwqou3Db7D5dPrlHaY3wzDXWs/Ol7llL4fKOmcdvsUeCtpqR2vgRpJ5R9bJ5JJe5c8qCj2l+ajCVJR7SflfgYDiE3n5eu/vWLRk0Wmvl89L13d6gg+t/h5s7q6KqgBnkfA97GSxPeXNyONi5oN8rhe9xa9rHQgPViAIAgCAIAgCAIAgCAIAgCA4D/GeTxb78779D1IOZRVQYQCN83F76eXfTrIPvv4ezZoqtwFhnAHVbdQSfC0hj8Jqdti21v83c7vQ7OLOGT36NKpOnOatB2flc7MEqfKf1Itq2hK5DmmgBNoX/AIpCOwBFGS0s1q1sIpfTReuTMLqlu9EznLj71exzyrx6oJbS6OsaNcUZ5nd6vGUVpQjXitMFv4k6DFoxrp4TytPeumFeitMEdkMdSWmnEnxbI4R9Upuot44vD+BG6+IUP20Z/jTD9kp+otOeUPCafMqH7Zgl2Rwn6pTdT91nLFUPAZy+IUP20QJ8XjOqnhHI096wnXovRBGE8dSeilEgyVbTqijHM7vXPKUXoRxzxEXogt/EtbUt34mcxcPes2iI149cE9plimgJF4X/AIZCewhVcZPQzopVsK5fVReqTJWIGPbqfaotqbaO7d3cuzm7jm5ho0aFEKc4JqbvqsUxyp5a5OLiraGrHsluoK5xFUAQBAEAQBAEAQBAEAQBAcp2U4XFUumjlbcbY86NFjmOq2rmUkny3/T2j4H9d/6kBuqbDIqaExQtyt0nhJJ1kk6SUIOKfCEsFRNLDI+N+d4zNcQbF+kG2saNSqy9OpKnLKibmLZxIdFRT0dQN8uhDHdaOxuto4itHtX81c9GPxOWicb/AJ/N0SWY1hMvztDLFxxShw6HD3reGKi/+SnHUrGixOEn0orZwf2MngOCyeJUzxcT4r9octk8JPSra/YvyeCnoa2teqK/FWgd83iMP4muatFhsLLQ96J5jQfRlvXEfEeE+LXUh/GR7ldYCg+093En5ZF6H6cR8RGfbKP8z9lPy6j4nsXEfK137vcDYPCPGrqQfjJ9yjmFBdp7uI+WRXX6cQdilA35zEYfwtc5UeGw0dL3ojmFBdKW9cSngGCx+PVTy8TIrdpKzbwkeq+vgiHSwUNLW3gjG/GcIi+aoZpTwyyho6Gj3rGeKiuhTjrzlHicJDoxWzi/sRpdnEjdFNTUcHAWwh7utJdYSxFaXat5JIzl8TazQjb8/ixpJ8SmqJo5Z5HyOu0ZnEmzQ64aOAaTo41kefUqyqSypHtCPUOQIZlyAIAgCAIAgCAIAgCAIAgOa4u7+fP95J7RUkkPMgMFa7cFCDhraww1Ezw1jt1IC18bZGkF++1w4tYseNQaUqjg7olfCVK/5yiZfyoJnxHqvzjoV1JdaT3HQqtOXSgtWbcZG0VA/wAU18fLCyUDna4HsWi5J6U1vNI4enPRGa1XLzsbhPiVkf44Z2H2CO1XVGlLRJ617lngVbS15oiVWBBn1mnd6Jk/Sjw0fGt5hLD5Pa9SE6lt/UaeTP3KnJLxrfwKZD8XqPBXeWOkqeS/7LeTycvEG0t9cjRy5u5RyS8a38CMhvtepNpsDD/rNO30jJ+lXWGj41v4F1h79r1JY2Nwjx6yP8EM7z7AHajo046ZPUvc3WBVr3b8lcsdQ0LPGdXyejAyIdLnE9io+SWhN7FxKyw9OGmM3qt9jH8I0jPm6JpPlTzPk/4x5AqZS6klv/Nhm6tOPRgtefcQ6mtM0sb8sbbFrQ1kbY2gB19TdevWSTxrM56tRzd2e0G6ghmVQBAEAQBAEAQBAEAQBAEBy/GXfKJ/vJPaKkEPMhJgrHbgoDh8kgbUSE5bbY4EluawL9JA3yETsWpzyZXstec2c+KxlzmAPgANmOa1r7tvoMgsDcjSS0206Gqcp3O/n0+jfJ/lJfmwtpa6sidnhmEo/tOfRxxuGYdC1g6kXeOf87iYV8VF5UZ5S877tJtY9kVNLua2iaTvvjJjdzt0i/MuxYhSzVI7jp53Crmqx3EpmE4NMNxPPCeB7Mw6Wn3K6o0J6Fvt6k82w8+ilqdvUuOwSkdpjxCnPpZ2etqcypvQntTKP4fDqT2pmP8A6ex/bqK333/ynMYf9thX5dHulsLxsEpG6ZMQpx6Od/qanMqa6nuRZfD4dae1Io7B8HhG7qJ5jwMZl7XH3JyNCGlb7+hfm2HhpS1u/oRZNkNLDoo6Jt958hMh5miw7Fm68Y5qcdxHOqdLNSjn8vxmrq6+slOeaYRDezHaxbijaMx5guWbqSd55jnnXxU/qlLJXnbdpKRYsxpDbPqbmzi8NYLb+TQXXtqcTbhaVjlNMq8dNfTfK80vzaa2aRpmGW2UPs0hobmaHaHEDQCQobucNWeXK9lqzHtNuoKDMqgCAIAgCAIAgCAIAgCAIDlONP8AlFR95J7RUkkLOgMFY7clAcRrSNtmuL7t+/b6RUBW6y6lqS21mh48h7BIObfHNZXV+pGsJS0JX1XNixkT7ZqKoafKhkeBy5ZGv9pWUJPss2VGUv03qv7k2LD7+LLWtHBLSh47Hn1Loi6sdF15q50KlWWjKXmrl3gB8uldxup6mM85bHYLoVaS0xi/OLXoX/qLsp/2tegfRuH0IXehJL72rVV49cFtkvsWTn4P/XAt2h/mT+ZJ+hactHwL/J8C/wDU8G98C5lI4/Qhb6ckvuas5V49UFtk/sUbn4P/AFwBoCPp0reNsFTJ2mOxWTrSeiMV/a36lf6nhS/tb9S2Wgt40ta4cEVIGDtePUsJOrLTfUrFHTrPTlPyViE+OJl7UVQ47zppH25S2NjfaXO6cvC95g6Mo/py13NfV1Jde7AweSxgYOfWTzkqjv1ownOWhq2qxhgIzx2Ft03fvvhUMme2m6ghBVAEAQBAEAQBAEAQBAEAQHI8ad8oqPvZfbKkkg50Bgq3bkoQcefVuimqHNDbkyN0tDrAv0ltxoOjXxlTGbi7ohpPSUpsWlYczZHg6t57bcbXaFZ1ZvS2axqyjobRtGYvTSi08UjT5yCZw6YpLg8zgpjPxZ9djojiE+mr+Ta9i34MpZLGKuynyZ43sN+NzMzO1aZNGXaa81feuBZRpPPGbXnxXA2eH01fH/29VC+3m6uMnq5rreCmujUi9fFHZTr14qyqKS/O83UeMY23XDI/j2pknbYrVRq9yf8AcuJusRU64LVK3ozL8YcY+yv/APEj/QrZNXw/7e5fnMv2/wDZ8THJjONu1QyM49qYztsFVxq9yX9y4lHiKnVBa5X+5pcQp8Qk/wC4qYYwfOVcbezNdZTU3mlUitfBGNSvXkrOcYr87kav4MpmEmWvDv7YI5JCTxOdlZ/yWGTRj2m/JW3vgcTVJO8pt+XF8C52LU0QtBFK93nJ5nc/8qI26XFZyqeHNruyrxCXQW1t+xrKrF5XnM6R53rCzGgcTW6FCqzWhswlVlLS2yx9Y6V8Jdl3OVgs0C4Dr3dYbo6dZ3gOBVlNyd5GKSWg9qM1BVJKoAgCAIAgCAIAgCAIAgCA47jjvlFR97L7ZUkkAvQGCqfuShBx6v8AnZvTf7RUAvGGSZGSWZlfex2xm8bWIvdp0aitI0pSV1bahH6nZBmGyG5G123ztjB71Koyva62o2VCT61tRk+BpbB14gDqcZYwDz3V3h5LrW1GjwdRK91/kuIlwaZua4bubZrPabX1XsdF1nkfytpDwtRd21EaakkZ4zS3WBfRpBsegqFG+hraZShODzqxbu/KPW/dWyJd+8jKn3suhpXvvlBda17adZsL85squFtLW0mMJzeZXJMWDTG1g3dEgXe0XI1gXOmynIfetposLUfdtQ+BpbFwMRA1kSxkDlN1fm8u9bUWWDqNXuv8lxMb8MkAudrtwiRh09Kq6Mr2utqKPDyXWtqAwyTK99mZWC7jtjOECwF90dOoaUlScVd22owl9LszBTeNH6Q9YWQPbjNQQFUAQBAEAQBAEAQBAEAQBAcYx53ymp+9l9sqSTXFyAwVTtyUBySv+dm9N/tFQQYopnN0tcRyG3SlrhOxKjxIi12Rk+UAY3dMZb23TTpL5XeiTFizBfcObfWQ4G/KGhuYcpKm5ZVPz8sTYMaiFtGrR4uWw4g24ClNdxpGvbQXy4zARYsa4cGX9lrGpTXYRpzvNZq/mRvDqTzA7VblqfgW1leWh4ESYsYp2izWNaODL+yrKpTfYRbndlaKS8i2fGojfRvW8XNccBDrAjiWTa7jN17kKXFmG24c62q5AtxAODso5CFFzN1Pz8uRZMSJvaOMHynAyOtyyE9gChZtBXK/giyzOdpc4nlN7cnAlrFW7l1N40fpD1hCD24zUEBVAEAQBAEAQBAEAQBAEAQHEsfd8pqfvpfbKkGtLkJMNS7clAcqr/nZvTf7RUEGGONzjZoJPAASUBLZhjtTnRtO8C7M7qsu7sT+S2QyTFhDSbZyTa5Ab7icw52qbZrl1Tz/AJ+biXBgcZ+lruBug4EjWNAGniUqN+suqF9BkkwOIC5e0cd9HaVrGlF9tGiwjtdu3mR/gym+0M6f3VuQj40V5CPjRIjwOEi4e0jhzaOwqsqMV20XeEdrpp+RZPgUYvutVr7oNAvqvcHTxLJxt1mboWIcuENBtnIJFwC33XzEcjSq2zXM3T/PzgRn4Y7U10bj5ObK7qvynsQrkESWJzTZwIPAQQhQvpvGj9IesID24zUEBVAEAQBAEAQBAEAQBAEAQHDdkDvlVV99N7blJJrS5AYKl25KEHMK752b03+0VAMoxNwYyMNiytv/AExdxJvd5+keM8AWsamSrWWzOI5ncR4m5twGRadY2saeVOVz3aWw3jXt2VsMoxp9suSDL5O1i1+G3CrvEXz5Mdhpzt2tkx2CXG5XZtEYzAA2Za4GoHi4lllrwrYVeKm+pbCLUVr32zm9rkXG+43PSoUktCRlOrOfSZh2zib0BW5T+EZmanrXsvkNr2vYa7G46CquSelLYaQqzh0WSosblbl0RnLe12Xtm124AeBTlrwrYarFTXUtg+Gn2LckGU/R2sWvw24VqsRbsx2Fli3a2THYYpcTc4AFkVhqG1jRycCpyue+SthnKvfsrYBijsj48sWVwt823c6b3b5J4wkqt1ay2ZzCX1O5Hp/GZ6Q9YWQPbjNQQFUAQBAEAQBAEAQBAEAQBAcJ2RH5VVffTe25SDWEoSYag7koQc8dRvlmnDACWmR5FwDlDtNhvnTqCmMHJ2iQ2lpLKfC5XnK2OQnX4uUAcJc7QBxlS6clpTNY05PQmzZtwimjF6ipAPm4Y3Su5C8lrAeTMpjFPS7bzZUYrpu29lPhChZojo5JDfXNO72Yg0dK0vQj1N7uJZSw6doxct3pc2FJVVMhHg9DSt4LUjXnpcCVvBt9Gmtd39zspUasleNJL+Xc3sGGY24CwdGOAMZF2WC1Uqi6orUjdYep1yitSM/wDjfnpPzmfqV8up3r/FcC/IS/cX+PsYJ8MxtoNw+QcBYyXssVRyqPqi9SKPDz6pRfmkvsaKsqaqMnwihpXcN6RjD0tAKym2ulTWq6+5hUoVYq8qSf8o15xGifolo3xnhhnd7MuYLDKoS6mt/rb1ONyoN2lFx8nfc7FXYTTSC9PUi/m5o3RHkD2lzSeUNWcoLsu+4q6MX0JX3M1lThcrDldHIDrGjMCOFrm6CORQqcnoTMXTktKaElG+J8IeLZsrxp05S4gXG8dydB4uFRKEou0kZJp6Ge1GahyBVJKoAgCAIAgCAIAgCAIAgCA4Jsjd8qq/vpv8jlINYXISYqg7koQc5qxeWW5A3b+HyjwKCUjJSQyO8V5AH0nPEbR+Jx7BpWilLqe82pqemLe2xsmyNZ49e8/wBsTJJekyZB0XV1Umu0brEVI6ar1ZyZHiDTbI2vkHC58UY/xu9pbQ5Sei71JG0a1WWjKexGYYk8ao2M4nVsx7InBdMaNRr6rLzlwNL1X0nbzm/sYn1jz9OJvozVrvXIrrDd847ZPgSuV8e+ZTwqX7R21P61ryKtbLjslxNMqtoy/wD1xKsrHj+pE70pq1vqkWTw/dOO2SM3yvj3zMpxJ5GljH8Ta2cdkryqOjUS+mz8pcSL1Y9F38pv7mGTEAL5210Y4WvikA/9bfaXNNVYaU1qTM5VqsdOUtjIjpWv8SvkB8mVj4+h0ZeOmyxdWb7Rk8RUl+q9eY1tXDI3xnlw8trxI084OjkOlUcpdb3nPUU7Xk767keIAOZY33Q4eEcKzMWj20zUOQIQXIAgCAIAgCAIAgCAIAgCA4Bskd8rq/vpv8jlJJqy5AYp3bkoD4MxB08gNrZ3EjMG3aH6QCdF7IlctTg5ysvWxs6rB2tc55MkzbnI2IAHJ9HOTfIf7Q06teomXFp5zueBqL6pRb/hfnoiykpaqV2SnpjHxhhvbjkfpHMQtYKbdoL88xCniJPJhDJ1fd5zbx7Go2bqurYmHfa0mV/PbQOldiw9lerLedSwigr1Zb+JLZV4LDvVMx4SWsHYCVoqlCHWt7LcthoaGt7K/HLD26I8PjPG+SR3cnPKS0N7EVePp9UtyKfHym//AD6W3JJ+pOe0+97ivzCPe9xX454e7RJh8f4XyN95TnlN6W9iLLH0+uT2Io+twWbW2phPEWvA6QCnKUJ9a2NFuWw89LWxoiSbG4ZNNFWxuO81xMTuYnR2rN4e+elLeQ8JGeelLfwNRWUlVE7JUU5k4ywk24pGae0rkqKonaauck6WIi7Thlar71nLqfB2vIc0yU4+kJQHWbv5SLF5t9EtHKsclt5gsFUl9UYuPn+eprKiINmAbobnu0Zg4hhduQ4jReyhqxxVKbhKz9bntNmocgUGZcgCAIAgCAIAgCAIAgCAIDz3sld8rq/v5/8AI5SDVlyEmOd2goQfFR0Tpp5WNy63klz2MAAdbS55AGv9kSuaUqbqSsia3CYGX2yugaeCJskzukBregq6j/KW/wBLnQqShpml5Z/Qytq6Jlv5uIynicyEdBzq65NaZPUvc3jiYw0VJvWXv2RUwFm0jncclTI72cquqtJdlvzfsJY+L0pvzZBqcYjfqpYm8j5j63o8RT8G8wliIPsbyE6qB1RNHO4+sqnKw8G9mXKLwjwr/Tb0JysfCieU/wCoFUN+Jp53D1FOVh4N7Iy14SZTYxGzXSxO5Xze56usRT8G80jiILsbyezZFTWs6kc3jjqZG+1mR1qT7LXk/Y6I46K0JryZa6son3/m4jEeN7Jh0bhUfJvRJ617kyxUZ6ak1rMLsKgfba66Fx4JmyQu6bOb0lUce5p7vUwdJTzqon55vUgVdC6GSNjspvlcC17JARmtocwkbx4DxKjVjmq0nTdme0WahyBQZlyAIAgCAIAgCAIAgCAIAgPO2yZ3yys+/n/yOUg1eZAWTO0FAfFiikmnkjhjfI8ueQ1jS42Djc2Cq3YvCEpu0TeQbA6nXO+npxr/AJszQeo27uxaxoVp9GD15vU74fDJtXk7b/beSmbG8Nj+fxHOd9sMRPQ55HqXRHB2/wCScVrN1gsPDpy3r7XMgfgceplXL6T2tHYFsqeFjplfU/Yt/wDFDue1/dFfjBhbfEw8H0pXH1LRVsJHQty9y3O8NHox/wBV7lfjfRjxcPg5y4+9X55hl1PYuBPzGn1LcuBX46U32Cm6Hd6nn2H7nu4D5lDu9OBT430h8bD6fmLh71HPMM+p7FwHzGn3blwKfGHC3ePh4HoyuHrVHWwktK3L7WI55hpdKP8AqvYoZMDk1x1UXovDh2hZunhZaJW1P3Kt4Kfctq+7MbtjuGSfM4jkO82aIjpc0n1LGWEv/wAc4vXYq8Hhp9CX+y+9vUizbA6nXBJTVA/0pm5uo6zuxc8qFaHSg/NZzGfwyaV4u+7it5oaihlgkbHNG+N9wcr2lpsToNjvaCsk7nnzpyg8mR7UZqHIFJQuQBAEAQBAEAQBAEAQBAEB5x2Tu+WVn38/+RykGszISY5naChB85huXb6jNPtIIlGe7xfdjcjIDcngOjQs51ZU88U2/wCDtwORyn1ycVbSiLPBESbVBPpMd69KnLk88ka1qNByzV7+al7mA0o3pYjzu7lZHM8OuqcXrLo6K/8AUj63erxinpaJjhr9pbSbBgzXf14ByyNC6YYem9NRHXD4fF/qR2k6LYw0/Wab81net1gqXjRuvhlP9xGf4pN+0035re9X5jR8aL/K6fjRhl2MNH1mm/NZ3qjwVLxoo/hlP9xECfBWt/rwHkkaVhPDU4/qIwn8PgtFSO0hSUVv6kXW7lzyhFaGcksNbRJbS0Ug35Yul3cs3mKrDrrnFazNDBECL1FvRY716FXLks6TOmjQoRf1V7eSfsSMYy7ZBkn24BjN1d5Ld27cHOBYjXYaNKiFWdS7mmvMpj8jlFkSclbSz2SzUOQK5wlyAIAgCAIAgCAIAgCAIAgOC/xIwKWmq55S120zPMjJLbm7zdzHHU1wcToOsWUg+R2wcI6UBbI8Eax0oD5bFKYte94F2uJNxvXN7HgsoBAuEBUEcHapRJIiqGDXE08rnLaFWMewntNY1ILTFPaSmYowaqeHnLj710Rx0Y/px3nQsZBaKcd/EvGNjep4Og962XxO36Udhb5h3U47C74e/wBCDoPep+bP9uOwn5jLwR2FDjg36eDoPeofxO/6UdhHzDvpx2GN+KsOunh6XD3rKWOjL9OO/iVeMg9NOO/iRZalh1RNHI5y5p1YS7CW0551IS0RS2kckcHasWzJlLqCD6fYFsTqMQqoY4437UHtMstjkZGCC67tWYjQBvoD12gCAIAgCAIAgCAIAgCAIAgKOaCLEAjgOlAR/g+HzUXUb3IB8Hw+ai6je5APg+HzUXUb3ICvgUXm4+o3uQFfAovNx9RvcgHgUXm4+o3uQDwKLzcfUb3IB4FF5uPqN7kA8Ci83H1G9yAeBRebj6je5APAovNx9RvcgHgUXm4+o3uQFPAovNx9RvcgHgUXm4+o3uQGaOMNFmgAcAFkBcgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCAIAgCA//9k=" />
               </div>
               <div>
                 <div className="text-lg font-medium">Tablets</div>
-                <div className="text-sm text-slate-500">Explora tablets</div>
+                <div className="text-sm text-slate-500">Pantalla, batería y portabilidad en equilibrio</div>
               </div>
-            </a>
+            </Link>
 
-            <a className="group flex items-center gap-4 rounded-2xl border bg-white p-4 transition-shadow hover:shadow-lg" href="/products?category=laptops">
+            <Link className="group flex items-center gap-4 rounded-2xl border bg-white p-4 transition-shadow hover:shadow-lg" href="/products?category=laptops">
                 <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-slate-100 overflow-hidden">
                 <img alt="Laptops" className="h-full w-full object-cover" src="data:image/jpeg;base64,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" />
               </div>
               <div>
                 <div className="text-lg font-medium">Laptops</div>
-                <div className="text-sm text-slate-500">Explora laptops</div>
+                <div className="text-sm text-slate-500">Equipos para rendimiento, clases o oficina</div>
               </div>
-            </a>
+            </Link>
 
-            <a className="group flex items-center gap-4 rounded-2xl border bg-white p-4 transition-shadow hover:shadow-lg" href="/products?category=accesorios">
+            <Link className="group flex items-center gap-4 rounded-2xl border bg-white p-4 transition-shadow hover:shadow-lg" href="/products?category=accesorios">
                 <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-slate-100 overflow-hidden">
                 <img alt="Accesorios" className="h-full w-full object-cover" src="https://f.fcdn.app/imgs/b03b5f/www.cellularcenter.com.uy/celluy/db49/original/catalogo/MTJV3LLAWH_MTJV3LLAWH_2/600x600/apple-airpods-pro-2-apple-airpods-pro-2.jpg" />
               </div>
               <div>
                 <div className="text-lg font-medium">Accesorios</div>
-                <div className="text-sm text-slate-500">Explora accesorios</div>
+                <div className="text-sm text-slate-500">Complementos para completar tu setup</div>
               </div>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
 
       <section className="px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto w-full max-w-7xl">
-          <h2 className="mb-6 text-2xl font-semibold">Populares</h2>
-          <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-600">No hay productos disponibles.</div>
+          <h2 className="mb-6 text-2xl font-semibold">Lo más buscado</h2>
+          <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm text-slate-600">
+            Aún no hay productos destacados en esta sección. Mientras tanto, puedes explorar todo el catálogo.
+          </div>
         </div>
       </section>
 

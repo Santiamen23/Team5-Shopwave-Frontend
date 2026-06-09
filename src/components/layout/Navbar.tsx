@@ -2,17 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, ShoppingCart } from "lucide-react";
+import { LogOut, Menu, Shield, ShoppingCart, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { href: "/", label: "Inicio" },
   { href: "/products", label: "Productos" },
-  { href: "/cart", label: "Carrito" },
-  { href: "/login", label: "Login" },
 ] as const;
 
 function isActivePath(pathname: string, href: string) {
@@ -56,6 +55,14 @@ function NavLink({
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const userNavItems = isAuthenticated
+    ? [
+        { href: "/orders", label: "Mis pedidos" },
+        { href: "/profile", label: "Perfil" },
+      ]
+    : [];
+  const adminNavItems = user?.role === "ROLE_ADMIN" ? [{ href: "/admin", label: "Admin" }] : [];
 
   return (
     <nav className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
@@ -68,14 +75,28 @@ export default function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-2 md:flex">
-          {navItems.map((item) => (
+          {[...navItems, ...userNavItems, ...adminNavItems].map((item) => (
             <NavLink key={item.href} href={item.href} label={item.label} pathname={pathname} />
           ))}
-          <Button size="icon" variant="outline" className="ml-2 rounded-full" aria-label="Ir al carrito" asChild>
-            <Link href="/cart">
-              <ShoppingCart className="h-5 w-5" />
-            </Link>
-          </Button>
+          {isAuthenticated ? (
+            <div className="ml-2 flex items-center gap-2">
+              <div className="hidden rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 lg:block">
+                {user?.firstName} {user?.lastName}
+              </div>
+              <Button size="icon" variant="outline" className="rounded-full" aria-label="Ir al carrito" asChild>
+                <Link href="/cart">
+                  <ShoppingCart className="h-5 w-5" />
+                </Link>
+              </Button>
+              <Button size="icon" variant="outline" className="rounded-full" aria-label="Cerrar sesión" onClick={() => void logout()}>
+                <LogOut className="h-5 w-5" />
+              </Button>
+            </div>
+          ) : !isLoading ? (
+            <Button className="ml-2 rounded-full" asChild>
+              <Link href="/login">Entrar</Link>
+            </Button>
+          ) : null}
         </div>
 
         <div className="md:hidden">
@@ -92,9 +113,36 @@ export default function Navbar() {
               </SheetHeader>
 
               <div className="mt-2 flex flex-col gap-2 px-1">
-                {navItems.map((item) => (
+                {[...navItems, ...userNavItems, ...adminNavItems].map((item) => (
                   <NavLink key={item.href} href={item.href} label={item.label} pathname={pathname} mobile />
                 ))}
+                {isAuthenticated ? (
+                  <div className="mt-2 space-y-2 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <div className="flex items-center gap-2 text-sm font-medium text-slate-950">
+                      <User className="h-4 w-4" />
+                      <span>{user?.firstName} {user?.lastName}</span>
+                    </div>
+                    {user?.role === "ROLE_ADMIN" ? (
+                      <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500">
+                        <Shield className="h-4 w-4" />
+                        <span>Administrador</span>
+                      </div>
+                    ) : null}
+                    <Button className="w-full" variant="outline" onClick={() => void logout()}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Cerrar sesión
+                    </Button>
+                  </div>
+                ) : !isLoading ? (
+                  <div className="mt-2 flex flex-col gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <Button className="w-full" asChild>
+                      <Link href="/login">Entrar</Link>
+                    </Button>
+                    <Button className="w-full" variant="outline" asChild>
+                      <Link href="/register">Crear cuenta</Link>
+                    </Button>
+                  </div>
+                ) : null}
               </div>
             </SheetContent>
           </Sheet>

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 
-import { Check, Minus, Plus, ShoppingCart, ShieldCheck, Truck } from "lucide-react";
+import { Minus, Plus, ShoppingCart } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -77,7 +77,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const isAddDisabled = isCartLoading || isSubmitting || remainingStock <= 0;
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+    <section className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <Card className="overflow-hidden border-slate-200/70 bg-white/95 xl:sticky xl:top-24">
           <div className="aspect-[4/3] bg-gradient-to-br from-slate-100 via-white to-blue-50 p-4 sm:p-6 lg:p-8">
@@ -232,12 +232,14 @@ export function ProductDetail({ product }: ProductDetailProps) {
           </Card>
 
           <Card className="border-slate-200/70 bg-white/95">
-            <CardHeader className="p-5 sm:p-6 lg:p-7">
+            <CardHeader className="p-3 sm:p-4 lg:p-5">
               <CardTitle className="text-xl text-slate-950 sm:text-2xl">Información ampliada</CardTitle>
-              <CardDescription>Todo lo que el detalle necesita para la navegación profunda.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4 p-5 text-sm leading-7 text-slate-600 sm:p-6 lg:p-7">
-              <p>{product.description}</p>
+            <CardContent className="space-y-4 p-2 text-sm leading-7 text-slate-600 sm:p-3 lg:p-4">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Descripcion</p>
+                <p className="mt-1 font-medium text-slate-950">{product.description}</p>
+              </div>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                   <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Marca</p>
@@ -256,21 +258,10 @@ export function ProductDetail({ product }: ProductDetailProps) {
                   <p className="mt-1 font-medium text-slate-950">{product.quantity} unidades</p>
                 </div>
               </div>
-
-              <div className="grid gap-3 text-slate-600 sm:grid-cols-2">
-                <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <ShieldCheck className="mt-0.5 h-4 w-4 text-blue-600" />
-                  <span>Detalle preparado para integrarse con autenticación, reseñas y stock real.</span>
-                </div>
-                <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <Truck className="mt-0.5 h-4 w-4 text-blue-600" />
-                  <span>La estructura ya queda lista para conectar envío, carrito y compra posterior.</span>
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>
       </div>
-    </main>
+    </section>
   );
 }

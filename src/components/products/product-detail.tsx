@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useCart } from "@/hooks/useCart";
 import type { Product } from "@/models/product.model";
 import { formatCurrency } from "@/utils/currency.util";
 
@@ -20,17 +21,71 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const availableSizes = product.sizes ?? [];
   const [selectedSize, setSelectedSize] = useState(availableSizes[0]?.name ?? "");
   const [quantity, setQuantity] = useState(1);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { addItem, isLoading: isCartLoading } = useCart();
+
+  function getStockForSize(sizeName: string) {
+    return Math.max(
+      availableSizes.find((size) => size.name === sizeName)?.quantity ?? product.quantity,
+      0,
+    );
+  }
 
   const hasDiscount = product.discountedPrice < product.price;
-  const remainingStock = Math.max(product.quantity, 0);
+  const remainingStock = getStockForSize(selectedSize);
+
+  function clampQuantity(value: number) {
+    return Math.min(Math.max(value, 1), Math.max(remainingStock, 1));
+  }
 
   function decrementQuantity() {
     setQuantity((current) => Math.max(1, current - 1));
   }
 
   function incrementQuantity() {
-    setQuantity((current) => Math.min(Math.max(remainingStock, 1), current + 1));
+    setQuantity((current) => clampQuantity(current + 1));
   }
+
+  function handleSelectSize(sizeName: string) {
+    const nextStock = getStockForSize(sizeName);
+    setSelectedSize(sizeName);
+    setQuantity((current) => Math.min(Math.max(current, 1), Math.max(nextStock, 1)));
+  }
+
+  async function handleAddToCart() {
+    setSubmitError(null);
+    setSubmitSuccess(null);
+
+    if (!selectedSize) {
+      setSubmitError("Selecciona un talle antes de agregar el producto.");
+      return;
+    }
+
+    if (remainingStock <= 0) {
+      setSubmitError("Este talle no tiene stock disponible.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await addItem({
+        product,
+        size: selectedSize,
+        quantity: clampQuantity(quantity),
+      });
+      setSubmitSuccess("Producto agregado al carrito correctamente.");
+    } catch (error) {
+      setSubmitError(error instanceof Error ? error.message : "No se pudo agregar el producto.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  const isAddDisabled = isCartLoading || isSubmitting || remainingStock <= 0;
+  const isIncreaseDisabled = remainingStock <= 0 || quantity >= remainingStock;
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
@@ -112,7 +167,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                           variant={isSelected ? "default" : "outline"}
                           size="sm"
                           disabled={isDisabled}
-                          onClick={() => setSelectedSize(size.name)}
+                          onClick={() => handleSelectSize(size.name)}
                           className="min-w-14 rounded-full sm:min-w-16"
                         >
                           {size.name}
@@ -150,6 +205,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       size="icon"
                       className="rounded-full"
                       onClick={incrementQuantity}
+                      disabled={isIncreaseDisabled}
                       aria-label="Aumentar cantidad"
                     >
                       <Plus className="h-4 w-4" />
@@ -161,15 +217,26 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 </div>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
-                <Button type="button" size="lg" className="w-full">
+              <div>
+                <Button
+                  type="button"
+                  size="lg"
+                  className="w-full"
+                  onClick={() => void handleAddToCart()}
+                  disabled={isAddDisabled}
+                >
                   <ShoppingCart className="h-4 w-4" />
-                  Agregar al carrito
-                </Button>
-                <Button type="button" size="lg" variant="secondary" className="w-full">
-                  Comprar ahora
+                  {isSubmitting ? "Agregando..." : "Agregar al carrito"}
                 </Button>
               </div>
+
+              {submitError ? (
+                <p className="text-sm font-medium text-red-600">{submitError}</p>
+              ) : null}
+
+              {submitSuccess ? (
+                <p className="text-sm font-medium text-emerald-700">{submitSuccess}</p>
+              ) : null}
             </CardContent>
           </Card>
 

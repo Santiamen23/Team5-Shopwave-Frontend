@@ -118,6 +118,7 @@ export default function Navbar() {
                 ))}
                 {isAuthenticated ? (
                   <div className="mt-2 space-y-2 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <NavLink href="/cart" label="Carrito" pathname={pathname} mobile />
                     <div className="flex items-center gap-2 text-sm font-medium text-slate-950">
                       <User className="h-4 w-4" />
                       <span>{user?.firstName} {user?.lastName}</span>

@@ -26,14 +26,18 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { addItem, isLoading: isCartLoading } = useCart();
 
+  function getStockForSize(sizeName: string) {
+    return Math.max(
+      availableSizes.find((size) => size.name === sizeName)?.quantity ?? product.quantity,
+      0,
+    );
+  }
+
   const hasDiscount = product.discountedPrice < product.price;
-  const remainingStock = Math.max(
-    availableSizes.find((size) => size.name === selectedSize)?.quantity ?? product.quantity,
-    0,
-  );
+  const remainingStock = getStockForSize(selectedSize);
 
   function clampQuantity(value: number) {
-    return Math.min(Math.max(remainingStock, 1), value);
+    return Math.min(Math.max(value, 1), Math.max(remainingStock, 1));
   }
 
   function decrementQuantity() {
@@ -42,6 +46,12 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
   function incrementQuantity() {
     setQuantity((current) => clampQuantity(current + 1));
+  }
+
+  function handleSelectSize(sizeName: string) {
+    const nextStock = getStockForSize(sizeName);
+    setSelectedSize(sizeName);
+    setQuantity((current) => Math.min(Math.max(current, 1), Math.max(nextStock, 1)));
   }
 
   async function handleAddToCart() {
@@ -75,6 +85,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   }
 
   const isAddDisabled = isCartLoading || isSubmitting || remainingStock <= 0;
+  const isIncreaseDisabled = remainingStock <= 0 || quantity >= remainingStock;
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
@@ -156,7 +167,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                           variant={isSelected ? "default" : "outline"}
                           size="sm"
                           disabled={isDisabled}
-                          onClick={() => setSelectedSize(size.name)}
+                          onClick={() => handleSelectSize(size.name)}
                           className="min-w-14 rounded-full sm:min-w-16"
                         >
                           {size.name}
@@ -194,6 +205,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       size="icon"
                       className="rounded-full"
                       onClick={incrementQuantity}
+                      disabled={isIncreaseDisabled}
                       aria-label="Aumentar cantidad"
                     >
                       <Plus className="h-4 w-4" />
@@ -205,7 +217,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 </div>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div>
                 <Button
                   type="button"
                   size="lg"
@@ -215,9 +227,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 >
                   <ShoppingCart className="h-4 w-4" />
                   {isSubmitting ? "Agregando..." : "Agregar al carrito"}
-                </Button>
-                <Button type="button" size="lg" variant="secondary" className="w-full">
-                  Comprar ahora
                 </Button>
               </div>
 

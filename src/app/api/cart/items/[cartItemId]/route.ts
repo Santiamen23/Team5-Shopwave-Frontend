@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import type { CartItem } from "@/models/cart.model";
 import { getSessionToken } from "@/lib/auth/session";
+import { ApiError } from "@/services/api.service";
 import { getCart } from "@/services/cart.service";
 import { removeCartItem, updateCartItem } from "@/services/cart-item.service";
 
@@ -24,7 +25,8 @@ export async function PUT(request: Request, { params }: RouteParams) {
     return NextResponse.json(cart);
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo actualizar el carrito.";
-    return NextResponse.json({ message }, { status: 500 });
+    const status = error instanceof ApiError ? error.status : 500;
+    return NextResponse.json({ message }, { status });
   }
 }
 
@@ -42,6 +44,7 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
     return NextResponse.json(cart);
   } catch (error) {
     const message = error instanceof Error ? error.message : "No se pudo eliminar el artículo.";
-    return NextResponse.json({ message }, { status: 500 });
+    const status = error instanceof ApiError ? error.status : 500;
+    return NextResponse.json({ message }, { status });
   }
 }

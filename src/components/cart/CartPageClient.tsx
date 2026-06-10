@@ -20,6 +20,11 @@ export default function CartPageClient() {
 
   const hasItems = cart.cartItems.length > 0;
 
+  function getAvailableItemQuantity(item: typeof cart.cartItems[number]) {
+    const sizeEntry = item.product.sizes?.find((size) => size.name === item.size);
+    return sizeEntry?.quantity ?? item.product.quantity;
+  }
+
   function showSuccess(message: string) {
     setStatusTone("success");
     setStatusMessage(message);
@@ -107,6 +112,11 @@ export default function CartPageClient() {
           ) : hasItems ? (
             <div className="space-y-4">
               {cart.cartItems.map((item) => (
+                (() => {
+                  const availableQuantity = getAvailableItemQuantity(item);
+                  const isIncreaseDisabled = busyItemId === item.id || availableQuantity <= 0 || item.quantity >= availableQuantity;
+
+                  return (
                 <Card key={item.id} className="border-slate-200/70 bg-white/95">
                   <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:p-6">
                     <div className="relative h-28 w-full overflow-hidden rounded-2xl bg-slate-100 sm:h-24 sm:w-24 sm:shrink-0">
@@ -142,7 +152,7 @@ export default function CartPageClient() {
                           size="icon"
                           className="rounded-full"
                           onClick={() => void handleUpdateQuantity(item.id, item.quantity + 1)}
-                          disabled={busyItemId === item.id}
+                          disabled={isIncreaseDisabled}
                           aria-label="Aumentar cantidad"
                         >
                           <Plus className="h-4 w-4" />
@@ -166,6 +176,8 @@ export default function CartPageClient() {
                     </div>
                   </CardContent>
                 </Card>
+                  );
+                })()
               ))}
             </div>
           ) : (

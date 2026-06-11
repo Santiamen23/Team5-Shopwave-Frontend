@@ -4,25 +4,36 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { useAuth } from "@/hooks/useAuth";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
-export default function AuthGuard({ children }: { children: React.ReactNode }) {
-	const { isAuthenticated, isLoading } = useAuth();
-	const pathname = usePathname();
-	const router = useRouter();
+export default function AuthGuard({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { isAuthenticated, isLoading } = useAuth();
 
-	useEffect(() => {
-		if (!isLoading && !isAuthenticated) {
-			router.replace(`/login?next=${encodeURIComponent(pathname)}`);
-		}
-	}, [isAuthenticated, isLoading, pathname, router]);
+  const pathname = usePathname();
 
-	if (isLoading) {
-		return <main className="p-6 text-sm text-slate-600">Verificando sesión...</main>;
-	}
+  const router = useRouter();
 
-	if (!isAuthenticated) {
-		return null;
-	}
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.replace(`/login?next=${encodeURIComponent(pathname)}`);
+    }
+  }, [isAuthenticated, isLoading, pathname, router]);
 
-	return <>{children}</>;
+  if (isLoading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </main>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  return <>{children}</>;
 }

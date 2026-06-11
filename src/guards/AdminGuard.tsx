@@ -4,33 +4,43 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/hooks/useAuth";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
-export default function AdminGuard({ children }: { children: React.ReactNode }) {
-	const { user, isAuthenticated, isLoading } = useAuth();
-	const router = useRouter();
+export default function AdminGuard({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { user, isAuthenticated, isLoading } = useAuth();
 
-	useEffect(() => {
-		if (isLoading) {
-			return;
-		}
+  const router = useRouter();
 
-		if (!isAuthenticated) {
-			router.replace("/login");
-			return;
-		}
+  useEffect(() => {
+    if (isLoading) {
+      return;
+    }
 
-		if (user?.role !== "ROLE_ADMIN") {
-			router.replace("/");
-		}
-	}, [isAuthenticated, isLoading, router, user?.role]);
+    if (!isAuthenticated) {
+      router.replace("/login");
+      return;
+    }
 
-	if (isLoading) {
-		return <main className="p-6 text-sm text-slate-600">Verificando permisos...</main>;
-	}
+    if (user?.role !== "ROLE_ADMIN") {
+      router.replace("/");
+    }
+  }, [isAuthenticated, isLoading, router, user?.role]);
 
-	if (!isAuthenticated || user?.role !== "ROLE_ADMIN") {
-		return null;
-	}
+  if (isLoading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <LoadingSpinner />
+      </main>
+    );
+  }
 
-	return <>{children}</>;
+  if (!isAuthenticated || user?.role !== "ROLE_ADMIN") {
+    return null;
+  }
+
+  return <>{children}</>;
 }

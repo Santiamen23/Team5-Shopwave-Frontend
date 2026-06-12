@@ -1,16 +1,12 @@
 import Navbar from "@/components/layout/Navbar";
-import { ProductDashboard } from "@/components/dashboard/ProductDashboard";
+import { ProductList } from "@/components/admin/ProductList";
 import { requireAdminUser } from "@/lib/auth/session";
 import { getProducts } from "@/services/product.service";
 import { Separator } from "@/components/ui/separator";
-import {
-  serverCreateProduct,
-  serverUpdateProduct,
-  serverDeleteProduct,
-} from "./actions";
+import { ProductsProvider } from "@/context/ProductContext";
 
 export default async function AdminPage() {
-  const user = await requireAdminUser();
+  await requireAdminUser();
   const products = await getProducts();
 
   return (
@@ -23,13 +19,10 @@ export default async function AdminPage() {
           </h1>
 
           <Separator />
-          
-          <ProductDashboard
-            products={products}
-            onCreateProduct={serverCreateProduct}
-            onEditProduct={serverUpdateProduct}
-            onDeleteProduct={serverDeleteProduct}
-          />
+
+          <ProductsProvider initialProducts={products}>
+            <ProductList />
+          </ProductsProvider>
         </div>
       </section>
     </main>

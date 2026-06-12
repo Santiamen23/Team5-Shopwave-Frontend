@@ -1,6 +1,6 @@
 import Navbar from "@/components/layout/Navbar";
 import { requireAdminUser } from "@/lib/auth/session";
-import { CreateProductForm } from "@/components/admin/CreateProductForm";
+import { CreateProductFormContainer } from "@/components/admin/CreateProductFormContainer";
 import { ProductsProvider } from "@/context/ProductContext";
 
 export default async function AdminCreateProductPage() {
@@ -13,7 +13,7 @@ export default async function AdminCreateProductPage() {
         <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
           <h1 className="text-3xl font-semibold text-slate-950">Crear producto</h1>
           <ProductsProvider>
-            <CreateProductForm  />
+            <CreateProductFormContainer />
           </ProductsProvider>
         </div>
       </section>

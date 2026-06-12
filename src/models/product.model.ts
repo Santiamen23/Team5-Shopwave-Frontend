@@ -65,6 +65,22 @@ export interface AdminCreateProductPayload {
 	thirdLevelCategory: string;
 }
 
+export interface AdminUpdateProductPayload {
+	id: number;
+	title: string;
+	description: string;
+	price: number;
+	discountedPrice: number;
+	discountPersent: number;
+	quantity: number;
+	brand: string;
+	color: string;
+	imageUrl: string;
+	topLevelCategory: string;
+	secondLevelCategory: string;
+	thirdLevelCategory: string;
+}
+
 export interface ProductQueryFilters {
 	category?: string;
 	colors?: string[];

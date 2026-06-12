@@ -6,7 +6,7 @@ import { useProducts } from "@/hooks/useProducts";
 
 export function ProductList() {
   const {
-    products, createProduct, updateProduct, deleteProduct,
+    products, createProduct, updateProduct, deleteProduct, error,
   } = useProducts();
   return (
     <div className="space-y-4">
@@ -14,6 +14,12 @@ export function ProductList() {
         <h2 className="text-2xl font-bold">Inventario</h2>
         <CreatePopup onCreate={createProduct} />
       </div>
+
+      {error ? (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      ) : null}
 
       <div className="space-y-2">
         {products.length === 0 ? (

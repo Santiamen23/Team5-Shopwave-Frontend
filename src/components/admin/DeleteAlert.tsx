@@ -16,7 +16,7 @@ import { Trash2 } from "lucide-react";
 
 interface DeleteAlertProps {
   productTitle: string;
-  onDelete?: () => void;
+  onDelete?: () => Promise<unknown> | unknown;
 }
 
 export function DeleteAlert({ productTitle, onDelete }: DeleteAlertProps) {

@@ -38,6 +38,10 @@ function createApiErrorMessage(path: string, status: number, body: unknown) {
 		return `Request to ${path} failed with ${status}: ${body.message}`;
 	}
 
+	if (body && typeof body === "object" && "error" in body && typeof body.error === "string") {
+		return `Request to ${path} failed with ${status}: ${body.error}`;
+	}
+
 	return `Request to ${path} failed with ${status}`;
 }
 

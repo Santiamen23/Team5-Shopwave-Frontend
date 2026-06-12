@@ -5,6 +5,7 @@ import {
   DialogTrigger,
   DialogContent,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -14,15 +15,15 @@ import { useProductForm } from "@/hooks/useCreateProductForm";
 import { CreateProductForm } from "./CreateProductForm";
 
 interface CreatePopupProps {
-  onCreate?: (payload: AdminCreateProductPayload) => void;
+  onCreate?: (payload: AdminCreateProductPayload) => Promise<unknown> | unknown;
 }
 
 export function CreatePopup({ onCreate }: CreatePopupProps) {
   const [createOpen, setCreateOpen] = useState(false);
   const { data, updateField, reset } = useProductForm();
 
-  const handleCreateProduct = () => {
-    onCreate?.(data);
+  const handleCreateProduct = async () => {
+    await onCreate?.(data);
     reset();
     setCreateOpen(false);
   };
@@ -37,7 +38,14 @@ export function CreatePopup({ onCreate }: CreatePopupProps) {
       </DialogTrigger>
       <DialogContent className="w-80">
         <DialogTitle>Crear nuevo producto</DialogTitle>
-        <CreateProductForm  />
+        <DialogDescription>
+          Completa los datos base para registrar un producto en el inventario.
+        </DialogDescription>
+        <CreateProductForm
+          data={data}
+          onChange={updateField}
+          onSubmit={handleCreateProduct}
+        />
       </DialogContent>
     </Dialog>
   );

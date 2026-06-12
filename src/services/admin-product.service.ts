@@ -1,4 +1,8 @@
-import type { AdminCreateProductPayload, Product } from "@/models/product.model";
+import type {
+	AdminCreateProductPayload,
+	AdminUpdateProductPayload,
+	Product,
+} from "@/models/product.model";
 import type { ApiResponse } from "@/types/api-response.type";
 
 import { apiProtectedJsonFetch, createJsonRequestInit } from "./api.service";
@@ -27,7 +31,7 @@ export async function createAdminProducts(
 
 export async function updateAdminProduct(
 	productId: string | number,
-	payload: Product,
+	payload: AdminUpdateProductPayload,
 	jwt: string,
 ): Promise<Product> {
 	return apiProtectedJsonFetch<Product>(

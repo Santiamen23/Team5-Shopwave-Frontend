@@ -1,12 +1,23 @@
 import { NextResponse } from "next/server";
 import { getSessionToken } from "@/lib/auth/session";
-import { AdminCreateProductPayload, Product } from "@/models/product.model";
+import {
+  AdminCreateProductPayload,
+  AdminUpdateProductPayload,
+} from "@/models/product.model";
 import {
   createAdminProduct,
   createAdminProducts,
   deleteAdminProduct,
   updateAdminProduct,
 } from "@/services/admin-product.service";
+import { ApiError } from "@/services/api.service";
+
+function createErrorResponse(error: unknown, fallbackMessage: string) {
+  const status = error instanceof ApiError ? error.status : 500;
+  const message = error instanceof Error ? error.message : fallbackMessage;
+
+  return NextResponse.json({ message }, { status });
+}
 
 export async function POST(request: Request) {
   const jwt = await getSessionToken();
@@ -26,8 +37,7 @@ export async function POST(request: Request) {
     const product = await createAdminProduct(payload as AdminCreateProductPayload, jwt);
     return NextResponse.json(product);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Parametros incompletos o servidor caido.";
-    return NextResponse.json({ message }, { status: 500 });
+    return createErrorResponse(error, "Parametros incompletos o servidor caido.");
   }
 }
 
@@ -39,12 +49,11 @@ export async function PATCH(request: Request) {
   }
 
   try {
-    const payload = await (request.json()) as Product;
+    const payload = await (request.json()) as AdminUpdateProductPayload;
     const product = await updateAdminProduct(payload.id, payload, jwt);
     return NextResponse.json(product);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Parametros incompletos o servidor caido.";
-    return NextResponse.json({ message }, { status: 500 });
+    return createErrorResponse(error, "Parametros incompletos o servidor caido.");
   }
 }
 
@@ -60,7 +69,6 @@ export async function DELETE(request: Request) {
     const reponse = await deleteAdminProduct(payload, jwt);
     return NextResponse.json(reponse);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Producto no encontrado o servidor caido.";
-    return NextResponse.json({ message }, { status: 500 });
+    return createErrorResponse(error, "Producto no encontrado o servidor caido.");
   }
 }

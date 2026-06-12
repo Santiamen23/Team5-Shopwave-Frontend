@@ -1,8 +1,6 @@
 'use client'
 
 import { Button } from "@/components/ui/button";
-import { useProductForm } from "@/hooks/useCreateProductForm";
-import { useProducts } from "@/hooks/useProducts";
 import { AdminCreateProductPayload } from "@/models/product.model";
 
 interface ProductFormProps {
@@ -15,10 +13,12 @@ interface ProductFormProps {
   submitLabel?: string;
 }
 
-export function CreateProductForm() {
-  const { data, updateField, reset } = useProductForm();
-  const { createProduct } = useProducts();
-
+export function CreateProductForm({
+  data,
+  onChange,
+  onSubmit,
+  submitLabel = "Agregar Producto",
+}: ProductFormProps) {
   return (
     <div className="space-y-3 max-h-96 overflow-y-auto">
       <div>
@@ -26,7 +26,7 @@ export function CreateProductForm() {
         <input
           type="text"
           value={data.title}
-          onChange={(e) => updateField("title", e.target.value)}
+          onChange={(e) => onChange("title", e.target.value)}
           className="w-full border rounded px-2 py-1 text-sm mt-1"
           placeholder="Product title"
         />
@@ -35,7 +35,7 @@ export function CreateProductForm() {
         <label className="text-sm font-medium">Descripción</label>
         <textarea
           value={data.description}
-          onChange={(e) => updateField("description", e.target.value)}
+          onChange={(e) => onChange("description", e.target.value)}
           className="w-full border rounded px-2 py-1 text-sm mt-1"
           placeholder="Product description"
           rows={3}
@@ -47,7 +47,7 @@ export function CreateProductForm() {
           <input
             type="number"
             value={data.price}
-            onChange={(e) => updateField("price", parseFloat(e.target.value))}
+            onChange={(e) => onChange("price", Number(e.target.value) || 0)}
             className="w-full border rounded px-2 py-1 text-sm mt-1"
             placeholder="0.00"
           />
@@ -57,7 +57,7 @@ export function CreateProductForm() {
           <input
             type="number"
             value={data.discountPersent}
-            onChange={(e) => updateField("discountPersent", parseFloat(e.target.value))}
+            onChange={(e) => onChange("discountPersent", Number(e.target.value) || 0)}
             className="w-full border rounded px-2 py-1 text-sm mt-1"
             placeholder="0"
           />
@@ -68,7 +68,7 @@ export function CreateProductForm() {
         <input
           type="number"
           value={data.discountedPrice}
-          onChange={(e) => updateField("discountedPrice", parseFloat(e.target.value))}
+          onChange={(e) => onChange("discountedPrice", Number(e.target.value) || 0)}
           className="w-full border rounded px-2 py-1 text-sm mt-1"
           placeholder="0.00"
         />
@@ -78,7 +78,7 @@ export function CreateProductForm() {
         <input
           type="number"
           value={data.quantity}
-          onChange={(e) => updateField("quantity", parseInt(e.target.value))}
+          onChange={(e) => onChange("quantity", Number(e.target.value) || 0)}
           className="w-full border rounded px-2 py-1 text-sm mt-1"
           placeholder="0"
         />
@@ -88,7 +88,7 @@ export function CreateProductForm() {
         <input
           type="text"
           value={data.brand}
-          onChange={(e) => updateField("brand", e.target.value)}
+          onChange={(e) => onChange("brand", e.target.value)}
           className="w-full border rounded px-2 py-1 text-sm mt-1"
           placeholder="Brand"
         />
@@ -98,7 +98,7 @@ export function CreateProductForm() {
         <input
           type="text"
           value={data.color}
-          onChange={(e) => updateField("color", e.target.value)}
+          onChange={(e) => onChange("color", e.target.value)}
           className="w-full border rounded px-2 py-1 text-sm mt-1"
           placeholder="Color"
         />
@@ -108,7 +108,7 @@ export function CreateProductForm() {
         <input
           type="text"
           value={data.imageUrl}
-          onChange={(e) => updateField("imageUrl", e.target.value)}
+          onChange={(e) => onChange("imageUrl", e.target.value)}
           className="w-full border rounded px-2 py-1 text-sm mt-1"
           placeholder="https://..."
         />
@@ -118,7 +118,7 @@ export function CreateProductForm() {
         <input
           type="text"
           value={data.topLevelCategory}
-          onChange={(e) => updateField("topLevelCategory", e.target.value)}
+          onChange={(e) => onChange("topLevelCategory", e.target.value)}
           className="w-full border rounded px-2 py-1 text-sm mt-1"
           placeholder="Category"
         />
@@ -128,7 +128,7 @@ export function CreateProductForm() {
         <input
           type="text"
           value={data.secondLevelCategory}
-          onChange={(e) => updateField("secondLevelCategory", e.target.value)}
+          onChange={(e) => onChange("secondLevelCategory", e.target.value)}
           className="w-full border rounded px-2 py-1 text-sm mt-1"
           placeholder="Category"
         />
@@ -138,13 +138,13 @@ export function CreateProductForm() {
         <input
           type="text"
           value={data.thirdLevelCategory}
-          onChange={(e) => updateField("thirdLevelCategory", e.target.value)}
+          onChange={(e) => onChange("thirdLevelCategory", e.target.value)}
           className="w-full border rounded px-2 py-1 text-sm mt-1"
           placeholder="Category"
         />
       </div>
-      <Button onClick={() => createProduct(data).finally(() => reset())} className="w-full">
-        <span>Agregar Producto</span>
+      <Button onClick={onSubmit} className="w-full">
+        <span>{submitLabel}</span>
       </Button>
     </div>
   );

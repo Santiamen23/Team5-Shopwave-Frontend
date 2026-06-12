@@ -8,7 +8,6 @@ export default function ProfileView({ user }: { user: UserProfile }) {
 
   return (
     <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-      {/* Encabezado Principal de Perfil */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-900 font-semibold text-white text-xl shadow-md">
@@ -27,7 +26,6 @@ export default function ProfileView({ user }: { user: UserProfile }) {
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
-        {/* Columna Izquierda: Datos Personales */}
         <Card className="shadow-sm border-slate-200/80 md:col-span-1">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-slate-900">Datos Personales</CardTitle>
@@ -50,10 +48,7 @@ export default function ProfileView({ user }: { user: UserProfile }) {
           </CardContent>
         </Card>
 
-        {/* Columna Derecha: Direcciones y Métodos de Pago */}
         <div className="space-y-6 md:col-span-2">
-          
-          {/* Sección de Direcciones */}
           <Card className="shadow-sm border-slate-200/80">
             <CardHeader>
               <CardTitle className="text-lg font-semibold text-slate-900">Direcciones de Envío</CardTitle>
@@ -69,7 +64,7 @@ export default function ProfileView({ user }: { user: UserProfile }) {
                       <p className="mt-1 text-slate-600">{addr.streetAddress}</p>
                       <p className="text-slate-600">{addr.city}, {addr.state} {addr.zipCode}</p>
                       <p className="mt-2 flex items-center gap-1 text-xs text-slate-400">
-                        📞 {addr.mobile}
+                         {addr.mobile}
                       </p>
                     </div>
                   ))}
@@ -78,7 +73,6 @@ export default function ProfileView({ user }: { user: UserProfile }) {
             </CardContent>
           </Card>
 
-          {/* Sección de Métodos de Pago */}
           <Card className="shadow-sm border-slate-200/80">
             <CardHeader>
               <CardTitle className="text-lg font-semibold text-slate-900">Métodos de Pago</CardTitle>
@@ -92,7 +86,7 @@ export default function ProfileView({ user }: { user: UserProfile }) {
                     <div key={index} className="flex items-center justify-between rounded-xl border border-slate-100 bg-slate-50/50 p-4 text-sm shadow-sm">
                       <div className="space-y-1">
                         <p className="font-medium text-slate-800">
-                          💳 •••• •••• •••• {payment.cardNumber?.slice(-4) || "0000"}
+                           •••• •••• •••• {payment.cardNumber?.slice(-4) || "0000"}
                         </p>
                         <p className="text-xs text-slate-500">Expira: {payment.expirationDate}</p>
                       </div>

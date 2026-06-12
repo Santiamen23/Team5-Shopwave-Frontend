@@ -384,7 +384,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 			try {
 				await addRemoteItem(input);
 				const hydratedCart = await loadRemoteCart().catch(() => null);
-				if (hasCartItems(hydratedCart)) {
+				if (hydratedCart && hasCartItems(hydratedCart)) {
 					return commitCart(hydratedCart, user);
 				}
 			} catch (remoteError) {

@@ -2,26 +2,17 @@
 
 import { ProductCard } from "./ProductCard";
 import { CreatePopup } from "./CreatePopup";
-import { Product, AdminCreateProductPayload } from "@/models/product.model";
+import { useProducts } from "@/hooks/useProducts";
 
-interface ProductDashboardProps {
-  products: Product[];
-  onCreateProduct?: (payload: AdminCreateProductPayload) => void;
-  onEditProduct?: (product: Product) => void;
-  onDeleteProduct?: (productId: number) => void;
-}
-
-export function ProductDashboard({
-  products,
-  onCreateProduct,
-  onEditProduct,
-  onDeleteProduct,
-}: ProductDashboardProps) {
+export function ProductList() {
+  const {
+    products, createProduct, updateProduct, deleteProduct,
+  } = useProducts();
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Inventario</h2>
-        <CreatePopup onCreate={onCreateProduct} />
+        <CreatePopup onCreate={createProduct} />
       </div>
 
       <div className="space-y-2">
@@ -34,8 +25,8 @@ export function ProductDashboard({
             <ProductCard
               key={product.id}
               product={product}
-              onEdit={onEditProduct}
-              onDelete={onDeleteProduct}
+              onEdit={updateProduct}
+              onDelete={() => deleteProduct(product.id)}
             />
           ))
         )}

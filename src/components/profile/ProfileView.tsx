@@ -5,6 +5,8 @@ import { Separator } from "@/components/ui/separator";
 
 export default function ProfileView({ user }: { user: UserProfile }) {
   const initials = `${user.firstName[0] || ""}${user.lastName[0] || ""}`.toUpperCase();
+  const roleName = user.role === "ROLE_ADMIN" ? "Administrador" : user.role === "ROLE_USER" ? "Cliente" : user.role;
+  const badgeVariant = user.role === "ROLE_ADMIN" ? "default" : "secondary";
 
   return (
     <section className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
@@ -19,8 +21,8 @@ export default function ProfileView({ user }: { user: UserProfile }) {
           </div>
         </div>
         <div>
-          <Badge variant="secondary" className="px-3 py-1 text-sm font-medium capitalize shadow-sm">
-            Rol: {user.role}
+          <Badge variant={badgeVariant} className="px-3 py-1 text-sm font-medium shadow-sm">
+              {roleName}
           </Badge>
         </div>
       </div>

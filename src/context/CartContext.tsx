@@ -99,6 +99,21 @@ function isIgnorableSyncError(error: unknown) {
 	return error instanceof Error && error.message.includes("status 400");
 }
 
+function isCartNotInitializedError(error: unknown) {
+	if (!(error instanceof Error)) {
+		return false;
+	}
+	const message = error.message.toLowerCase();
+	return message.includes("cart") && message.includes("null");
+}
+
+function describeCartError(error: unknown): string {
+	if (isCartNotInitializedError(error)) {
+		return "El servidor todavía no tiene un carrito creado para tu cuenta. Vuelve a iniciar sesión o contacta al equipo de backend para que el endpoint cree el carrito automáticamente al primer uso.";
+	}
+	return error instanceof Error ? error.message : "No se pudo sincronizar el carrito con el servidor.";
+}
+
 function isServerCartItem(item: CartItem) {
 	return item.userId !== null;
 }
@@ -307,12 +322,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 				let nextCart = remoteCart ? normalizeCart(remoteCart) : storedCart ? normalizeCart(storedCart) : cloneCart(EMPTY_CART);
 
 				if (storedCart?.cartItems.length) {
+					await loadRemoteCart().catch(() => null);
 					for (const item of storedCart.cartItems) {
-						nextCart = await addRemoteItem({
-							product: item.product,
-							size: item.size,
-							quantity: item.quantity,
-						});
+						try {
+							nextCart = await addRemoteItem({
+								product: item.product,
+								size: item.size,
+								quantity: item.quantity,
+							});
+						} catch (syncError) {
+							if (isCartNotInitializedError(syncError)) {
+								await loadRemoteCart().catch(() => null);
+								nextCart = await addRemoteItem({
+									product: item.product,
+									size: item.size,
+									quantity: item.quantity,
+								});
+							} else {
+								throw syncError;
+							}
+						}
 					}
 				}
 
@@ -382,6 +411,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
 		if (isAuthenticated) {
 			try {
+				await loadRemoteCart().catch(() => null);
 				await addRemoteItem(input);
 				const hydratedCart = await loadRemoteCart().catch(() => null);
 				if (hydratedCart && hasCartItems(hydratedCart)) {
@@ -389,7 +419,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 				}
 			} catch (remoteError) {
 				if (!isIgnorableSyncError(remoteError)) {
-					setError(remoteError instanceof Error ? remoteError.message : "No se pudo sincronizar el carrito.");
+					setError(describeCartError(remoteError));
 				}
 			}
 

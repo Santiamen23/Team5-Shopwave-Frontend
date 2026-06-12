@@ -7,6 +7,18 @@ import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	FieldErrors,
+	REQUIRED_ERROR,
+	getInputBorderClass,
+	validateEmail,
+	validateRequired,
+} from "@/utils/validation.util";
+
+interface LoginFieldErrors extends FieldErrors {
+	email?: string;
+	password?: string;
+}
 
 export default function LoginForm({ nextPath }: { nextPath: string }) {
   const router = useRouter();
@@ -15,14 +27,45 @@ export default function LoginForm({ nextPath }: { nextPath: string }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<LoginFieldErrors>({});
+
+  function validate(): LoginFieldErrors {
+	const nextErrors: LoginFieldErrors = {};
+	const emailError = validateEmail(email);
+	const passwordError = validateRequired(password);
+
+	if (emailError) nextErrors.email = emailError;
+	if (passwordError) nextErrors.password = passwordError ?? REQUIRED_ERROR;
+
+	return nextErrors;
+  }
+
+  function clearFieldError(field: keyof LoginFieldErrors) {
+	setErrors((prev) => {
+		if (!prev[field]) {
+			return prev;
+		}
+		const next: LoginFieldErrors = { ...prev };
+		delete next[field];
+		return next;
+	});
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+
+	const validationErrors = validate();
+	if (Object.keys(validationErrors).length > 0) {
+		setErrors(validationErrors);
+		return;
+	}
+
+	setErrors({});
     setIsLoading(true);
 
     try {
-      await login({ email, password });
+      await login({ email: email.trim(), password });
       router.push(nextPath);
       router.refresh();
     } catch (err) {
@@ -68,38 +111,56 @@ export default function LoginForm({ nextPath }: { nextPath: string }) {
             </div>
           ) : null}
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={handleSubmit} noValidate>
             <div className="space-y-4">
               <div>
                 <label htmlFor="email" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Correo Electrónico
+                  Correo Electrónico <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="email"
                   type="email"
-                  required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-950 placeholder-slate-400 outline-none transition-all focus:border-slate-900 focus:ring-1 focus:ring-slate-900 disabled:opacity-50"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    clearFieldError("email");
+                  }}
+                  className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-950 placeholder-slate-400 outline-none transition-all focus:ring-1 disabled:opacity-50 ${getInputBorderClass(errors.email)}`}
                   placeholder="ejemplo@correo.com"
                   disabled={isLoading}
+                  aria-invalid={Boolean(errors.email)}
+                  aria-describedby={errors.email ? "email-error" : undefined}
                 />
+                {errors.email ? (
+                  <p id="email-error" className="mt-1 text-xs font-medium text-red-500">
+                    {errors.email}
+                  </p>
+                ) : null}
               </div>
 
               <div>
                 <label htmlFor="password" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Contraseña
+                  Contraseña <span className="text-red-500">*</span>
                 </label>
                 <input
                   id="password"
                   type="password"
-                  required
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-950 placeholder-slate-400 outline-none transition-all focus:border-slate-900 focus:ring-1 focus:ring-slate-900 disabled:opacity-50"
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    clearFieldError("password");
+                  }}
+                  className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-950 placeholder-slate-400 outline-none transition-all focus:ring-1 disabled:opacity-50 ${getInputBorderClass(errors.password)}`}
                   placeholder="••••••••"
                   disabled={isLoading}
+                  aria-invalid={Boolean(errors.password)}
+                  aria-describedby={errors.password ? "password-error" : undefined}
                 />
+                {errors.password ? (
+                  <p id="password-error" className="mt-1 text-xs font-medium text-red-500">
+                    {errors.password}
+                  </p>
+                ) : null}
               </div>
             </div>
 

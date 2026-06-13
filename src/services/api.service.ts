@@ -87,7 +87,14 @@ async function readResponseBody(response: Response) {
 	const contentType = response.headers.get("content-type") ?? "";
 
 	if (contentType.includes("application/json")) {
-		return JSON.parse(text) as unknown;
+		try {
+			return JSON.parse(text) as unknown;
+		} catch {
+			const preview = text.slice(0, 200);
+			throw new Error(
+				`La respuesta no es JSON válido (status ${response.status}, content-type ${contentType}). Inicio del cuerpo: ${preview}`,
+			);
+		}
 	}
 
 	return text;

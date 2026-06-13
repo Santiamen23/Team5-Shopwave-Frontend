@@ -1,16 +1,17 @@
 import type { Order } from "@/models/order.model";
-import type { ApiResponse } from "@/types/api-response.type";
+import type { ApiResponse, PagedResponse } from "@/types/api-response.type";
 
 import { apiProtectedJsonFetch } from "./api.service";
 
 export async function getAdminOrders(jwt: string): Promise<Order[]> {
-	return apiProtectedJsonFetch<Order[]>(
+	const response = await apiProtectedJsonFetch<Order[] | PagedResponse<Order>>(
 		"/admin/orders/",
 		jwt,
 		{
 			cache: "no-store",
 		},
 	);
+	return Array.isArray(response) ? response : response.content ?? [];
 }
 
 export async function confirmAdminOrder(orderId: string | number, jwt: string): Promise<Order> {

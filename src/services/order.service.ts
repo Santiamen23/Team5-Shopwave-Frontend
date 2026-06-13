@@ -1,4 +1,5 @@
 import type { CreateOrderPayload, Order } from "@/models/order.model";
+import type { PagedResponse } from "@/types/api-response.type";
 
 import { apiProtectedJsonFetch, createJsonRequestInit } from "./api.service";
 
@@ -11,13 +12,14 @@ export async function createOrder(payload: CreateOrderPayload, jwt: string): Pro
 }
 
 export async function getUserOrders(jwt: string): Promise<Order[]> {
-	return apiProtectedJsonFetch<Order[]>(
+	const response = await apiProtectedJsonFetch<Order[] | PagedResponse<Order>>(
 		"/orders/user",
 		jwt,
 		{
 			cache: "no-store",
 		},
 	);
+	return Array.isArray(response) ? response : response.content ?? [];
 }
 
 export async function getOrderById(orderId: string | number, jwt: string): Promise<Order> {

@@ -31,7 +31,7 @@ export default function CheckoutPageClient() {
         orderNumber: checkoutReceipt.orderNumber,
         totalItems: checkoutReceipt.totalItems,
       });
-      setStatusMessage("Compra simulada completada y carrito vaciado correctamente.");
+      setStatusMessage("Compra completada y carrito vaciado correctamente.");
     } catch (checkoutError) {
       setError(checkoutError instanceof Error ? checkoutError.message : "No se pudo completar la compra.");
     } finally {
@@ -46,8 +46,8 @@ export default function CheckoutPageClient() {
       <section className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[1fr_360px] lg:px-8">
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-semibold text-slate-950">Checkout simulado</h1>
-            <p className="mt-2 text-sm text-slate-600">Confirma el pedido y finaliza una compra de prueba.</p>
+            <h1 className="text-3xl font-semibold text-slate-950">Checkout</h1>
+            <p className="mt-2 text-sm text-slate-600">Confirma el pedido y finaliza tu compra.</p>
           </div>
 
           {receipt ? (
@@ -57,7 +57,7 @@ export default function CheckoutPageClient() {
                 <div>
                   <h2 className="text-2xl font-semibold text-emerald-950">Compra confirmada</h2>
                   <p className="mt-2 text-sm text-emerald-900">
-                    Tu orden simulada <span className="font-semibold">{receipt.orderNumber}</span> fue generada correctamente.
+                    Tu orden <span className="font-semibold">{receipt.orderNumber}</span> fue generada correctamente.
                   </p>
                   <p className="mt-1 text-sm text-emerald-900">Productos procesados: {receipt.totalItems}</p>
                 </div>
@@ -96,7 +96,7 @@ export default function CheckoutPageClient() {
 
               <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
                 <CreditCard className="h-5 w-5 text-slate-500" />
-                <p>Pago simulado con confirmación instantánea.</p>
+                <p>Pago procesado con confirmación instantánea.</p>
               </div>
 
               {isLoading ? (

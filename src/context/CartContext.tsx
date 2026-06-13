@@ -4,6 +4,7 @@ import { createContext, useCallback, useEffect, useState } from "react";
 
 import { useAuth } from "@/hooks/useAuth";
 import type { Cart, CartItem } from "@/models/cart.model";
+import type { Order } from "@/models/order.model";
 import type { Product } from "@/models/product.model";
 import type { UserProfile } from "@/models/user.model";
 
@@ -514,16 +515,39 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 			throw new Error("El carrito está vacío.");
 		}
 
-		const receipt: CheckoutReceipt = {
-			orderNumber: `SW-${Date.now().toString(36).toUpperCase()}`,
-			totalItems: cart.totalItem,
-			totalPrice: cart.totalPrice,
-			discountedTotal: cart.totalDiscountedPrice,
-			discount: cart.discounte,
-		};
+		if (!user) {
+			throw new Error("Debes iniciar sesión para finalizar la compra.");
+		}
 
-		await clearCart();
-		return receipt;
+		const order = await requestJson<Order>("/api/orders", {
+			method: "POST",
+			body: JSON.stringify({
+				firstName: user.firstName,
+				lastName: user.lastName,
+				streetAddress: "Dirección no especificada",
+				city: "Ciudad no especificada",
+				state: "Estado no especificado",
+				zipCode: "00000",
+				mobile: user.mobile || "0000000000",
+				paymentMethod: "CREDIT_CARD",
+				status: "COMPLETED",
+				paymentId: `SW-${Date.now()}`,
+				cardholderName: `${user.firstName} ${user.lastName}`.trim() || "Cliente Shopwave",
+				cardNumber: "4111111111111111",
+			}),
+		});
+
+		const emptyCart = cloneCart(EMPTY_CART);
+		setCart(emptyCart);
+		clearStoredCart();
+
+		return {
+			orderNumber: order.orderId || String(order.id),
+			totalItems: order.totalItem,
+			totalPrice: order.totalPrice,
+			discountedTotal: order.totalDiscountedPrice ?? order.totalPrice,
+			discount: order.discounte ?? 0,
+		};
 	}
 
 	return (

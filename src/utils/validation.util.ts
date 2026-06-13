@@ -77,6 +77,6 @@ export function validateUrl(value: string): string | null {
 
 export function getInputBorderClass(hasError: unknown): string {
 	return hasError
-		? "border-red-500 focus:border-red-500 focus:ring-red-500"
-		: "border-slate-200 focus:border-slate-900 focus:ring-slate-900";
+		? "border-danger-500 focus:border-danger-500 focus:ring-danger-500/30"
+		: "border-slate-200 focus:border-brand-500 focus:ring-brand-500/20";
 }

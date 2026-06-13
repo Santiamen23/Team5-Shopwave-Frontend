@@ -24,7 +24,7 @@ interface AdminOrdersViewProps {
 }
 
 export default function AdminOrdersView({ initialOrders, jwt }: AdminOrdersViewProps) {
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
+  const [orders, setOrders] = useState<Order[]>(Array.isArray(initialOrders) ? initialOrders : []);
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
   const [loadingId, setLoadingId] = useState<number | null>(null);
 
@@ -77,9 +77,13 @@ export default function AdminOrdersView({ initialOrders, jwt }: AdminOrdersViewP
       {orders.map((order) => {
         const isExpanded = expandedOrderId === order.id;
         const statusConfig = STATUS_MAP[order.orderStatus] || { label: order.orderStatus, variant: "outline" };
-        const clientName = order.shippingAddress 
+        const clientName = order.shippingAddress
           ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}`
           : "Usuario Desconocido";
+        const orderTotal = order.orderItems.reduce((sum, item) => {
+          const unitPrice = item.discountedPrice ?? item.price ?? 0;
+          return sum + unitPrice * item.quantity;
+        }, 0);
 
         return (
           <Card key={order.id} className="overflow-hidden border-slate-200/80 shadow-sm">
@@ -99,7 +103,7 @@ export default function AdminOrdersView({ initialOrders, jwt }: AdminOrdersViewP
                   </div>
                   <div>
                     <span className="block text-xs font-medium uppercase tracking-wider text-slate-400">Total</span>
-                    <span className="text-sm font-bold text-slate-900">{formatCurrency(order.totalPrice ?? 0)}</span>
+                    <span className="text-sm font-bold text-slate-900">{formatCurrency(orderTotal)}</span>
                   </div>
                   <div>
                     <span className="block text-xs font-medium uppercase tracking-wider text-slate-400">Estado</span>

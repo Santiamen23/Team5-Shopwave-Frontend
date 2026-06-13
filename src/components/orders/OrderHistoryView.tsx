@@ -18,6 +18,7 @@ const STATUS_MAP: Record<OrderStatus, { label: string; variant: "default" | "sec
 };
 
 export default function OrderHistoryView({ orders }: { orders: Order[] }) {
+  const safeOrders = Array.isArray(orders) ? orders : [];
   const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
 
   const toggleOrder = (id: number) => {
@@ -38,7 +39,14 @@ export default function OrderHistoryView({ orders }: { orders: Order[] }) {
     });
   };
 
-  if (!orders || orders.length === 0) {
+  const calculateOrderTotal = (order: Order): number => {
+    return order.orderItems.reduce((sum, item) => {
+      const unitPrice = item.discountedPrice ?? item.price ?? 0;
+      return sum + unitPrice * item.quantity;
+    }, 0);
+  };
+
+  if (!safeOrders || safeOrders.length === 0) {
     return (
       <div className="text-center py-12">
         <p className="text-sm italic text-slate-500">Aún no has realizado ningún pedido.</p>
@@ -48,9 +56,10 @@ export default function OrderHistoryView({ orders }: { orders: Order[] }) {
 
   return (
     <div className="space-y-4">
-      {orders.map((order) => {
+      {safeOrders.map((order) => {
         const isExpanded = expandedOrderId === order.id;
         const statusConfig = STATUS_MAP[order.orderStatus] || { label: order.orderStatus, variant: "outline" };
+        const orderTotal = calculateOrderTotal(order);
 
         return (
           <Card key={order.id} className="overflow-hidden border-slate-200/80 shadow-sm transition-all hover:shadow-md">
@@ -67,7 +76,7 @@ export default function OrderHistoryView({ orders }: { orders: Order[] }) {
                   </div>
                   <div>
                     <span className="block text-xs font-medium uppercase tracking-wider text-slate-400">Total</span>
-                    <span className="text-sm font-bold text-slate-900">{formatPrice(order.totalPrice)}</span>
+                    <span className="text-sm font-bold text-slate-900">{formatPrice(orderTotal)}</span>
                   </div>
                 </div>
 

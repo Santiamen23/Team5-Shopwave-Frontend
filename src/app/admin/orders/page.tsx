@@ -9,13 +9,17 @@ export default async function AdminOrdersPage() {
 
   const jwt = (await getSessionToken()) ?? "";
 
-  let orders: Order[] = []; 
-  
+  let orders: Order[] = [];
+  let loadError: string | null = null;
+
   try {
     if (jwt) {
       orders = await getAdminOrders(jwt);
+    } else {
+      loadError = "No hay sesión activa.";
     }
   } catch (error) {
+    loadError = error instanceof Error ? error.message : "No se pudieron cargar las órdenes.";
     console.error("Error cargando el panel de órdenes globales:", error);
   }
 
@@ -31,7 +35,14 @@ export default async function AdminOrdersPage() {
             Monitorea los pedidos de la tienda, gestiona flujos de entrega y modifica estados en tiempo real.
           </p>
         </div>
-      
+
+        {loadError ? (
+          <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+            <p className="font-semibold">No se pudieron cargar las órdenes.</p>
+            <p className="mt-1 text-xs">{loadError}</p>
+          </div>
+        ) : null}
+
         <AdminOrdersView initialOrders={orders} jwt={jwt} />
       </section>
     </main>

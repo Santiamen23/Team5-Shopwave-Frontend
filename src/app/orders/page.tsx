@@ -1,15 +1,13 @@
-import { cookies } from "next/headers";
 import Navbar from "@/components/layout/Navbar";
 import OrderHistoryView from "@/components/orders/OrderHistoryView";
-import { requireAuthenticatedUser } from "@/lib/auth/session";
+import { getSessionToken, requireAuthenticatedUser } from "@/lib/auth/session";
 import { getUserOrders } from "@/services/order.service";
 import type { Order } from "@/models/order.model";
 
 export default async function OrdersPage() {
   await requireAuthenticatedUser();
 
-  const cookieStore = await cookies();
-  const jwt = cookieStore.get("token")?.value || ""; 
+  const jwt = (await getSessionToken()) ?? "";
 
   let orders: Order[] = []; 
   

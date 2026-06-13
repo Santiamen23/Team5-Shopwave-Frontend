@@ -1,6 +1,5 @@
-import { cookies } from "next/headers";
 import Navbar from "@/components/layout/Navbar";
-import { requireAdminUser } from "@/lib/auth/session";
+import { getSessionToken, requireAdminUser } from "@/lib/auth/session";
 import { getAdminOrders } from "@/services/admin-order.service";
 import AdminOrdersView from "@/components/admin/AdminOrdersView";
 import type { Order } from "@/models/order.model";
@@ -8,8 +7,7 @@ import type { Order } from "@/models/order.model";
 export default async function AdminOrdersPage() {
   await requireAdminUser();
 
-  const cookieStore = await cookies();
-  const jwt = cookieStore.get("token")?.value || ""; 
+  const jwt = (await getSessionToken()) ?? "";
 
   let orders: Order[] = []; 
   

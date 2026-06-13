@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { Order, OrderStatus } from "@/models/order.model";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/utils/currency.util";

@@ -26,6 +26,23 @@ export interface AddToCartInput {
 	quantity: number;
 }
 
+export interface CheckoutShippingDetails {
+	firstName: string;
+	lastName: string;
+	streetAddress: string;
+	city: string;
+	state: string;
+	zipCode: string;
+	mobile: string;
+}
+
+export interface CheckoutInput {
+	shipping: CheckoutShippingDetails;
+	paymentMethod: import("@/models/order.model").PaymentMethod;
+	cardholderName: string;
+	cardNumber: string;
+}
+
 export interface CheckoutReceipt {
 	orderNumber: string;
 	totalItems: number;
@@ -42,8 +59,30 @@ interface CartContextValue {
 	updateQuantity: (cartItemId: number, quantity: number) => Promise<Cart>;
 	removeItem: (cartItemId: number) => Promise<Cart>;
 	clearCart: () => Promise<Cart>;
-	checkout: () => Promise<CheckoutReceipt>;
+	checkout: (input: CheckoutInput) => Promise<CheckoutReceipt>;
 	refreshCart: () => Promise<Cart>;
+}
+
+function ensureShippingDetails(shipping: CheckoutShippingDetails): CheckoutShippingDetails {
+	const trimmed: CheckoutShippingDetails = {
+		firstName: shipping.firstName.trim(),
+		lastName: shipping.lastName.trim(),
+		streetAddress: shipping.streetAddress.trim(),
+		city: shipping.city.trim(),
+		state: shipping.state.trim(),
+		zipCode: shipping.zipCode.trim(),
+		mobile: shipping.mobile.trim(),
+	};
+
+	const missingField = (Object.keys(trimmed) as Array<keyof CheckoutShippingDetails>).find(
+		(key) => trimmed[key].length === 0,
+	);
+
+	if (missingField) {
+		throw new Error("Faltan datos de envío. Revisa el formulario antes de continuar.");
+	}
+
+	return trimmed;
 }
 
 export const CartContext = createContext<CartContextValue | undefined>(undefined);
@@ -510,7 +549,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 		return emptyCart;
 	}
 
-	async function checkout() {
+	async function checkout(input: CheckoutInput) {
 		if (!cart.cartItems.length) {
 			throw new Error("El carrito está vacío.");
 		}
@@ -519,21 +558,25 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 			throw new Error("Debes iniciar sesión para finalizar la compra.");
 		}
 
+		const shipping = ensureShippingDetails(input.shipping);
+
+		const cardholderName = (input.cardholderName || `${shipping.firstName} ${shipping.lastName}`).trim();
+
 		const order = await requestJson<Order>("/api/orders", {
 			method: "POST",
 			body: JSON.stringify({
-				firstName: user.firstName,
-				lastName: user.lastName,
-				streetAddress: "Dirección no especificada",
-				city: "Ciudad no especificada",
-				state: "Estado no especificado",
-				zipCode: "00000",
-				mobile: user.mobile || "0000000000",
-				paymentMethod: "CREDIT_CARD",
+				firstName: shipping.firstName,
+				lastName: shipping.lastName,
+				streetAddress: shipping.streetAddress,
+				city: shipping.city,
+				state: shipping.state,
+				zipCode: shipping.zipCode,
+				mobile: shipping.mobile,
+				paymentMethod: input.paymentMethod,
 				status: "COMPLETED",
 				paymentId: `SW-${Date.now()}`,
-				cardholderName: `${user.firstName} ${user.lastName}`.trim() || "Cliente Shopwave",
-				cardNumber: "4111111111111111",
+				cardholderName,
+				cardNumber: input.cardNumber,
 			}),
 		});
 

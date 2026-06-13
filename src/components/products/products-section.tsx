@@ -1,9 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useDeferredValue, useEffect, useState } from "react";
-
-import type { ProductCardData } from "@/models/product.model";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 
 import { ProductCard } from "@/components/products/product-card";
 import { Button } from "@/components/ui/button";
@@ -15,9 +13,21 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { SearchBar } from "@/components/ui/search-bar";
+import { ProductFiltersSheet } from "./ProductFiltersSheet";
+import { SortMenu } from "./SortMenu";
+import {
+	EMPTY_FILTERS,
+	applyFilters,
+	countActiveFilters,
+	extractFacets,
+	type CatalogProduct,
+	type ProductFilters,
+} from "./product-filters";
+import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ProductsSectionProps {
-	products: ProductCardData[];
+	products: CatalogProduct[];
 	title?: string;
 	description?: string;
 	emptyMessage?: string;
@@ -25,6 +35,8 @@ interface ProductsSectionProps {
 	ctaHref?: string;
 	ctaLabel?: string;
 	enableSearch?: boolean;
+	enableFilters?: boolean;
+	initialFilters?: Partial<ProductFilters>;
 }
 
 export function ProductsSection({
@@ -36,21 +48,26 @@ export function ProductsSection({
 	ctaHref,
 	ctaLabel,
 	enableSearch = false,
+	enableFilters = false,
+	initialFilters,
 }: ProductsSectionProps) {
-	const [query, setQuery] = useState("");
+	const [filters, setFilters] = useState<ProductFilters>(() => ({
+		...EMPTY_FILTERS,
+		...initialFilters,
+	}));
 	const [currentPage, setCurrentPage] = useState(0);
 	const [pageSize, setPageSize] = useState(3);
-	const deferredQuery = useDeferredValue(query);
-	const normalizedQuery = deferredQuery.trim().toLowerCase();
+	const deferredQuery = useDeferredValue(filters.query);
 
-	const filteredProducts = enableSearch
-		? products.filter((product) => {
-				const searchableText = [product.title, product.brand, product.color]
-					.join(" ")
-					.toLowerCase();
-				return searchableText.includes(normalizedQuery);
-			})
-		: products;
+	const facets = useMemo(() => extractFacets(products), [products]);
+
+	const filteredProducts = useMemo(() => {
+		const base: ProductFilters = { ...filters, query: deferredQuery };
+		return applyFilters(products, base);
+	}, [products, filters, deferredQuery]);
+
+	const activeFilters = filters;
+	const activeCount = countActiveFilters(activeFilters);
 
 	const isCarousel = Boolean(limit);
 	const carouselLimit = limit ? Math.min(limit, 12) : 0;
@@ -67,10 +84,18 @@ export function ProductsSection({
 				),
 			)
 		: [];
-	const effectiveEmptyMessage =
-		enableSearch && normalizedQuery
-			? "No hay productos que coincidan con tu búsqueda."
-			: emptyMessage;
+
+	const showFilters = enableSearch || enableFilters;
+
+	const effectiveEmptyMessage = (() => {
+		if (filteredProducts.length === 0) {
+			if (activeCount > 0 || filters.query.trim().length > 0) {
+				return "No hay productos que coincidan con los filtros aplicados.";
+			}
+			return emptyMessage;
+		}
+		return emptyMessage;
+	})();
 
 	useEffect(() => {
 		const updatePageSize = () => {
@@ -113,6 +138,10 @@ export function ProductsSection({
 		setCurrentPage((previousPage) => (previousPage + 1) % totalPages);
 	};
 
+	const handleClearFilters = () => {
+		setFilters({ ...EMPTY_FILTERS });
+	};
+
 	return (
 		<Card className="mx-auto max-w-6xl gap-0 overflow-hidden border-slate-200/80 bg-white py-0 shadow-[0_24px_60px_-42px_oklch(0.18_0.02_250_/_0.3)]">
 			{title || description ? (
@@ -136,14 +165,59 @@ export function ProductsSection({
 			) : null}
 
 			<CardContent className="space-y-6 p-4 sm:p-6 lg:p-8">
-				{enableSearch ? (
-					<SearchBar
-						label="Buscar producto"
-						value={query}
-						onChange={(event) => setQuery(event.target.value)}
-						placeholder="Busca por nombre, marca o color"
-						resultText={`${filteredProducts.length} resultado${filteredProducts.length === 1 ? "" : "s"}`}
-					/>
+				{showFilters ? (
+					<div className="space-y-4">
+						<div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+							{enableSearch ? (
+								<div className="flex-1">
+									<SearchBar
+										label="Buscar producto"
+										value={filters.query}
+										onChange={(event) =>
+											setFilters((prev) => ({ ...prev, query: event.target.value }))
+										}
+										placeholder="Busca por nombre, marca o color"
+										resultText={`${filteredProducts.length} de ${products.length} ${
+											filteredProducts.length === 1 ? "resultado" : "resultados"
+										}`}
+									/>
+								</div>
+							) : (
+								<div className="flex-1 text-sm text-slate-600">
+									<span className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-brand-700">
+										Resultados
+									</span>
+									<p className="mt-1 text-base font-semibold text-slate-900">
+										{filteredProducts.length} de {products.length} productos
+									</p>
+								</div>
+							)}
+							{enableFilters ? (
+								<div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+									<SortMenu
+										value={filters.sort}
+										onChange={(sort) =>
+											setFilters((prev) => ({ ...prev, sort }))
+										}
+									/>
+									<ProductFiltersSheet
+										filters={filters}
+										facets={facets}
+										onChange={setFilters}
+										onClear={handleClearFilters}
+										activeCount={activeCount}
+									/>
+								</div>
+							) : null}
+						</div>
+
+						{enableFilters && activeCount > 0 ? (
+							<ActiveFilterChips
+								filters={filters}
+								onChange={setFilters}
+							/>
+						) : null}
+					</div>
 				) : null}
 
 				{visibleProducts.length > 0 ? (
@@ -158,7 +232,10 @@ export function ProductsSection({
 										<div key={pageIndex} className="w-full shrink-0">
 											<div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
 												{page.map((product) => (
-													<ProductCard key={product.id} product={product} />
+													<ProductCard
+														key={product.id}
+														product={product}
+													/>
 												))}
 											</div>
 										</div>
@@ -212,5 +289,94 @@ export function ProductsSection({
 				) : null}
 			</CardContent>
 		</Card>
+	);
+}
+
+function ActiveFilterChips({
+	filters,
+	onChange,
+}: {
+	filters: ProductFilters;
+	onChange: (filters: ProductFilters) => void;
+}) {
+	function removeFromArray<T>(arr: T[], value: T) {
+		return arr.filter((v) => v !== value);
+	}
+
+	const chips: Array<{ key: string; label: string; onRemove: () => void }> = [];
+
+	if (filters.stock !== "all") {
+		const stockLabel: Record<string, string> = {
+			in_stock: "En stock",
+			low_stock: "Stock bajo",
+			out_of_stock: "Sin stock",
+			on_sale: "En oferta",
+		};
+		chips.push({
+			key: `stock-${filters.stock}`,
+			label: `Disponibilidad: ${stockLabel[filters.stock] ?? filters.stock}`,
+			onRemove: () => onChange({ ...filters, stock: "all" }),
+		});
+	}
+	for (const cat of filters.categories) {
+		chips.push({
+			key: `cat-${cat}`,
+			label: `Categoría: ${cat}`,
+			onRemove: () =>
+				onChange({ ...filters, categories: removeFromArray(filters.categories, cat) }),
+		});
+	}
+	for (const brand of filters.brands) {
+		chips.push({
+			key: `brand-${brand}`,
+			label: `Marca: ${brand}`,
+			onRemove: () =>
+				onChange({ ...filters, brands: removeFromArray(filters.brands, brand) }),
+		});
+	}
+	for (const color of filters.colors) {
+		chips.push({
+			key: `color-${color}`,
+			label: `Color: ${color}`,
+			onRemove: () =>
+				onChange({ ...filters, colors: removeFromArray(filters.colors, color) }),
+		});
+	}
+	if (filters.priceRange !== "any") {
+		chips.push({
+			key: `price-${filters.priceRange}`,
+			label: `Precio: ${
+				filters.priceRange === "under_1000"
+					? "menos de Bs 1.000"
+					: filters.priceRange === "1000_5000"
+						? "Bs 1.000 — 5.000"
+						: "más de Bs 5.000"
+			}`,
+			onRemove: () => onChange({ ...filters, priceRange: "any" }),
+		});
+	}
+
+	if (chips.length === 0) return null;
+
+	return (
+		<div className="flex flex-wrap items-center gap-2">
+			<span className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-slate-500">
+				Activos
+			</span>
+			{chips.map((chip) => (
+				<button
+					key={chip.key}
+					type="button"
+					onClick={chip.onRemove}
+					className={cn(
+						"inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700 transition-colors",
+						"hover:bg-brand-100",
+					)}
+				>
+					{chip.label}
+					<X className="h-3 w-3" />
+				</button>
+			))}
+		</div>
 	);
 }

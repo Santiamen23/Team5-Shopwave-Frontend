@@ -1,24 +1,46 @@
+import { ShoppingBag } from "lucide-react";
+
 import Navbar from "@/components/layout/Navbar";
 import { ProductList } from "@/components/admin/ProductList";
 import { ProductsProvider } from "@/context/ProductContext";
 import { requireAdminUser } from "@/lib/auth/session";
 import { getProducts } from "@/services/product.service";
+import { Separator } from "@/components/ui/separator";
 
 export default async function AdminProductsPage() {
-  await requireAdminUser();
-  const products = await getProducts();
+	await requireAdminUser();
+	const products = await getProducts();
 
-  return (
-    <main className="min-h-screen bg-slate-50">
-      <Navbar />
-      <section className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="rounded-[2rem] border border-slate-200 bg-white p-8 shadow-sm">
-          <h1 className="text-3xl font-semibold text-slate-950">Productos administrativos</h1>
-          <ProductsProvider initialProducts={products}>
-            <ProductList/>
-          </ProductsProvider>
-        </div>
-      </section>
-    </main>
-  );
+	return (
+		<main className="min-h-screen">
+			<Navbar />
+			<section className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+				<div className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/95 shadow-[0_24px_60px_-36px_oklch(0.18_0.02_250_/_0.35)]">
+					<div className="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-600 to-info-700 px-7 py-6 text-white sm:px-9">
+						<div className="bg-grid-faint absolute inset-0 opacity-25" />
+						<div className="relative">
+							<p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-100/90">
+								Administración
+							</p>
+							<h1 className="mt-1 text-3xl font-semibold tracking-tight text-white">
+								Productos administrativos
+							</h1>
+						</div>
+					</div>
+					<div className="px-7 py-6 sm:px-9">
+						<div className="mb-4 flex items-center gap-2">
+							<ShoppingBag className="h-4 w-4 text-brand-600" />
+							<h2 className="text-lg font-semibold tracking-tight text-slate-900">
+								Inventario
+							</h2>
+						</div>
+						<Separator className="mb-5 bg-slate-100" />
+						<ProductsProvider initialProducts={products}>
+							<ProductList />
+						</ProductsProvider>
+					</div>
+				</div>
+			</section>
+		</main>
+	);
 }

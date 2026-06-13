@@ -3,11 +3,12 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { CheckCircle2, CreditCard, MapPin, ShoppingBag } from "lucide-react";
+import { CheckCircle2, CreditCard, MapPin, ShoppingBag, Lock } from "lucide-react";
 
 import Navbar from "@/components/layout/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormField, Input } from "@/components/ui/input";
 import type { PaymentMethod } from "@/models/order.model";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
@@ -168,26 +169,35 @@ export default function CheckoutPageClient() {
 	}
 
 	return (
-		<main className="min-h-screen bg-slate-50">
+		<main className="min-h-screen">
 			<Navbar />
 
 			<section className="mx-auto grid w-full max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:grid-cols-[1fr_360px] lg:px-8">
 				<div className="space-y-6">
 					<div>
-						<h1 className="text-3xl font-semibold text-slate-950">Checkout</h1>
-						<p className="mt-2 text-sm text-slate-600">Confirma el pedido y finaliza tu compra.</p>
+						<p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">
+							Pago seguro
+						</p>
+						<h1 className="mt-1 text-3xl font-semibold tracking-tight text-slate-950">
+							Checkout
+						</h1>
+						<p className="mt-2 text-sm text-slate-600">
+							Confirma el pedido y finaliza tu compra.
+						</p>
 					</div>
 
 					{receipt ? (
-						<Card className="border-emerald-200 bg-emerald-50/80">
+						<Card className="border-success-500/30 bg-success-50/80 shadow-[0_18px_50px_-36px_oklch(0.58_0.16_155_/_0.5)]">
 							<CardContent className="flex flex-col gap-4 p-6">
-								<CheckCircle2 className="h-10 w-10 text-emerald-600" />
+								<div className="grid h-12 w-12 place-items-center rounded-2xl bg-success-500 text-white shadow-[0_8px_24px_-8px_oklch(0.58_0.16_155_/_0.6)]">
+									<CheckCircle2 className="h-6 w-6" />
+								</div>
 								<div>
-									<h2 className="text-2xl font-semibold text-emerald-950">Compra confirmada</h2>
-									<p className="mt-2 text-sm text-emerald-900">
+									<h2 className="text-2xl font-semibold tracking-tight text-success-700">Compra confirmada</h2>
+									<p className="mt-2 text-sm text-success-700">
 										Tu orden <span className="font-semibold">{receipt.orderNumber}</span> fue generada correctamente.
 									</p>
-									<p className="mt-1 text-sm text-emerald-900">Productos procesados: {receipt.totalItems}</p>
+									<p className="mt-1 text-sm text-success-700/90">Productos procesados: {receipt.totalItems}</p>
 								</div>
 								<Button asChild className="w-fit">
 									<Link href="/products">Seguir comprando</Link>
@@ -197,78 +207,90 @@ export default function CheckoutPageClient() {
 					) : null}
 
 					{error ? (
-						<div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">{error}</div>
+						<div className="rounded-2xl border border-danger-500/30 bg-danger-50 p-4 text-sm text-danger-700">{error}</div>
 					) : null}
 
 					{statusMessage ? (
-						<div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-900">
+						<div className="rounded-2xl border border-success-500/30 bg-success-50 p-4 text-sm text-success-700">
 							{statusMessage}
 						</div>
 					) : null}
 
-					<Card className="border-slate-200/70 bg-white/95">
+					<Card className="border-slate-200/80 bg-white/95 shadow-[0_18px_50px_-36px_oklch(0.18_0.02_250_/_0.35)]">
 						<CardHeader>
-							<CardTitle>Datos de envío</CardTitle>
+							<CardTitle className="flex items-center gap-2">
+								<MapPin className="h-4 w-4 text-brand-600" />
+								Datos de envío
+							</CardTitle>
 							<CardDescription>Estos campos se enviarán al backend en la orden.</CardDescription>
 						</CardHeader>
 						<CardContent className="grid gap-4 text-sm text-slate-600 sm:grid-cols-2">
-							<Field
-								id="firstName"
-								label="Nombre"
-								value={shipping.firstName}
-								error={showShippingErrors ? shippingErrors.firstName : undefined}
-								onChange={(value) => handleShippingChange("firstName", value)}
-							/>
-							<Field
-								id="lastName"
-								label="Apellido"
-								value={shipping.lastName}
-								error={showShippingErrors ? shippingErrors.lastName : undefined}
-								onChange={(value) => handleShippingChange("lastName", value)}
-							/>
-							<Field
-								id="streetAddress"
-								label="Dirección"
-								value={shipping.streetAddress}
-								error={showShippingErrors ? shippingErrors.streetAddress : undefined}
-								onChange={(value) => handleShippingChange("streetAddress", value)}
-								className="sm:col-span-2"
-							/>
-							<Field
-								id="city"
-								label="Ciudad"
-								value={shipping.city}
-								error={showShippingErrors ? shippingErrors.city : undefined}
-								onChange={(value) => handleShippingChange("city", value)}
-							/>
-							<Field
-								id="state"
-								label="Estado / Departamento"
-								value={shipping.state}
-								error={showShippingErrors ? shippingErrors.state : undefined}
-								onChange={(value) => handleShippingChange("state", value)}
-							/>
-							<Field
-								id="zipCode"
-								label="Código postal"
-								value={shipping.zipCode}
-								error={showShippingErrors ? shippingErrors.zipCode : undefined}
-								onChange={(value) => handleShippingChange("zipCode", value)}
-							/>
-							<Field
-								id="mobile"
-								label="Celular"
-								value={shipping.mobile}
-								error={showShippingErrors ? shippingErrors.mobile : undefined}
-								onChange={(value) => handleShippingChange("mobile", value)}
-								type="tel"
-							/>
+							<FormField id="firstName" label="Nombre" required error={showShippingErrors ? shippingErrors.firstName : undefined}>
+								<Input
+									id="firstName"
+									value={shipping.firstName}
+									onChange={(event) => handleShippingChange("firstName", event.target.value)}
+									invalid={Boolean(showShippingErrors && shippingErrors.firstName)}
+								/>
+							</FormField>
+							<FormField id="lastName" label="Apellido" required error={showShippingErrors ? shippingErrors.lastName : undefined}>
+								<Input
+									id="lastName"
+									value={shipping.lastName}
+									onChange={(event) => handleShippingChange("lastName", event.target.value)}
+									invalid={Boolean(showShippingErrors && shippingErrors.lastName)}
+								/>
+							</FormField>
+							<FormField id="streetAddress" label="Dirección" required error={showShippingErrors ? shippingErrors.streetAddress : undefined} className="sm:col-span-2">
+								<Input
+									id="streetAddress"
+									value={shipping.streetAddress}
+									onChange={(event) => handleShippingChange("streetAddress", event.target.value)}
+									invalid={Boolean(showShippingErrors && shippingErrors.streetAddress)}
+								/>
+							</FormField>
+							<FormField id="city" label="Ciudad" required error={showShippingErrors ? shippingErrors.city : undefined}>
+								<Input
+									id="city"
+									value={shipping.city}
+									onChange={(event) => handleShippingChange("city", event.target.value)}
+									invalid={Boolean(showShippingErrors && shippingErrors.city)}
+								/>
+							</FormField>
+							<FormField id="state" label="Estado / Departamento" required error={showShippingErrors ? shippingErrors.state : undefined}>
+								<Input
+									id="state"
+									value={shipping.state}
+									onChange={(event) => handleShippingChange("state", event.target.value)}
+									invalid={Boolean(showShippingErrors && shippingErrors.state)}
+								/>
+							</FormField>
+							<FormField id="zipCode" label="Código postal" required error={showShippingErrors ? shippingErrors.zipCode : undefined}>
+								<Input
+									id="zipCode"
+									value={shipping.zipCode}
+									onChange={(event) => handleShippingChange("zipCode", event.target.value)}
+									invalid={Boolean(showShippingErrors && shippingErrors.zipCode)}
+								/>
+							</FormField>
+							<FormField id="mobile" label="Celular" required error={showShippingErrors ? shippingErrors.mobile : undefined}>
+								<Input
+									id="mobile"
+									type="tel"
+									value={shipping.mobile}
+									onChange={(event) => handleShippingChange("mobile", event.target.value)}
+									invalid={Boolean(showShippingErrors && shippingErrors.mobile)}
+								/>
+							</FormField>
 						</CardContent>
 					</Card>
 
-					<Card className="border-slate-200/70 bg-white/95">
+					<Card className="border-slate-200/80 bg-white/95 shadow-[0_18px_50px_-36px_oklch(0.18_0.02_250_/_0.35)]">
 						<CardHeader>
-							<CardTitle>Método de pago</CardTitle>
+							<CardTitle className="flex items-center gap-2">
+								<CreditCard className="h-4 w-4 text-brand-600" />
+								Método de pago
+							</CardTitle>
 							<CardDescription>Selecciona cómo quieres pagar.</CardDescription>
 						</CardHeader>
 						<CardContent className="space-y-4 text-sm text-slate-600">
@@ -280,10 +302,10 @@ export default function CheckoutPageClient() {
 											key={option.value}
 											type="button"
 											onClick={() => handlePaymentChange("method", option.value)}
-											className={`rounded-xl border px-4 py-3 text-left text-sm font-medium transition-colors ${
+											className={`rounded-xl border px-4 py-3 text-left text-sm font-semibold transition-all duration-200 ${
 												isActive
-													? "border-slate-900 bg-slate-900 text-white"
-													: "border-slate-200 bg-white text-slate-700 hover:border-slate-400"
+													? "border-transparent bg-gradient-to-br from-brand-600 to-brand-700 text-white shadow-[0_8px_24px_-12px_oklch(0.43_0.18_245_/_0.55)]"
+													: "border-slate-200 bg-white text-slate-700 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700"
 											}`}
 										>
 											{option.label}
@@ -294,50 +316,52 @@ export default function CheckoutPageClient() {
 
 							{payment.method === "CREDIT_CARD" || payment.method === "DEBIT_CARD" ? (
 								<div className="grid gap-4 sm:grid-cols-2">
-									<Field
-										id="cardholderName"
-										label="Titular de la tarjeta"
-										value={payment.cardholderName}
-										error={showPaymentErrors ? paymentErrors.cardholderName : undefined}
-										onChange={(value) => handlePaymentChange("cardholderName", value)}
-									/>
-									<Field
-										id="cardNumber"
-										label="Número de tarjeta"
-										value={payment.cardNumber}
-										error={showPaymentErrors ? paymentErrors.cardNumber : undefined}
-										onChange={(value) => handlePaymentChange("cardNumber", value)}
-										placeholder="4111 1111 1111 1111"
-										inputMode="numeric"
-									/>
+									<FormField id="cardholderName" label="Titular de la tarjeta" required error={showPaymentErrors ? paymentErrors.cardholderName : undefined}>
+										<Input
+											id="cardholderName"
+											value={payment.cardholderName}
+											onChange={(event) => handlePaymentChange("cardholderName", event.target.value)}
+											invalid={Boolean(showPaymentErrors && paymentErrors.cardholderName)}
+										/>
+									</FormField>
+									<FormField id="cardNumber" label="Número de tarjeta" required error={showPaymentErrors ? paymentErrors.cardNumber : undefined}>
+										<Input
+											id="cardNumber"
+											value={payment.cardNumber}
+											onChange={(event) => handlePaymentChange("cardNumber", event.target.value)}
+											placeholder="4111 1111 1111 1111"
+											inputMode="numeric"
+											invalid={Boolean(showPaymentErrors && paymentErrors.cardNumber)}
+										/>
+									</FormField>
 								</div>
 							) : (
-								<div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-									<CreditCard className="h-5 w-5 text-slate-500" />
+								<div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-brand-50/40 p-4">
+									<CreditCard className="h-5 w-5 text-brand-600" />
 									<p>Serás redirigido a {payment.method === "PAYPAL" ? "PayPal" : "la pasarela"} para completar el pago.</p>
 								</div>
 							)}
 						</CardContent>
 					</Card>
 
-					<Card className="border-slate-200/70 bg-white/95">
+					<Card className="border-slate-200/80 bg-white/95 shadow-[0_18px_50px_-36px_oklch(0.18_0.02_250_/_0.35)]">
 						<CardHeader>
 							<CardTitle>Datos del cliente</CardTitle>
 						</CardHeader>
 						<CardContent className="space-y-4 text-sm text-slate-600">
 							<div className="grid gap-4 sm:grid-cols-2">
-								<div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-									<p className="text-xs uppercase tracking-[0.24em] text-slate-500">Cliente</p>
-									<p className="mt-1 font-medium text-slate-950">{user?.firstName} {user?.lastName}</p>
+								<div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-brand-50/40 p-4">
+									<p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-brand-700">Cliente</p>
+									<p className="mt-1 font-semibold text-slate-950">{user?.firstName} {user?.lastName}</p>
 								</div>
-								<div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-									<p className="text-xs uppercase tracking-[0.24em] text-slate-500">Correo</p>
-									<p className="mt-1 font-medium text-slate-950">{user?.email}</p>
+								<div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-brand-50/40 p-4">
+									<p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-brand-700">Correo</p>
+									<p className="mt-1 font-semibold text-slate-950">{user?.email}</p>
 								</div>
 							</div>
 
-							<div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-								<MapPin className="h-5 w-5 text-slate-500" />
+							<div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-brand-50/40 p-4">
+								<MapPin className="h-5 w-5 text-brand-600" />
 								<p>
 									{shippingIsValid
 										? "La dirección ingresada se enviará al backend en el payload de la orden."
@@ -358,7 +382,7 @@ export default function CheckoutPageClient() {
 							) : (
 								<div className="grid gap-3 sm:grid-cols-2">
 									{cart.cartItems.slice(0, 2).map((item) => (
-										<div key={item.id} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+										<div key={item.id} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-brand-50/30 p-3">
 											<div className="relative h-16 w-16 overflow-hidden rounded-xl bg-slate-100">
 												<Image src={item.product.imageUrl} alt={item.product.title} fill className="object-cover" unoptimized />
 											</div>
@@ -375,12 +399,13 @@ export default function CheckoutPageClient() {
 				</div>
 
 				<aside className="w-full">
-					<Card className="sticky top-24 border-slate-200/70 bg-white/95">
-						<CardHeader>
-							<CardTitle>Total a pagar</CardTitle>
-							<CardDescription>Confirmación final del pedido.</CardDescription>
-						</CardHeader>
-						<CardContent className="space-y-4">
+					<Card className="sticky top-24 overflow-hidden border-slate-200/80 bg-white/95 shadow-[0_18px_50px_-36px_oklch(0.18_0.02_250_/_0.35)]">
+						<div className="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-600 to-info-700 px-5 py-4 text-white">
+							<div className="bg-grid-faint absolute inset-0 opacity-25" />
+							<p className="relative text-xs font-semibold uppercase tracking-[0.18em] text-brand-100/90">Total a pagar</p>
+							<p className="relative mt-1 text-sm text-white/90">Confirmación final del pedido.</p>
+						</div>
+						<CardContent className="space-y-4 p-5">
 							<div className="space-y-3 text-sm text-slate-600">
 								<div className="flex items-center justify-between">
 									<span>Subtotal</span>
@@ -388,20 +413,22 @@ export default function CheckoutPageClient() {
 								</div>
 								<div className="flex items-center justify-between">
 									<span>Descuento</span>
-									<span className="font-medium text-emerald-600">- {formatCurrency(cart.discounte)}</span>
+									<span className="font-semibold text-success-600">- {formatCurrency(cart.discounte)}</span>
 								</div>
 								<div className="flex items-center justify-between border-t border-slate-200 pt-3 text-base">
 									<span className="font-semibold text-slate-950">Total final</span>
-									<span className="font-semibold text-slate-950">{formatCurrency(cart.totalDiscountedPrice)}</span>
+									<span className="text-lg font-semibold tracking-tight text-gradient-brand">{formatCurrency(cart.totalDiscountedPrice)}</span>
 								</div>
 							</div>
 
 							<Button
 								type="button"
+								size="lg"
 								className="w-full"
 								onClick={() => void handleCheckout()}
 								disabled={!canCheckout}
 							>
+								<Lock className="h-4 w-4" />
 								{isProcessing
 									? "Procesando..."
 									: receipt
@@ -419,42 +446,5 @@ export default function CheckoutPageClient() {
 				</aside>
 			</section>
 		</main>
-	);
-}
-
-interface FieldProps {
-	id: string;
-	label: string;
-	value: string;
-	onChange: (value: string) => void;
-	error?: string;
-	type?: string;
-	placeholder?: string;
-	inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
-	className?: string;
-}
-
-function Field({ id, label, value, onChange, error, type = "text", placeholder, inputMode, className }: FieldProps) {
-	const hasError = Boolean(error);
-	return (
-		<div className={className}>
-			<label htmlFor={id} className="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-				{label}
-			</label>
-			<input
-				id={id}
-				type={type}
-				value={value}
-				onChange={(event) => onChange(event.target.value)}
-				placeholder={placeholder}
-				inputMode={inputMode}
-				className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-950 outline-none transition-all focus:ring-1 disabled:opacity-50 ${
-					hasError
-						? "border-rose-300 focus:border-rose-500 focus:ring-rose-500"
-						: "border-slate-200 focus:border-slate-900 focus:ring-slate-900"
-				}`}
-			/>
-			{hasError ? <p className="mt-1 text-xs text-rose-600">{error}</p> : null}
-		</div>
 	);
 }

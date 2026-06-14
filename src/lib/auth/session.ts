@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import type { UserProfile } from "@/models/user.model";
-import { ApiError, createApiUrl } from "@/services/api.service";
+import { ApiError, createApiUrl, createBearerToken } from "@/services/api.service";
 
 export const SESSION_COOKIE_NAME = "shopwave_session";
 
@@ -68,7 +68,7 @@ export async function getUserProfileFromToken(jwt: string): Promise<UserProfile>
 		cache: "no-store",
 		headers: {
 			Accept: "application/json",
-			Authorization: jwt,
+			Authorization: createBearerToken(jwt),
 		},
 	});
 	const body = await readResponseBody(response);

@@ -184,7 +184,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
 							<div className="space-y-4">
 								<p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 sm:text-sm">
-									Talles
+									Modelo/Variante
 								</p>
 								<div className="flex flex-wrap gap-2 sm:gap-3">
 									{availableSizes.length > 0 ? (

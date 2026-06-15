@@ -149,7 +149,7 @@ export default function CartPageClient() {
 										className="border-slate-200/80 bg-white/95 transition-shadow hover:shadow-[0_18px_40px_-24px_oklch(0.43_0.18_245_/_0.35)]"
 									>
 										<CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:p-6">
-											<div className="relative h-28 w-full overflow-hidden rounded-2xl bg-gradient-to-br from-brand-50 to-white sm:h-24 sm:w-24 sm:shrink-0">
+											<div className="relative h-28 w-full overflow-hidden rounded-2xl bg-slate-50 sm:h-24 sm:w-24 sm:shrink-0">
 												<Image
 													src={item.product.imageUrl}
 													alt={item.product.title}
@@ -244,7 +244,7 @@ export default function CartPageClient() {
 							})}
 						</div>
 					) : (
-						<Card className="border-slate-200/80 bg-gradient-to-br from-white to-brand-50/40">
+						<Card className="border-slate-200/80 bg-white">
 							<CardContent className="flex flex-col items-center gap-4 p-8 text-center">
 								<div className="grid h-14 w-14 place-items-center rounded-2xl bg-brand-50 text-brand-600">
 									<ShoppingBag className="h-7 w-7" />
@@ -266,38 +266,38 @@ export default function CartPageClient() {
 				</div>
 
 				<aside className="w-full lg:max-w-sm">
-					<Card className="sticky top-24 border-slate-200/80 bg-white/95">
-						<div className="border-b border-slate-100 bg-gradient-to-br from-brand-700 via-brand-600 to-info-700 px-5 py-4 text-white">
-							<p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-100/90">
+					<Card className="sticky top-24 border-brand-700 bg-brand-700 text-white">
+						<div className="border-b border-white/15 px-5 py-4">
+							<p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-100">
 								Resumen
 							</p>
-							<p className="mt-1 text-sm text-white/90">
+							<p className="mt-1 text-sm text-brand-100/90">
 								Totales calculados sobre el carrito actual.
 							</p>
 						</div>
 						<CardContent className="space-y-4 p-5">
-							<dl className="space-y-3 text-sm text-slate-600">
+							<dl className="space-y-3 text-sm text-brand-100">
 								<div className="flex items-center justify-between">
 									<dt>Productos</dt>
-									<dd className="font-semibold text-slate-950">
+									<dd className="font-semibold text-white">
 										{cart.totalItem}
 									</dd>
 								</div>
 								<div className="flex items-center justify-between">
 									<dt>Subtotal</dt>
-									<dd className="font-medium text-slate-950">
+									<dd className="font-medium text-white">
 										{formatCurrency(cart.totalPrice)}
 									</dd>
 								</div>
 								<div className="flex items-center justify-between">
 									<dt>Descuento</dt>
-									<dd className="font-semibold text-success-600">
+									<dd className="font-semibold text-white">
 										- {formatCurrency(cart.discounte)}
 									</dd>
 								</div>
-								<div className="flex items-center justify-between border-t border-slate-200 pt-3 text-base">
-									<dt className="font-semibold text-slate-950">Total final</dt>
-									<dd className="text-lg font-semibold tracking-tight text-gradient-brand">
+								<div className="flex items-center justify-between border-t border-white/15 pt-3 text-base">
+									<dt className="font-semibold text-white">Total final</dt>
+									<dd className="text-lg font-semibold tracking-tight text-white">
 										{formatCurrency(cart.totalDiscountedPrice)}
 									</dd>
 								</div>
@@ -306,8 +306,8 @@ export default function CartPageClient() {
 							<div className="space-y-3">
 								<Button
 									asChild
-									className="w-full"
 									size="lg"
+									className="w-full bg-white text-brand-700 hover:bg-brand-50 hover:text-brand-700"
 									disabled={!hasItems}
 								>
 									<Link href="/checkout">
@@ -317,8 +317,9 @@ export default function CartPageClient() {
 								</Button>
 								<Button
 									type="button"
+									size="lg"
 									variant="outline"
-									className="w-full"
+									className="w-full border-white bg-slate-100 text-slate-900 hover:bg-white hover:text-brand-700"
 									onClick={() => void handleClearCart()}
 									disabled={!hasItems || isClearing}
 								>

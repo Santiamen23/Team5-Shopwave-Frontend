@@ -13,6 +13,10 @@ import type { PaymentMethod } from "@/models/order.model";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { formatCurrency } from "@/utils/currency.util";
+import {
+	validatePaymentDetails,
+	validateShippingDetails,
+} from "@/utils/checkout.validation";
 
 const PAYMENT_METHODS: Array<{ value: PaymentMethod; label: string }> = [
 	{ value: "CREDIT_CARD", label: "Tarjeta de crédito" },
@@ -52,15 +56,6 @@ const EMPTY_PAYMENT: PaymentFormState = {
 	cardNumber: "",
 };
 
-function isFilled(value: string) {
-	return value.trim().length > 0;
-}
-
-function isValidCardNumber(value: string) {
-	const digits = value.replace(/\s+/g, "");
-	return /^\d{13,19}$/.test(digits);
-}
-
 export default function CheckoutPageClient() {
 	const { user } = useAuth();
 	const { cart, isLoading, checkout } = useCart();
@@ -85,28 +80,15 @@ export default function CheckoutPageClient() {
 	const [error, setError] = useState<string | null>(null);
 	const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
-	const shippingErrors = useMemo(() => {
-		const errors: Partial<Record<keyof ShippingFormState, string>> = {};
-		if (!isFilled(shipping.firstName)) errors.firstName = "Ingresa tu nombre.";
-		if (!isFilled(shipping.lastName)) errors.lastName = "Ingresa tu apellido.";
-		if (!isFilled(shipping.streetAddress)) errors.streetAddress = "La dirección es obligatoria.";
-		if (!isFilled(shipping.city)) errors.city = "Ingresa la ciudad.";
-		if (!isFilled(shipping.state)) errors.state = "Ingresa el estado o departamento.";
-		if (!isFilled(shipping.zipCode)) errors.zipCode = "Ingresa el código postal.";
-		else if (!/^[\w\s-]{3,10}$/.test(shipping.zipCode.trim())) errors.zipCode = "Código postal inválido.";
-		if (!isFilled(shipping.mobile)) errors.mobile = "Ingresa un celular de contacto.";
-		else if (!/^\+?[\d\s-]{7,15}$/.test(shipping.mobile.trim())) errors.mobile = "Número de celular inválido.";
-		return errors;
-	}, [shipping]);
+	const shippingErrors = useMemo(
+		() => validateShippingDetails(shipping),
+		[shipping],
+	);
 
-	const paymentErrors = useMemo(() => {
-		const errors: Partial<Record<keyof PaymentFormState, string>> = {};
-		if (payment.method === "CREDIT_CARD" || payment.method === "DEBIT_CARD") {
-			if (!isFilled(payment.cardholderName)) errors.cardholderName = "Ingresa el titular de la tarjeta.";
-			if (!isValidCardNumber(payment.cardNumber)) errors.cardNumber = "Número de tarjeta inválido (13 a 19 dígitos).";
-		}
-		return errors;
-	}, [payment]);
+	const paymentErrors = useMemo(
+		() => validatePaymentDetails(payment.method, payment.cardholderName, payment.cardNumber),
+		[payment.method, payment.cardholderName, payment.cardNumber],
+	);
 
 	const shippingIsValid = Object.keys(shippingErrors).length === 0;
 	const paymentIsValid = Object.keys(paymentErrors).length === 0;
@@ -304,7 +286,7 @@ export default function CheckoutPageClient() {
 											onClick={() => handlePaymentChange("method", option.value)}
 											className={`rounded-xl border px-4 py-3 text-left text-sm font-semibold transition-all duration-200 ${
 												isActive
-													? "border-transparent bg-gradient-to-br from-brand-600 to-brand-700 text-white shadow-[0_8px_24px_-12px_oklch(0.43_0.18_245_/_0.55)]"
+													? "border-transparent bg-brand-600 text-white"
 													: "border-slate-200 bg-white text-slate-700 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700"
 											}`}
 										>
@@ -336,7 +318,7 @@ export default function CheckoutPageClient() {
 									</FormField>
 								</div>
 							) : (
-								<div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-brand-50/40 p-4">
+								<div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
 									<CreditCard className="h-5 w-5 text-brand-600" />
 									<p>Serás redirigido a {payment.method === "PAYPAL" ? "PayPal" : "la pasarela"} para completar el pago.</p>
 								</div>
@@ -350,17 +332,17 @@ export default function CheckoutPageClient() {
 						</CardHeader>
 						<CardContent className="space-y-4 text-sm text-slate-600">
 							<div className="grid gap-4 sm:grid-cols-2">
-								<div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-brand-50/40 p-4">
+								<div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
 									<p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-brand-700">Cliente</p>
 									<p className="mt-1 font-semibold text-slate-950">{user?.firstName} {user?.lastName}</p>
 								</div>
-								<div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-brand-50/40 p-4">
+								<div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
 									<p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-brand-700">Correo</p>
 									<p className="mt-1 font-semibold text-slate-950">{user?.email}</p>
 								</div>
 							</div>
 
-							<div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-brand-50/40 p-4">
+							<div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
 								<MapPin className="h-5 w-5 text-brand-600" />
 								<p>
 									{shippingIsValid
@@ -382,7 +364,7 @@ export default function CheckoutPageClient() {
 							) : (
 								<div className="grid gap-3 sm:grid-cols-2">
 									{cart.cartItems.slice(0, 2).map((item) => (
-										<div key={item.id} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-brand-50/30 p-3">
+										<div key={item.id} className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3">
 											<div className="relative h-16 w-16 overflow-hidden rounded-xl bg-slate-100">
 												<Image src={item.product.imageUrl} alt={item.product.title} fill className="object-cover" unoptimized />
 											</div>
@@ -399,32 +381,31 @@ export default function CheckoutPageClient() {
 				</div>
 
 				<aside className="w-full">
-					<Card className="sticky top-24 overflow-hidden border-slate-200/80 bg-white/95 shadow-[0_18px_50px_-36px_oklch(0.18_0.02_250_/_0.35)]">
-						<div className="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-600 to-info-700 px-5 py-4 text-white">
-							<div className="bg-grid-faint absolute inset-0 opacity-25" />
-							<p className="relative text-xs font-semibold uppercase tracking-[0.18em] text-brand-100/90">Total a pagar</p>
-							<p className="relative mt-1 text-sm text-white/90">Confirmación final del pedido.</p>
+					<Card className="sticky top-24 overflow-hidden border-brand-700 bg-brand-700 text-white">
+						<div className="border-b border-white/15 px-5 py-4">
+							<p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-100">Total a pagar</p>
+							<p className="mt-1 text-sm text-brand-100/90">Confirmación final del pedido.</p>
 						</div>
 						<CardContent className="space-y-4 p-5">
-							<div className="space-y-3 text-sm text-slate-600">
+							<div className="space-y-3 text-sm text-brand-100">
 								<div className="flex items-center justify-between">
 									<span>Subtotal</span>
-									<span className="font-medium text-slate-950">{formatCurrency(cart.totalPrice)}</span>
+									<span className="font-medium text-white">{formatCurrency(cart.totalPrice)}</span>
 								</div>
 								<div className="flex items-center justify-between">
 									<span>Descuento</span>
-									<span className="font-semibold text-success-600">- {formatCurrency(cart.discounte)}</span>
+									<span className="font-semibold text-white">- {formatCurrency(cart.discounte)}</span>
 								</div>
-								<div className="flex items-center justify-between border-t border-slate-200 pt-3 text-base">
-									<span className="font-semibold text-slate-950">Total final</span>
-									<span className="text-lg font-semibold tracking-tight text-gradient-brand">{formatCurrency(cart.totalDiscountedPrice)}</span>
+								<div className="flex items-center justify-between border-t border-white/15 pt-3 text-base">
+									<span className="font-semibold text-white">Total final</span>
+									<span className="text-lg font-semibold tracking-tight text-white">{formatCurrency(cart.totalDiscountedPrice)}</span>
 								</div>
 							</div>
 
 							<Button
 								type="button"
 								size="lg"
-								className="w-full"
+								className="w-full bg-white text-brand-700 hover:bg-brand-50 hover:text-brand-700"
 								onClick={() => void handleCheckout()}
 								disabled={!canCheckout}
 							>
@@ -438,7 +419,12 @@ export default function CheckoutPageClient() {
 											: "Completa el formulario"}
 							</Button>
 
-							<Button asChild variant="outline" className="w-full">
+							<Button
+								asChild
+								size="lg"
+								variant="outline"
+								className="w-full border-white bg-slate-100 text-slate-900 hover:bg-white hover:text-brand-700"
+							>
 								<Link href="/cart">Volver al carrito</Link>
 							</Button>
 						</CardContent>

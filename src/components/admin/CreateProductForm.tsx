@@ -5,14 +5,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormField, Input, Textarea } from "@/components/ui/input";
 import { AdminCreateProductPayload, ProductSize } from "@/models/product.model";
-import {
-	FieldErrors,
-	validateMinLength,
-	validateNumber,
-	validateProductSizes,
-	validateRequired,
-	validateUrl,
-} from "@/utils/validation.util";
+import { validateCreateProduct } from "@/utils/product.validation";
 
 interface ProductFormProps {
 	data: AdminCreateProductPayload;
@@ -23,88 +16,6 @@ interface ProductFormProps {
 	onSubmit: () => void;
 	submitLabel?: string;
 	externalError?: string | null;
-}
-
-export interface CreateProductFieldErrors extends FieldErrors {
-	title?: string;
-	description?: string;
-	price?: string;
-	discountedPrice?: string;
-	discountPersent?: string;
-	quantity?: string;
-	brand?: string;
-	color?: string;
-	imageUrl?: string;
-	topLevelCategory?: string;
-	secondLevelCategory?: string;
-	thirdLevelCategory?: string;
-	sizes?: string;
-}
-
-export function validateCreateProduct(
-	data: AdminCreateProductPayload,
-): CreateProductFieldErrors {
-	const errors: CreateProductFieldErrors = {};
-
-	const titleError = validateMinLength(data.title, 3, "El nombre");
-	if (titleError) errors.title = titleError;
-
-	const descriptionError = validateMinLength(data.description, 10, "La descripción");
-	if (descriptionError) errors.description = descriptionError;
-
-	const priceError = validateNumber(data.price, "El precio", { min: 0.01 });
-	if (priceError) {
-		errors.price = priceError;
-	} else if (data.discountedPrice > data.price) {
-		errors.price =
-			"El precio original no puede ser menor al precio con descuento.";
-	}
-
-	const discountedError = validateNumber(
-		data.discountedPrice,
-		"El precio con descuento",
-		{ min: 0 },
-	);
-	if (discountedError) {
-		errors.discountedPrice = discountedError;
-	} else if (data.discountedPrice > data.price) {
-		errors.discountedPrice =
-			"El precio con descuento no puede ser mayor al precio original.";
-	}
-
-	const discountError = validateNumber(data.discountPersent, "El descuento", {
-		min: 0,
-		max: 100,
-	});
-	if (discountError) errors.discountPersent = discountError;
-
-	const quantityError = validateNumber(data.quantity, "La cantidad total", {
-		min: 1,
-	});
-	if (quantityError) errors.quantity = quantityError;
-
-	const brandError = validateRequired(data.brand);
-	if (brandError) errors.brand = "La marca es obligatoria.";
-
-	const colorError = validateRequired(data.color);
-	if (colorError) errors.color = "El color es obligatorio.";
-
-	const imageError = validateUrl(data.imageUrl);
-	if (imageError) errors.imageUrl = imageError;
-
-	const topError = validateRequired(data.topLevelCategory);
-	if (topError) errors.topLevelCategory = "La categoría principal es obligatoria.";
-
-	const secondError = validateRequired(data.secondLevelCategory);
-	if (secondError) errors.secondLevelCategory = "La categoría secundaria es obligatoria.";
-
-	const thirdError = validateRequired(data.thirdLevelCategory);
-	if (thirdError) errors.thirdLevelCategory = "La categoría terciaria es obligatoria.";
-
-	const sizesError = validateProductSizes(data.size);
-	if (sizesError) errors.sizes = sizesError ?? "Debes agregar al menos una talla.";
-
-	return errors;
 }
 
 export function CreateProductForm({
@@ -149,13 +60,6 @@ export function CreateProductForm({
 		onChange("size", next);
 	}
 
-	function clearError(field: keyof CreateProductFieldErrors) {
-		// No state to clear, validation is computed on each render.
-		// This is just a placeholder for the prop pattern used in the
-		// EditPopup form to keep the visual feedback reactive.
-		void field;
-	}
-
 	return (
 		<div className="space-y-4">
 			<FormField id="title" label="Nombre" required error={errors.title}>
@@ -163,10 +67,7 @@ export function CreateProductForm({
 					id="title"
 					type="text"
 					value={data.title}
-					onChange={(e) => {
-						onChange("title", e.target.value);
-						clearError("title");
-					}}
+					onChange={(e) => onChange("title", e.target.value)}
 					placeholder="Título del producto"
 					invalid={Boolean(errors.title)}
 				/>
@@ -182,10 +83,7 @@ export function CreateProductForm({
 				<Textarea
 					id="description"
 					value={data.description}
-					onChange={(e) => {
-						onChange("description", e.target.value);
-						clearError("description");
-					}}
+					onChange={(e) => onChange("description", e.target.value)}
 					placeholder="Descripción del producto"
 					rows={3}
 					invalid={Boolean(errors.description)}

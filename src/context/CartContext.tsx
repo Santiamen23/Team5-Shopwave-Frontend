@@ -7,6 +7,10 @@ import type { Cart, CartItem } from "@/models/cart.model";
 import type { Order } from "@/models/order.model";
 import type { Product } from "@/models/product.model";
 import type { UserProfile } from "@/models/user.model";
+import {
+	sanitizeShippingDetails,
+	validateShippingDetails,
+} from "@/utils/checkout.validation";
 
 const STORAGE_KEY = "shopwave_cart_v1";
 
@@ -64,21 +68,9 @@ interface CartContextValue {
 }
 
 function ensureShippingDetails(shipping: CheckoutShippingDetails): CheckoutShippingDetails {
-	const trimmed: CheckoutShippingDetails = {
-		firstName: shipping.firstName.trim(),
-		lastName: shipping.lastName.trim(),
-		streetAddress: shipping.streetAddress.trim(),
-		city: shipping.city.trim(),
-		state: shipping.state.trim(),
-		zipCode: shipping.zipCode.trim(),
-		mobile: shipping.mobile.trim(),
-	};
+	const trimmed = sanitizeShippingDetails(shipping);
 
-	const missingField = (Object.keys(trimmed) as Array<keyof CheckoutShippingDetails>).find(
-		(key) => trimmed[key].length === 0,
-	);
-
-	if (missingField) {
+	if (Object.values(validateShippingDetails(trimmed)).some(Boolean)) {
 		throw new Error("Faltan datos de envío. Revisa el formulario antes de continuar.");
 	}
 

@@ -7,9 +7,10 @@ import { useProductForm } from "@/hooks/useCreateProductForm";
 import { useProducts } from "@/hooks/useProducts";
 import { AdminCreateProductPayload } from "@/models/product.model";
 import {
-	CreateProductForm,
+	sanitizeCreateSizes,
 	validateCreateProduct,
-} from "./CreateProductForm";
+} from "@/utils/product.validation";
+import { CreateProductForm } from "./CreateProductForm";
 
 export function CreateProductFormContainer() {
 	const router = useRouter();
@@ -31,12 +32,7 @@ export function CreateProductFormContainer() {
 
 		const payload: AdminCreateProductPayload = {
 			...data,
-			size: data.size
-				.map((size) => ({
-					name: size.name.trim(),
-					quantity: Math.max(0, Math.floor(size.quantity || 0)),
-				}))
-				.filter((size) => size.name.length > 0 && size.quantity > 0),
+			size: sanitizeCreateSizes(data.size),
 		};
 
 		setIsSubmitting(true);

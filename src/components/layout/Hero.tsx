@@ -28,7 +28,7 @@ export default function Hero() {
 							<div className="space-y-5">
 								<h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl xl:text-[4.5rem] xl:leading-[1.05]">
 									Todo lo que necesitas en{" "}
-									<span className="text-gradient-brand">tecnología</span>, en una
+									<span className="text-brand-700">tecnología</span>, en una
 									tienda clara, rápida y lista para cualquier pantalla.
 								</h1>
 
@@ -84,7 +84,7 @@ export default function Hero() {
 						</div>
 
 						<div className="relative">
-							<div className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-to-br from-brand-700 via-brand-600 to-info-700 opacity-95 shadow-[0_35px_90px_-40px_oklch(0.28_0.11_245_/_0.6)]" />
+							<div className="absolute -inset-4 -z-10 rounded-[2rem] bg-brand-700 opacity-95" />
 							<div className="rounded-[2rem] border border-white/15 bg-white/10 p-4 sm:p-5">
 								<div className="relative overflow-hidden rounded-[1.5rem] border border-white/15">
 									<Image
@@ -96,7 +96,7 @@ export default function Hero() {
 										sizes="(max-width: 1024px) 100vw, 45vw"
 										className="h-72 w-full object-cover sm:h-80 lg:h-[28rem]"
 									/>
-									<div className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-slate-950/10 to-transparent" />
+									<div className="absolute inset-0 bg-slate-950/60" />
 									<div className="absolute left-4 right-4 bottom-4 rounded-2xl border border-white/15 bg-slate-950/55 px-4 py-3 text-white backdrop-blur-sm">
 										<p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-brand-200">
 											ShopWave

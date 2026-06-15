@@ -81,11 +81,10 @@ export default function Navbar() {
 					href="/"
 					className="flex items-center gap-2.5 text-xl font-semibold tracking-tight text-slate-950 sm:text-2xl"
 				>
-					<span className="relative grid h-9 w-9 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-500 via-brand-600 to-brand-800 text-sm font-bold text-white shadow-[0_8px_24px_-8px_oklch(0.43_0.18_245_/_0.6)]">
-						<span className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,oklch(1_0_0_/_0.45),transparent_60%)]" />
-						<span className="relative">S</span>
+					<span className="grid h-9 w-9 place-items-center rounded-xl bg-brand-600 text-sm font-bold text-white">
+						S
 					</span>
-					<span className="text-gradient-brand">ShopWave</span>
+					<span className="text-brand-700">ShopWave</span>
 				</Link>
 
 				<div className="hidden items-center gap-1 md:flex">
@@ -142,7 +141,7 @@ export default function Navbar() {
 						>
 							<SheetHeader className="border-b border-slate-200/70 pb-4">
 								<SheetTitle className="text-left text-xl">
-									<span className="text-gradient-brand">ShopWave</span>
+									<span className="text-brand-700">ShopWave</span>
 								</SheetTitle>
 							</SheetHeader>
 
@@ -157,7 +156,7 @@ export default function Navbar() {
 									/>
 								))}
 								{isAuthenticated ? (
-									<div className="mt-2 space-y-3 rounded-2xl border border-slate-200 bg-gradient-to-br from-brand-50 to-white p-4">
+									<div className="mt-2 space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
 										<NavLink
 											href="/cart"
 											label="Carrito"

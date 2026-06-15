@@ -1,12 +1,12 @@
 export default function Footer() {
 	return (
-		<footer className="relative mt-12 overflow-hidden bg-gradient-to-b from-slate-950 to-slate-900 text-white">
-			<div className="h-1 w-full bg-gradient-to-r from-brand-500 via-info-500 to-brand-700" />
+		<footer className="relative mt-12 overflow-hidden bg-slate-900 text-white">
+			<div className="h-1 w-full bg-brand-600" />
 			<div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
 				<div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
 					<div>
 						<div className="mb-3 flex items-center gap-2.5">
-							<span className="grid h-9 w-9 place-items-center rounded-2xl bg-gradient-to-br from-brand-500 via-brand-600 to-brand-800 text-sm font-bold text-white shadow-[0_8px_24px_-8px_oklch(0.43_0.18_245_/_0.7)]">
+							<span className="grid h-9 w-9 place-items-center rounded-xl bg-brand-600 text-sm font-bold text-white">
 								S
 							</span>
 							<h4 className="text-lg font-semibold text-white">

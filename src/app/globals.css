@@ -247,13 +247,6 @@ body {
 
 /* Reusable utilities that work without Tailwind plugin */
 @layer utilities {
-  .text-gradient-brand {
-    background-image: linear-gradient(135deg, var(--brand-700) 0%, var(--brand-500) 60%, oklch(0.65 0.15 220) 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
-  }
-
   .bg-grid-faint {
     background-image:
       linear-gradient(to right, oklch(0.88 0.04 245 / 0.35) 1px, transparent 1px),

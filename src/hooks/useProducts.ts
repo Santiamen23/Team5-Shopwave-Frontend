@@ -10,6 +10,27 @@ import {
 } from "@/models/product.model";
 import { useProductsContext } from "@/context/ProductContext";
 
+function isForeignKeyError(error: unknown) {
+  if (!(error instanceof Error)) return false;
+  const message = error.message.toLowerCase();
+  return (
+    message.includes("foreign key") ||
+    message.includes("constraint") ||
+    message.includes("cart_item") ||
+    message.includes("could not execute statement")
+  );
+}
+
+function friendlyDeleteError(error: unknown) {
+  if (isForeignKeyError(error)) {
+    return "No se puede eliminar el producto porque forma parte de uno o más carritos activos. Vacía los carritos que lo contienen o desactívalo en el backend antes de reintentar.";
+  }
+
+  return error instanceof Error
+    ? error.message
+    : "Error al eliminar el producto";
+}
+
 function getCategoryHierarchy(product: Product) {
   const thirdLevelCategory = product.category?.name ?? "";
   const secondLevelCategory = product.category?.parentCategory?.name ?? "";
@@ -154,13 +175,10 @@ export function useProducts() {
 
       return data;
     } catch (err) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : "Error al eliminar el producto";
+      const message = friendlyDeleteError(err);
 
       setError(message);
-      throw err;
+      throw new Error(message);
     } finally {
       setLoading(false);
     }

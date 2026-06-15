@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useEffect, useState, startTransition } from "react";
+import { createContext, useEffect, useState, startTransition, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 import type { SignInPayload } from "@/models/auth.model";
@@ -23,19 +23,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const [user, setUser] = useState<UserProfile | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 
-	async function refreshSession() {
+	const refreshSession = useCallback(async () => {
 		try {
 			const session = await getSession();
 			setUser(session.user);
 			return session.user;
+		} catch (error) {
+			console.warn("No se pudo refrescar la sesión:", error);
+			setUser(null);
+			return null;
 		} finally {
 			setIsLoading(false);
 		}
-	}
+	}, []);
 
 	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect
 		void refreshSession();
-	}, []);
+	}, [refreshSession]);
 
 	async function login(payload: SignInPayload) {
 		const session = await signIn(payload);

@@ -20,6 +20,18 @@ async function parseJsonResponse<T>(response: Response): Promise<T> {
 	return response.json() as Promise<T>;
 }
 
+function isSessionUnavailableError(error: unknown) {
+	if (!(error instanceof Error)) {
+		return false;
+	}
+	const message = error.message.toLowerCase();
+	return (
+		message.includes("status 404") ||
+		message.includes("status 500") ||
+		message.includes("failed to fetch")
+	);
+}
+
 export async function signUp(payload: AuthPayload): Promise<UserProfile> {
 	const response = await fetch("/api/auth/register", createJsonRequestInit("POST", payload));
 	return parseJsonResponse<UserProfile>(response);
@@ -31,9 +43,23 @@ export async function signIn(payload: SignInPayload): Promise<SessionResponse> {
 }
 
 export async function getSession(): Promise<SessionResponse> {
-	const response = await fetch("/api/auth/session", {
-		cache: "no-store",
-	});
+	let response: Response;
+
+	try {
+		response = await fetch("/api/auth/session", {
+			cache: "no-store",
+		});
+	} catch (networkError) {
+		if (isSessionUnavailableError(networkError)) {
+			return { user: null };
+		}
+		throw networkError;
+	}
+
+	if (response.status === 404 || response.status === 500) {
+		return { user: null };
+	}
+
 	return parseJsonResponse<SessionResponse>(response);
 }
 

@@ -110,11 +110,11 @@ export default function CartPageClient() {
 						</p>
 					</div>
 
-					{error ? (
-						<div className="rounded-2xl border border-warning-500/30 bg-warning-50 p-4 text-sm text-warning-700">
-							{error}
-						</div>
-					) : null}
+							{error ? (
+								<div className="rounded-2xl border border-warning-500/30 bg-warning-50 p-4 text-sm text-warning-700">
+									{error}
+								</div>
+							) : null}
 
 					{statusMessage ? (
 						<div

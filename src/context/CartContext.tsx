@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useRef, useState } from "react";
 
 import { useAuth } from "@/hooks/useAuth";
 import type { Cart, CartItem } from "@/models/cart.model";
@@ -11,8 +11,6 @@ import {
 	sanitizeShippingDetails,
 	validateShippingDetails,
 } from "@/utils/checkout.validation";
-
-const STORAGE_KEY = "shopwave_cart_v1";
 
 const EMPTY_CART: Cart = {
 	id: 0,
@@ -128,7 +126,23 @@ function hasCartItems(cart: Cart | null | undefined) {
 }
 
 function isIgnorableSyncError(error: unknown) {
-	return error instanceof Error && error.message.includes("status 400");
+	if (!(error instanceof Error)) return false;
+	const message = error.message.toLowerCase();
+	return (
+		message.includes("status 400") ||
+		message.includes("status 404") ||
+		message.includes("status 500")
+	);
+}
+
+function isCartItemMissingError(error: unknown) {
+	if (!(error instanceof Error)) return false;
+	const message = error.message.toLowerCase();
+	return (
+		message.includes("status 404") ||
+		message.includes("cart item") ||
+		message.includes("not found")
+	);
 }
 
 function isCartNotInitializedError(error: unknown) {
@@ -148,41 +162,6 @@ function describeCartError(error: unknown): string {
 
 function isServerCartItem(item: CartItem) {
 	return item.userId !== null;
-}
-
-function readStoredCart(): Cart | null {
-	if (typeof window === "undefined") {
-		return null;
-	}
-
-	const rawCart = window.localStorage.getItem(STORAGE_KEY);
-
-	if (!rawCart) {
-		return null;
-	}
-
-	try {
-		return normalizeCart(JSON.parse(rawCart) as Cart);
-	} catch {
-		window.localStorage.removeItem(STORAGE_KEY);
-		return null;
-	}
-}
-
-function persistCart(cart: Cart) {
-	if (typeof window === "undefined") {
-		return;
-	}
-
-	window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
-}
-
-function clearStoredCart() {
-	if (typeof window === "undefined") {
-		return;
-	}
-
-	window.localStorage.removeItem(STORAGE_KEY);
 }
 
 function getItemQuantity(product: Product, size: string) {
@@ -316,6 +295,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 	const [cart, setCart] = useState<Cart>(() => cloneCart(EMPTY_CART));
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const operationInProgressRef = useRef(0);
+
+	function beginOperation() {
+		operationInProgressRef.current += 1;
+	}
+
+	function endOperation() {
+		operationInProgressRef.current = Math.max(0, operationInProgressRef.current - 1);
+	}
+
+	function hasPendingOperation() {
+		return operationInProgressRef.current > 0;
+	}
 
 	const commitCart = useCallback((nextCart: Cart, nextUser?: UserProfile | null) => {
 		const normalizedCart = normalizeCart(nextCart);
@@ -324,14 +316,28 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 			user: nextUser ?? user ?? normalizedCart.user,
 		};
 		setCart(resolvedCart);
-		persistCart(resolvedCart);
 		return resolvedCart;
 	}, [user]);
+
+	const prevAuthRef = useRef<boolean | null>(null);
 
 	useEffect(() => {
 		if (isAuthLoading) {
 			return;
 		}
+
+		const previousAuth = prevAuthRef.current;
+		const authStateChanged = previousAuth !== isAuthenticated;
+
+		if (!authStateChanged) {
+			return;
+		}
+
+		if (hasPendingOperation()) {
+			return;
+		}
+
+		prevAuthRef.current = isAuthenticated;
 
 		let cancelled = false;
 
@@ -340,54 +346,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 			setError(null);
 
 			try {
-				const storedCart = readStoredCart();
-
 				if (!isAuthenticated) {
 					if (!cancelled) {
-						setCart(storedCart ? normalizeCart(storedCart) : cloneCart(EMPTY_CART));
+						setCart(cloneCart(EMPTY_CART));
 					}
 
 					return;
 				}
 
 				const remoteCart = await loadRemoteCart().catch(() => null);
-				let nextCart = remoteCart ? normalizeCart(remoteCart) : storedCart ? normalizeCart(storedCart) : cloneCart(EMPTY_CART);
-
-				if (storedCart?.cartItems.length) {
-					await loadRemoteCart().catch(() => null);
-					for (const item of storedCart.cartItems) {
-						try {
-							nextCart = await addRemoteItem({
-								product: item.product,
-								size: item.size,
-								quantity: item.quantity,
-							});
-						} catch (syncError) {
-							if (isCartNotInitializedError(syncError)) {
-								await loadRemoteCart().catch(() => null);
-								nextCart = await addRemoteItem({
-									product: item.product,
-									size: item.size,
-									quantity: item.quantity,
-								});
-							} else {
-								throw syncError;
-							}
-						}
-					}
-				}
-
-				const hydratedCart = await loadRemoteCart().catch(() => nextCart);
 
 				if (!cancelled) {
-					const preferredCart = hasCartItems(hydratedCart) ? hydratedCart : nextCart;
-					commitCart(preferredCart, user);
+					commitCart(remoteCart ? normalizeCart(remoteCart) : cloneCart(EMPTY_CART), user);
 				}
 			} catch (loadError) {
-				const storedCart = readStoredCart();
-
 				if (!cancelled) {
-					setCart(storedCart ? normalizeCart(storedCart) : cloneCart(EMPTY_CART));
+					setCart(cloneCart(EMPTY_CART));
 					setError(loadError instanceof Error ? loadError.message : "No se pudo cargar el carrito.");
 				}
 			} finally {
@@ -404,18 +378,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 		};
 	}, [commitCart, isAuthLoading, isAuthenticated, user]);
 
-	useEffect(() => {
-		if (!isAuthLoading && !isAuthenticated) {
-			persistCart(cart);
-		}
-	}, [cart, isAuthLoading, isAuthenticated]);
-
 	async function refreshCart() {
 		if (!isAuthenticated) {
-			const storedCart = readStoredCart();
-			const nextCart = storedCart ? normalizeCart(storedCart) : cloneCart(EMPTY_CART);
-			setCart(nextCart);
-			return nextCart;
+			setCart(cloneCart(EMPTY_CART));
+			return cloneCart(EMPTY_CART);
 		}
 
 		const remoteCart = normalizeCart(await loadRemoteCart());
@@ -423,122 +389,155 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 	}
 
 	async function addItem(input: AddToCartInput) {
-		if (!input.size) {
-			throw new Error("Selecciona un talle antes de agregar el producto.");
-		}
+		beginOperation();
+		try {
+			if (!input.size) {
+				throw new Error("Selecciona una variante antes de agregar el producto.");
+			}
 
-		const availableQuantity = getItemQuantity(input.product, input.size);
+			const availableQuantity = getItemQuantity(input.product, input.size);
 
-		if (input.quantity < 1) {
-			throw new Error("La cantidad debe ser mayor a cero.");
-		}
+			if (input.quantity < 1) {
+				throw new Error("La cantidad debe ser mayor a cero.");
+			}
 
-		if (availableQuantity > 0 && input.quantity > availableQuantity) {
-			throw new Error("La cantidad solicitada supera el stock disponible.");
-		}
+			if (availableQuantity > 0 && input.quantity > availableQuantity) {
+				throw new Error("La cantidad solicitada supera el stock disponible.");
+			}
 
-		const optimisticItem = createCartItemFromProduct(input.product, input.size, input.quantity);
-		const optimisticCart = mergeItem(cart, optimisticItem);
-		commitCart(optimisticCart, user);
+			const optimisticItem = createCartItemFromProduct(input.product, input.size, input.quantity);
+			const optimisticCart = mergeItem(cart, optimisticItem);
+			commitCart(optimisticCart, user);
 
-		if (isAuthenticated) {
-			try {
-				await loadRemoteCart().catch(() => null);
-				await addRemoteItem(input);
-				const hydratedCart = await loadRemoteCart().catch(() => null);
-				if (hydratedCart && hasCartItems(hydratedCart)) {
-					return commitCart(hydratedCart, user);
+			if (isAuthenticated) {
+				try {
+					await loadRemoteCart().catch(() => null);
+					await addRemoteItem(input);
+					const hydratedCart = await loadRemoteCart().catch(() => null);
+					if (hydratedCart && hasCartItems(hydratedCart)) {
+						return commitCart(hydratedCart, user);
+					}
+				} catch (remoteError) {
+					if (!isIgnorableSyncError(remoteError)) {
+						setError(describeCartError(remoteError));
+					}
 				}
-			} catch (remoteError) {
-				if (!isIgnorableSyncError(remoteError)) {
-					setError(describeCartError(remoteError));
-				}
+
+				return optimisticCart;
 			}
 
 			return optimisticCart;
+		} finally {
+			endOperation();
 		}
-
-		return optimisticCart;
 	}
 
 	async function updateQuantity(cartItemId: number, quantity: number) {
-		const currentItem = cart.cartItems.find((item) => item.id === cartItemId);
+		beginOperation();
+		try {
+			const currentItem = cart.cartItems.find((item) => item.id === cartItemId);
 
-		if (!currentItem) {
-			throw new Error("El producto no está en el carrito.");
-		}
+			if (!currentItem) {
+				throw new Error("El producto no está en el carrito.");
+			}
 
-		if (quantity <= 0) {
-			return removeItem(cartItemId);
-		}
+			if (quantity <= 0) {
+				return removeItem(cartItemId);
+			}
 
-		const availableQuantity = getItemQuantity(currentItem.product, currentItem.size);
+			const availableQuantity = getItemQuantity(currentItem.product, currentItem.size);
 
-		if (availableQuantity > 0 && quantity > availableQuantity) {
-			throw new Error("La cantidad solicitada supera el stock disponible.");
-		}
+			if (availableQuantity > 0 && quantity > availableQuantity) {
+				throw new Error("La cantidad solicitada supera el stock disponible.");
+			}
 
-		const optimisticCart = updateQuantityLocal(cart, cartItemId, quantity);
-		commitCart(optimisticCart, user);
+			const optimisticCart = updateQuantityLocal(cart, cartItemId, quantity);
+			commitCart(optimisticCart, user);
 
-		if (isAuthenticated && isServerCartItem(currentItem)) {
-			try {
-				const remoteCart = await updateRemoteItem({
-					...currentItem,
-					quantity,
-					price: currentItem.product.price * quantity,
-					discountedPrice: currentItem.product.discountedPrice * quantity,
-				});
-				if (hasCartItems(remoteCart) || optimisticCart.cartItems.length === 0) {
-					return commitCart(remoteCart, user);
+			if (isAuthenticated && isServerCartItem(currentItem)) {
+				try {
+					const remoteCart = await updateRemoteItem({
+						...currentItem,
+						quantity,
+						price: currentItem.product.price * quantity,
+						discountedPrice: currentItem.product.discountedPrice * quantity,
+					});
+					if (hasCartItems(remoteCart) || optimisticCart.cartItems.length === 0) {
+						return commitCart(remoteCart, user);
+					}
+				} catch (remoteError) {
+					if (!isIgnorableSyncError(remoteError)) {
+						setError(remoteError instanceof Error ? remoteError.message : "No se pudo sincronizar el carrito.");
+					}
 				}
-			} catch (remoteError) {
-				if (!isIgnorableSyncError(remoteError)) {
-					setError(remoteError instanceof Error ? remoteError.message : "No se pudo sincronizar el carrito.");
-				}
+
+				return optimisticCart;
 			}
 
 			return optimisticCart;
+		} finally {
+			endOperation();
 		}
-
-		return optimisticCart;
 	}
 
 	async function removeItem(cartItemId: number) {
-		const optimisticCart = removeLocalItem(cart, cartItemId);
-		commitCart(optimisticCart, user);
+		beginOperation();
+		try {
+			const optimisticCart = removeLocalItem(cart, cartItemId);
+			commitCart(optimisticCart, user);
 
-		const currentItem = cart.cartItems.find((item) => item.id === cartItemId);
+			const currentItem = cart.cartItems.find((item) => item.id === cartItemId);
 
-		if (isAuthenticated && currentItem && isServerCartItem(currentItem)) {
-			try {
-				const remoteCart = await removeRemoteItem(cartItemId);
-				return commitCart(remoteCart, user);
-			} catch (remoteError) {
-				if (!isIgnorableSyncError(remoteError)) {
-					setError(remoteError instanceof Error ? remoteError.message : "No se pudo sincronizar el carrito.");
+			if (isAuthenticated && currentItem && isServerCartItem(currentItem)) {
+				try {
+					const remoteCart = await removeRemoteItem(cartItemId);
+					return commitCart(remoteCart, user);
+				} catch (remoteError) {
+					if (isCartItemMissingError(remoteError)) {
+						return commitCart(optimisticCart, user);
+					}
+					if (!isIgnorableSyncError(remoteError)) {
+						setError(remoteError instanceof Error ? remoteError.message : "No se pudo sincronizar el carrito.");
+					}
 				}
+
+				return optimisticCart;
 			}
 
 			return optimisticCart;
+		} finally {
+			endOperation();
 		}
-
-		return optimisticCart;
 	}
 
 	async function clearCart() {
-		if (isAuthenticated) {
-			for (const item of cart.cartItems) {
-				if (isServerCartItem(item)) {
-					await removeRemoteItem(item.id);
-				}
-			}
-		}
+		beginOperation();
+		try {
+			const emptyCart = cloneCart(EMPTY_CART);
 
-		const emptyCart = cloneCart(EMPTY_CART);
-		setCart(emptyCart);
-		clearStoredCart();
-		return emptyCart;
+			setCart(emptyCart);
+			setError(null);
+
+			const itemsToRemove = cart.cartItems.filter((item) =>
+				isAuthenticated ? isServerCartItem(item) : false,
+			);
+
+			if (isAuthenticated && itemsToRemove.length > 0) {
+				await Promise.all(
+					itemsToRemove.map((item) =>
+						removeRemoteItem(item.id).catch((remoteError) => {
+							if (!isCartItemMissingError(remoteError)) {
+								console.warn("No se pudo eliminar el item del servidor:", remoteError);
+							}
+						}),
+					),
+				);
+			}
+
+			return emptyCart;
+		} finally {
+			endOperation();
+		}
 	}
 
 	async function checkout(input: CheckoutInput) {
@@ -574,7 +573,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
 		const emptyCart = cloneCart(EMPTY_CART);
 		setCart(emptyCart);
-		clearStoredCart();
 
 		return {
 			orderNumber: order.orderId || String(order.id),

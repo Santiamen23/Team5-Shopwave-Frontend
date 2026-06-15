@@ -80,3 +80,45 @@ export function getInputBorderClass(hasError: unknown): string {
 		? "border-danger-500 focus:border-danger-500 focus:ring-danger-500/30"
 		: "border-slate-200 focus:border-brand-500 focus:ring-brand-500/20";
 }
+
+export function validateMinLengthValue(
+	value: string,
+	min: number,
+	fieldLabel: string,
+): string | null {
+	const required = validateRequired(value);
+	if (required) {
+		return `${fieldLabel} es obligatorio.`;
+	}
+
+	return value.trim().length >= min
+		? null
+		: `${fieldLabel} debe tener al menos ${min} caracteres.`;
+}
+
+export function validateProductSizes(sizes: { name: string; quantity: number }[]): string | null {
+	if (!Array.isArray(sizes) || sizes.length === 0) {
+		return "Debes agregar al menos una talla con stock.";
+	}
+
+	const invalid = sizes.find((size) => {
+		const nameOk = typeof size.name === "string" && size.name.trim().length > 0;
+		const quantityOk =
+			typeof size.quantity === "number" &&
+			Number.isFinite(size.quantity) &&
+			size.quantity > 0;
+		return !nameOk || !quantityOk;
+	});
+
+	if (invalid) {
+		return "Cada talla debe tener un nombre y una cantidad mayor a cero.";
+	}
+
+	const names = sizes.map((size) => size.name.trim().toLowerCase());
+	const uniqueNames = new Set(names);
+	if (uniqueNames.size !== names.length) {
+		return "No puedes repetir el nombre de una talla.";
+	}
+
+	return null;
+}

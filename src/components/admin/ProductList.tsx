@@ -167,7 +167,7 @@ export function ProductList() {
 									className={cn(
 										"inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all",
 										isActive
-											? "border-transparent bg-gradient-to-br from-brand-600 to-brand-700 text-white shadow-[0_8px_24px_-12px_oklch(0.43_0.18_245_/_0.55)]"
+											? "border-transparent bg-brand-600 text-white"
 											: "border-slate-200 bg-white text-slate-600 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700",
 									)}
 								>
@@ -196,7 +196,7 @@ export function ProductList() {
 			) : null}
 
 			{filteredProducts.length === 0 ? (
-				<div className="rounded-2xl border border-dashed border-slate-300 bg-gradient-to-br from-white to-brand-50/40 p-12 text-center">
+				<div className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center">
 					<div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-slate-100 text-slate-500">
 						{products.length === 0 ? (
 							<PackageX className="h-5 w-5" />
@@ -243,13 +243,13 @@ function StatTile({
 	tone: "brand" | "warning";
 }) {
 	const toneClasses: Record<typeof tone, string> = {
-		brand: "from-brand-50 to-white text-brand-700",
-		warning: "from-warning-50 to-white text-warning-700",
+		brand: "bg-brand-50 text-brand-700",
+		warning: "bg-warning-50 text-warning-700",
 	};
 	return (
 		<div
 			className={cn(
-				"flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-gradient-to-br p-4 shadow-sm transition-shadow hover:shadow-md",
+				"flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50 p-4 transition-shadow hover:shadow-md",
 				toneClasses[tone],
 			)}
 		>

@@ -19,9 +19,8 @@ export default function ProfileView({ user }: { user: UserProfile }) {
 		<section className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
 			<div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 				<div className="flex items-center gap-4">
-					<div className="relative grid h-16 w-16 place-items-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-500 via-brand-600 to-brand-800 text-xl font-bold text-white shadow-[0_12px_30px_-12px_oklch(0.43_0.18_245_/_0.6)]">
-						<span className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,oklch(1_0_0_/_0.45),transparent_60%)]" />
-						<span className="relative">{initials}</span>
+					<div className="grid h-16 w-16 place-items-center rounded-2xl bg-brand-600 text-xl font-bold text-white">
+						{initials}
 					</div>
 					<div>
 						<h1 className="text-3xl font-semibold tracking-tight text-slate-950">
@@ -93,7 +92,7 @@ export default function ProfileView({ user }: { user: UserProfile }) {
 									{user.addresses.map((addr) => (
 										<div
 											key={addr.id}
-											className="rounded-xl border border-slate-200 bg-gradient-to-br from-white to-brand-50/40 p-4 text-sm shadow-sm transition-shadow hover:shadow-md"
+											className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm transition-shadow hover:shadow-md"
 										>
 											<p className="font-semibold text-slate-800">
 												{addr.firstName} {addr.lastName}
@@ -131,7 +130,7 @@ export default function ProfileView({ user }: { user: UserProfile }) {
 									{user.paymentInformation.map((payment, index) => (
 										<div
 											key={index}
-											className="flex items-center justify-between rounded-xl border border-slate-200 bg-gradient-to-br from-white to-brand-50/40 p-4 text-sm shadow-sm"
+											className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm"
 										>
 											<div className="space-y-1">
 												<p className="font-medium text-slate-800">

@@ -14,8 +14,8 @@ export default async function AdminCreateProductPage() {
 			<Navbar />
 			<section className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
 				<div className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/95 shadow-[0_24px_60px_-36px_oklch(0.18_0.02_250_/_0.35)]">
-					<div className="relative overflow-hidden bg-gradient-to-br from-brand-700 via-brand-600 to-info-700 px-7 py-6 text-white sm:px-9">
-						<div className="bg-grid-faint absolute inset-0 opacity-25" />
+					<div className="relative overflow-hidden bg-brand-700 px-7 py-6 text-white sm:px-9">
+						<div className="absolute -top-12 -right-12 h-40 w-40 rounded-full bg-white/15 blur-3xl" />
 						<div className="relative flex items-center gap-3">
 							<span className="grid h-10 w-10 place-items-center rounded-xl bg-white/15 backdrop-blur">
 								<Plus className="h-5 w-5" />

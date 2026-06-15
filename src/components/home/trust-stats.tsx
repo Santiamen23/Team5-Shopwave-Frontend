@@ -56,7 +56,7 @@ export function TrustStats({
 	return (
 		<section className="px-4 pt-2 pb-6 sm:px-6 sm:pt-4 sm:pb-8 lg:px-8 lg:pt-6 lg:pb-10">
 			<div className="mx-auto w-full max-w-7xl">
-				<Card className="grid grid-cols-2 gap-2 border-slate-200/80 bg-gradient-to-br from-white via-white to-brand-50/30 p-3 sm:grid-cols-4 sm:gap-0 sm:p-0">
+				<Card className="grid grid-cols-2 gap-2 border-slate-200/80 bg-white p-3 sm:grid-cols-4 sm:gap-0 sm:p-0">
 					{stats.map((stat, index) => (
 						<div
 							key={stat.label}

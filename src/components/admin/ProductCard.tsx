@@ -32,7 +32,7 @@ export function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
 	return (
 		<Card className="overflow-hidden border-slate-200/80 bg-white shadow-sm transition-shadow hover:shadow-[0_18px_40px_-24px_oklch(0.43_0.18_245_/_0.35)]">
 			<CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:gap-6 sm:p-5">
-				<div className="relative h-28 w-full overflow-hidden rounded-2xl bg-gradient-to-br from-brand-50 to-white sm:h-24 sm:w-24 sm:shrink-0">
+				<div className="relative h-28 w-full overflow-hidden rounded-2xl bg-slate-50 sm:h-24 sm:w-24 sm:shrink-0">
 					<Image
 						src={product.imageUrl}
 						alt={product.title}

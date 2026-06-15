@@ -100,7 +100,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
 		<section className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
 			<div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
 				<Card className="overflow-hidden border-slate-200/80 bg-white/95 xl:sticky xl:top-24">
-					<div className="relative aspect-[4/3] bg-gradient-to-br from-brand-50 via-white to-info-50 p-4 sm:p-6 lg:p-8">
+					<div className="relative aspect-[4/3] bg-slate-50 p-4 sm:p-6 lg:p-8">
 						{hasDiscount ? (
 							<Badge
 								variant="success"
@@ -152,7 +152,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
 									<p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 sm:text-sm">
 										Precio actual
 									</p>
-									<p className="text-3xl font-semibold tracking-tight text-gradient-brand sm:text-4xl">
+									<p className="text-3xl font-semibold tracking-tight text-brand-700 sm:text-4xl">
 										{formatCurrency(product.discountedPrice)}
 									</p>
 								</div>
@@ -286,7 +286,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
 							</CardTitle>
 						</CardHeader>
 						<CardContent className="space-y-4 p-2 text-sm leading-7 text-slate-600 sm:p-3 lg:p-4">
-							<div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-white to-brand-50/40 p-4">
+							<div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
 								<p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
 									Descripcion
 								</p>

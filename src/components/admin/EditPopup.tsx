@@ -13,34 +13,20 @@ import {
 import { Edit } from "lucide-react";
 import { Product } from "@/models/product.model";
 import {
-	FieldErrors,
-	validateNumber,
-	validateRequired,
-	validateUrl,
-} from "@/utils/validation.util";
+	EditProductFieldErrors,
+	validateEditProduct,
+} from "@/utils/product.validation";
 
 interface EditPopupProps {
 	product: Product;
 	onEdit?: (product: Product) => Promise<Product> | Product | void;
 }
 
-interface EditFieldErrors extends FieldErrors {
-	title?: string;
-	description?: string;
-	price?: string;
-	discountedPrice?: string;
-	discountPersent?: string;
-	quantity?: string;
-	brand?: string;
-	color?: string;
-	imageUrl?: string;
-}
-
 export function EditPopup({ product, onEdit }: EditPopupProps) {
 	const [editOpen, setEditOpen] = useState(false);
 	const [editData, setEditData] = useState(product);
 	const [saving, setSaving] = useState(false);
-	const [errors, setErrors] = useState<EditFieldErrors>({});
+	const [errors, setErrors] = useState<EditProductFieldErrors>({});
 
 	useEffect(() => {
 		// eslint-disable-next-line react-hooks/set-state-in-effect
@@ -56,67 +42,20 @@ export function EditPopup({ product, onEdit }: EditPopupProps) {
 		}));
 	};
 
-	function clearFieldError(field: keyof EditFieldErrors) {
+	function clearFieldError(field: keyof EditProductFieldErrors) {
 		setErrors((prev) => {
 			if (!prev[field]) {
 				return prev;
 			}
-			const next: EditFieldErrors = { ...prev };
+			const next: EditProductFieldErrors = { ...prev };
 			delete next[field];
 			return next;
 		});
 	}
 
-	function validate(): EditFieldErrors {
-		const next: EditFieldErrors = {};
-
-		const titleError = validateRequired(editData.title);
-		if (titleError) next.title = "El nombre es obligatorio.";
-
-		const descriptionError = validateRequired(editData.description);
-		if (descriptionError) next.description = "La descripción es obligatoria.";
-
-		const priceError = validateNumber(editData.price, "El precio", { min: 0.01 });
-		if (priceError) next.price = priceError;
-
-		const discountedError = validateNumber(
-			editData.discountedPrice,
-			"El precio con descuento",
-			{ min: 0 },
-		);
-		if (discountedError) {
-			next.discountedPrice = discountedError;
-		} else if (editData.discountedPrice > editData.price) {
-			next.discountedPrice =
-				"El precio con descuento no puede ser mayor al precio original.";
-		}
-
-		const discountError = validateNumber(editData.discountPersent, "El descuento", {
-			min: 0,
-			max: 100,
-		});
-		if (discountError) next.discountPersent = discountError;
-
-		const quantityError = validateNumber(editData.quantity, "La cantidad", {
-			min: 0,
-		});
-		if (quantityError) next.quantity = quantityError;
-
-		const brandError = validateRequired(editData.brand);
-		if (brandError) next.brand = "La marca es obligatoria.";
-
-		const colorError = validateRequired(editData.color);
-		if (colorError) next.color = "El color es obligatorio.";
-
-		const imageError = validateUrl(editData.imageUrl);
-		if (imageError) next.imageUrl = imageError;
-
-		return next;
-	}
-
 	const handleSaveEdit = async () => {
-		const validationErrors = validate();
-		if (Object.keys(validationErrors).length > 0) {
+		const validationErrors = validateEditProduct(editData);
+		if (Object.values(validationErrors).some(Boolean)) {
 			setErrors(validationErrors);
 			return;
 		}
@@ -144,7 +83,7 @@ export function EditPopup({ product, onEdit }: EditPopupProps) {
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="max-h-[85vh] w-[min(92vw,36rem)] overflow-y-auto">
-				<div className="rounded-xl bg-gradient-to-br from-brand-50 to-white px-4 py-3">
+				<div className="rounded-xl bg-slate-50 px-4 py-3">
 					<DialogTitle>Editar Producto</DialogTitle>
 					<DialogDescription>
 						Modifica la información principal del producto y guarda los cambios.

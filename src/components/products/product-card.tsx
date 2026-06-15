@@ -18,7 +18,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
 	return (
 		<Card className="group overflow-hidden border-slate-200/80 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-[0_28px_60px_-32px_oklch(0.43_0.18_245_/_0.45)]">
-			<div className="relative aspect-[4/5] bg-gradient-to-br from-brand-50 via-white to-info-50 p-4 sm:aspect-square sm:p-5 lg:p-6">
+			<div className="relative aspect-[4/5] bg-slate-50 p-4 sm:aspect-square sm:p-5 lg:p-6">
 				{onSale ? (
 					<Badge
 						variant="success"

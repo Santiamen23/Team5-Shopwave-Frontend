@@ -86,7 +86,7 @@ export function ProductFiltersPanel({
 									className={cn(
 										"inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all",
 										isActive
-											? "border-transparent bg-gradient-to-br from-brand-600 to-brand-700 text-white shadow-[0_6px_18px_-10px_oklch(0.43_0.18_245_/_0.55)]"
+											? "border-transparent bg-brand-600 text-white"
 											: "border-slate-200 bg-white text-slate-600 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700",
 									)}
 								>
@@ -124,7 +124,7 @@ export function ProductFiltersPanel({
 										className={cn(
 											"inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all",
 											isActive
-												? "border-transparent bg-gradient-to-br from-brand-600 to-brand-700 text-white shadow-[0_6px_18px_-10px_oklch(0.43_0.18_245_/_0.55)]"
+												? "border-transparent bg-brand-600 text-white"
 												: "border-slate-200 bg-white text-slate-600 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700",
 										)}
 									>
@@ -164,7 +164,7 @@ export function ProductFiltersPanel({
 										className={cn(
 											"inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-semibold transition-all",
 											isActive
-												? "border-transparent bg-gradient-to-br from-brand-600 to-brand-700 text-white shadow-[0_6px_18px_-10px_oklch(0.43_0.18_245_/_0.55)]"
+												? "border-transparent bg-brand-600 text-white"
 												: "border-slate-200 bg-white text-slate-600 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700",
 										)}
 									>
@@ -204,7 +204,7 @@ export function ProductFiltersPanel({
 										className={cn(
 											"inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold capitalize transition-all",
 											isActive
-												? "border-transparent bg-gradient-to-br from-brand-600 to-brand-700 text-white shadow-[0_6px_18px_-10px_oklch(0.43_0.18_245_/_0.55)]"
+												? "border-transparent bg-brand-600 text-white"
 												: "border-slate-200 bg-white text-slate-600 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700",
 										)}
 									>
@@ -232,7 +232,7 @@ export function ProductFiltersPanel({
 									className={cn(
 										"rounded-xl border px-3 py-2 text-left text-xs font-semibold transition-all",
 										isActive
-											? "border-transparent bg-gradient-to-br from-brand-600 to-brand-700 text-white shadow-[0_6px_18px_-10px_oklch(0.43_0.18_245_/_0.55)]"
+											? "border-transparent bg-brand-600 text-white"
 											: "border-slate-200 bg-white text-slate-600 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700",
 									)}
 								>

@@ -12,7 +12,11 @@ import { Plus } from "lucide-react";
 import { AdminCreateProductPayload } from "@/models/product.model";
 import { useState } from "react";
 import { useProductForm } from "@/hooks/useCreateProductForm";
-import { CreateProductForm, validateCreateProduct } from "./CreateProductForm";
+import {
+	sanitizeCreateSizes,
+	validateCreateProduct,
+} from "@/utils/product.validation";
+import { CreateProductForm } from "./CreateProductForm";
 
 interface CreatePopupProps {
 	onCreate?: (payload: AdminCreateProductPayload) => Promise<unknown> | unknown;
@@ -37,12 +41,7 @@ export function CreatePopup({ onCreate }: CreatePopupProps) {
 
 		const payload: AdminCreateProductPayload = {
 			...data,
-			size: data.size
-				.map((size) => ({
-					name: size.name.trim(),
-					quantity: Math.max(0, Math.floor(size.quantity || 0)),
-				}))
-				.filter((size) => size.name.length > 0 && size.quantity > 0),
+			size: sanitizeCreateSizes(data.size),
 		};
 
 		setIsSubmitting(true);
@@ -73,7 +72,7 @@ export function CreatePopup({ onCreate }: CreatePopupProps) {
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="w-[min(92vw,32rem)]">
-				<div className="rounded-xl bg-gradient-to-br from-brand-50 to-white px-4 py-3">
+				<div className="rounded-xl bg-slate-50 px-4 py-3">
 					<DialogTitle>Crear nuevo producto</DialogTitle>
 					<DialogDescription>
 						Completa los datos del producto, incluyendo al menos una talla con

@@ -98,7 +98,7 @@ export default function LoginForm({ nextPath }: { nextPath: string }) {
 
 			<Card className="w-full max-w-md border-slate-200/80 bg-white/95 shadow-[0_24px_60px_-32px_oklch(0.18_0.02_250_/_0.4)]">
 				<CardHeader className="space-y-3 text-center">
-					<div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-brand-500 via-brand-600 to-brand-800 text-white shadow-[0_8px_24px_-8px_oklch(0.43_0.18_245_/_0.6)]">
+					<div className="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-brand-600 text-white">
 						<LogIn className="h-5 w-5" />
 					</div>
 					<CardTitle className="text-3xl font-semibold tracking-tight text-slate-950">

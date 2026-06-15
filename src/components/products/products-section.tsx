@@ -145,7 +145,7 @@ export function ProductsSection({
 	return (
 		<Card className="mx-auto max-w-6xl gap-0 overflow-hidden border-slate-200/80 bg-white py-0 shadow-[0_24px_60px_-42px_oklch(0.18_0.02_250_/_0.3)]">
 			{title || description ? (
-				<CardHeader className="relative overflow-hidden border-b border-white/10 bg-gradient-to-br from-brand-700 via-brand-600 to-info-700 px-5 py-7 text-white sm:px-7 sm:py-9 lg:px-9">
+				<CardHeader className="relative overflow-hidden border-b border-white/10 bg-brand-700 px-5 py-7 text-white sm:px-7 sm:py-9 lg:px-9">
 					<div className="bg-grid-faint absolute inset-0 opacity-30" />
 					<div className="absolute -top-16 -right-12 h-44 w-44 rounded-full bg-white/15 blur-3xl" />
 					<div className="absolute -bottom-20 -left-10 h-44 w-44 rounded-full bg-info-500/30 blur-3xl" />
@@ -275,7 +275,7 @@ export function ProductsSection({
 						</section>
 					)
 				) : (
-					<div className="rounded-2xl border border-dashed border-slate-300 bg-gradient-to-br from-white to-brand-50/40 p-8 text-center text-sm text-slate-600">
+					<div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-600">
 						{effectiveEmptyMessage}
 					</div>
 				)}

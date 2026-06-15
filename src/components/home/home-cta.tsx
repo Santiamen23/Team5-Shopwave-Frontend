@@ -13,8 +13,7 @@ export function HomeCTA() {
 	return (
 		<section className="px-4 py-10 sm:px-6 sm:py-12 lg:px-8 lg:py-14">
 			<div className="mx-auto w-full max-w-7xl">
-				<div className="relative overflow-hidden rounded-[2rem] border border-slate-200/80 bg-gradient-to-br from-brand-700 via-brand-600 to-info-700 px-6 py-10 text-white shadow-[0_30px_80px_-30px_oklch(0.28_0.11_245_/_0.6)] sm:px-10 sm:py-12">
-					<div className="bg-grid-faint absolute inset-0 opacity-25" />
+				<div className="relative overflow-hidden rounded-[2rem] border border-slate-200/80 bg-brand-700 px-6 py-10 text-white sm:px-10 sm:py-12">
 					<div className="absolute -top-24 -right-16 h-60 w-60 rounded-full bg-white/15 blur-3xl" />
 					<div className="absolute -bottom-24 -left-16 h-60 w-60 rounded-full bg-info-500/30 blur-3xl" />
 

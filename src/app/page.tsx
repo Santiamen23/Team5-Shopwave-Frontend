@@ -16,8 +16,8 @@ interface CategoryTile {
 	label: string;
 	description: string;
 	icon: React.ReactNode;
-	gradient: string;
-	ringColor: string;
+	iconBg: string;
+	iconRing: string;
 }
 
 const CATEGORIES: CategoryTile[] = [
@@ -26,32 +26,32 @@ const CATEGORIES: CategoryTile[] = [
 		label: "Celulares",
 		description: "Modelos para trabajo, estudio y uso diario",
 		icon: <Smartphone className="h-5 w-5" />,
-		gradient: "from-brand-50 via-white to-info-50",
-		ringColor: "group-hover:border-brand-300",
+		iconBg: "bg-brand-50 text-brand-700",
+		iconRing: "ring-slate-200",
 	},
 	{
 		href: "/products?category=tablets",
 		label: "Tablets",
 		description: "Pantalla, batería y portabilidad en equilibrio",
 		icon: <Tablet className="h-5 w-5" />,
-		gradient: "from-info-50 via-white to-brand-50",
-		ringColor: "group-hover:border-info-300",
+		iconBg: "bg-info-50 text-info-700",
+		iconRing: "ring-slate-200",
 	},
 	{
 		href: "/products?category=laptops",
 		label: "Laptops",
 		description: "Equipos para rendimiento, clases o oficina",
 		icon: <Laptop className="h-5 w-5" />,
-		gradient: "from-brand-50 via-white to-brand-100/60",
-		ringColor: "group-hover:border-brand-400",
+		iconBg: "bg-slate-100 text-slate-700",
+		iconRing: "ring-slate-200",
 	},
 	{
 		href: "/products?category=accesorios",
 		label: "Accesorios",
 		description: "Complementos para completar tu setup",
 		icon: <Headphones className="h-5 w-5" />,
-		gradient: "from-white via-info-50 to-brand-50",
-		ringColor: "group-hover:border-info-300",
+		iconBg: "bg-warning-50 text-warning-700",
+		iconRing: "ring-slate-200",
 	},
 ];
 
@@ -146,10 +146,10 @@ export default async function HomePage() {
 							<Link
 								key={category.href}
 								href={category.href}
-								className={`group relative flex items-center gap-4 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_60px_-32px_oklch(0.43_0.18_245_/_0.35)] ${category.ringColor}`}
+								className={`group relative flex items-center gap-4 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 transition-colors duration-200 hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-md`}
 							>
 								<div
-									className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${category.gradient} text-brand-700 ring-1 ring-inset ring-white`}
+									className={`flex h-14 w-14 items-center justify-center rounded-2xl ring-1 ring-inset ${category.iconBg} ${category.iconRing}`}
 								>
 									{category.icon}
 								</div>

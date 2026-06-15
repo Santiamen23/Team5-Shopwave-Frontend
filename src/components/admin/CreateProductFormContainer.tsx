@@ -7,7 +7,7 @@ import { useProductForm } from "@/hooks/useCreateProductForm";
 import { useProducts } from "@/hooks/useProducts";
 import { AdminCreateProductPayload } from "@/models/product.model";
 import {
-	sanitizeCreateSizes,
+	sanitizeCreateVariants,
 	validateCreateProduct,
 } from "@/utils/product.validation";
 import { CreateProductForm } from "./CreateProductForm";
@@ -18,9 +18,11 @@ export function CreateProductFormContainer() {
 	const { createProduct, error } = useProducts();
 	const [submitError, setSubmitError] = useState<string | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [showErrors, setShowErrors] = useState(false);
 
 	const handleSubmit = async () => {
 		setSubmitError(null);
+		setShowErrors(true);
 
 		const validationErrors = validateCreateProduct(data);
 		if (Object.values(validationErrors).some(Boolean)) {
@@ -32,13 +34,14 @@ export function CreateProductFormContainer() {
 
 		const payload: AdminCreateProductPayload = {
 			...data,
-			size: sanitizeCreateSizes(data.size),
+			size: sanitizeCreateVariants(data.size, data.quantity),
 		};
 
 		setIsSubmitting(true);
 		try {
 			await createProduct(payload);
 			reset();
+			setShowErrors(false);
 			router.refresh();
 		} catch (err) {
 			setSubmitError(
@@ -57,6 +60,7 @@ export function CreateProductFormContainer() {
 				onSubmit={() => void handleSubmit()}
 				submitLabel={isSubmitting ? "Guardando..." : "Agregar Producto"}
 				externalError={submitError ?? error}
+				showErrors={showErrors}
 			/>
 		</div>
 	);

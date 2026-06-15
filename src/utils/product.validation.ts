@@ -3,7 +3,7 @@ import type { AdminCreateProductPayload, Product, ProductSize } from "@/models/p
 import {
 	validateMinLength,
 	validateNumber,
-	validateProductSizes,
+	validateProductVariants,
 	validateRequired,
 	validateUrl,
 } from "./validation.util";
@@ -21,7 +21,7 @@ export interface ProductFieldErrors {
 	topLevelCategory?: string;
 	secondLevelCategory?: string;
 	thirdLevelCategory?: string;
-	sizes?: string;
+	variants?: string;
 }
 
 export function validateCreateProduct(
@@ -83,14 +83,14 @@ export function validateCreateProduct(
 	const thirdError = validateRequired(data.thirdLevelCategory);
 	if (thirdError) errors.thirdLevelCategory = "La categoría terciaria es obligatoria.";
 
-	const sizesError = validateProductSizes(data.size);
-	if (sizesError) errors.sizes = sizesError ?? "Debes agregar al menos una talla.";
+	const variantsError = validateProductVariants(data.size);
+	if (variantsError) errors.variants = variantsError ?? "Debes agregar al menos una variante.";
 
 	return errors;
 }
 
 export interface EditProductFieldErrors extends ProductFieldErrors {
-	sizes?: string;
+	variants?: string;
 }
 
 export function validateEditProduct(product: Product): EditProductFieldErrors {
@@ -140,11 +140,15 @@ export function validateEditProduct(product: Product): EditProductFieldErrors {
 	return errors;
 }
 
-export function sanitizeCreateSizes(sizes: ProductSize[]): ProductSize[] {
+export function sanitizeCreateVariants(
+	sizes: ProductSize[],
+	globalQuantity: number,
+): ProductSize[] {
+	const safeGlobalQuantity = Math.max(0, Math.floor(globalQuantity || 0));
 	return sizes
 		.map((size) => ({
 			name: size.name.trim(),
-			quantity: Math.max(0, Math.floor(size.quantity || 0)),
+			quantity: safeGlobalQuantity,
 		}))
-		.filter((size) => size.name.length > 0 && size.quantity > 0);
+		.filter((size) => size.name.length > 0);
 }

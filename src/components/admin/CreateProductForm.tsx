@@ -16,6 +16,7 @@ interface ProductFormProps {
 	onSubmit: () => void;
 	submitLabel?: string;
 	externalError?: string | null;
+	showErrors?: boolean;
 }
 
 export function CreateProductForm({
@@ -24,15 +25,16 @@ export function CreateProductForm({
 	onSubmit,
 	submitLabel = "Agregar Producto",
 	externalError,
+	showErrors = false,
 }: ProductFormProps) {
-	const errors = validateCreateProduct(data);
+	const errors = showErrors ? validateCreateProduct(data) : {};
 	const hasErrors = Object.values(errors).some(Boolean);
 	const sizes = data.size ?? [];
 
 	function handleAddSize() {
 		const newSizes: ProductSize[] = [
 			...sizes,
-			{ name: "", quantity: 1 },
+			{ name: "", quantity: data.quantity || 1 },
 		];
 		onChange("size", newSizes);
 	}
@@ -42,20 +44,9 @@ export function CreateProductForm({
 		onChange("size", next);
 	}
 
-	function handleUpdateSize(
-		index: number,
-		field: keyof ProductSize,
-		value: string | number,
-	) {
+	function handleUpdateSize(index: number, value: string) {
 		const next = sizes.map((size, idx) =>
-			idx === index
-				? {
-						...size,
-						[field]: field === "quantity"
-							? Number(value) || 0
-							: String(value),
-					}
-				: size,
+			idx === index ? { ...size, name: value } : size,
 		);
 		onChange("size", next);
 	}
@@ -145,7 +136,13 @@ export function CreateProductForm({
 				/>
 			</FormField>
 
-			<FormField id="quantity" label="Cantidad" required error={errors.quantity}>
+			<FormField
+				id="quantity"
+				label="Cantidad (stock global)"
+				required
+				error={errors.quantity}
+				hint="Stock total disponible para el producto."
+			>
 				<Input
 					id="quantity"
 					type="number"
@@ -249,10 +246,11 @@ export function CreateProductForm({
 				<div className="flex items-center justify-between">
 					<div>
 						<p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-600">
-							Tallas <span className="ml-1 text-danger-600">*</span>
+							Variantes <span className="ml-1 text-danger-600">*</span>
 						</p>
 						<p className="text-xs text-slate-500">
-							Agrega al menos una talla con su stock disponible.
+							Agrega al menos una variante del producto (almacenamiento,
+							memoria, color, etc.).
 						</p>
 					</div>
 					<Button
@@ -262,47 +260,30 @@ export function CreateProductForm({
 						onClick={handleAddSize}
 					>
 						<Plus className="h-4 w-4" />
-						<span>Agregar talla</span>
+						<span>Agregar variante</span>
 					</Button>
 				</div>
 
 				{sizes.length === 0 ? (
 					<div className="rounded-xl border border-dashed border-slate-300 bg-slate-50/60 p-4 text-center text-xs text-slate-500">
-						Todavía no agregaste tallas. Necesitas al menos una para vender el
-						producto.
+						Todavía no agregaste variantes. Necesitas al menos una para registrar
+						el producto.
 					</div>
 				) : (
 					<div className="space-y-2">
 						{sizes.map((size, index) => (
 							<div
-								key={`size-${index}`}
+								key={`variant-${index}`}
 								className="flex items-end gap-2 rounded-xl border border-slate-200 bg-white p-3"
 							>
 								<div className="flex-1">
-									<FormField id={`size-name-${index}`} label="Nombre">
+									<FormField id={`variant-name-${index}`} label="Nombre">
 										<Input
-											id={`size-name-${index}`}
+											id={`variant-name-${index}`}
 											type="text"
 											value={size.name}
-											onChange={(e) =>
-												handleUpdateSize(index, "name", e.target.value)
-											}
-											placeholder="Ej: S, M, 256GB"
-										/>
-									</FormField>
-								</div>
-								<div className="w-28">
-									<FormField id={`size-qty-${index}`} label="Cantidad">
-										<Input
-											id={`size-qty-${index}`}
-											type="number"
-											min="1"
-											step="1"
-											value={size.quantity}
-											onChange={(e) =>
-												handleUpdateSize(index, "quantity", e.target.value)
-											}
-											placeholder="0"
+											onChange={(e) => handleUpdateSize(index, e.target.value)}
+											placeholder="Ej: 256GB, 16GB RAM, Negro"
 										/>
 									</FormField>
 								</div>
@@ -310,7 +291,7 @@ export function CreateProductForm({
 									type="button"
 									variant="ghost"
 									size="icon-sm"
-									aria-label="Eliminar talla"
+									aria-label="Eliminar variante"
 									className="text-danger-600 hover:bg-danger-50 hover:text-danger-700"
 									onClick={() => handleRemoveSize(index)}
 								>
@@ -321,9 +302,9 @@ export function CreateProductForm({
 					</div>
 				)}
 
-				{errors.sizes ? (
+				{errors.variants ? (
 					<p className="mt-1.5 text-xs font-medium text-danger-600">
-						{errors.sizes}
+						{errors.variants}
 					</p>
 				) : null}
 			</div>
@@ -339,12 +320,12 @@ export function CreateProductForm({
 				onClick={onSubmit}
 				className="w-full"
 				size="lg"
-				disabled={hasErrors}
+				disabled={showErrors && hasErrors}
 			>
 				{submitLabel}
 			</Button>
 
-			{hasErrors ? (
+			{showErrors && hasErrors ? (
 				<p className="text-center text-xs text-slate-500">
 					Revisa los campos marcados antes de guardar el producto.
 				</p>

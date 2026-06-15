@@ -5,13 +5,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-	"group/button inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-transparent bg-clip-padding text-sm font-semibold whitespace-nowrap transition-all duration-200 outline-none select-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background active:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-danger-500 aria-invalid:ring-2 aria-invalid:ring-danger-500/30 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg]:transition-transform [&_svg]:duration-200 group-hover/button:[&_svg]:translate-x-0.5",
+	"group/button inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-transparent bg-clip-padding text-sm font-semibold whitespace-nowrap transition-colors duration-200 outline-none select-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background active:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-danger-500 aria-invalid:ring-2 aria-invalid:ring-danger-500/30 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 [&_svg]:transition-transform [&_svg]:duration-200 group-hover/button:[&_svg]:translate-x-0.5",
 	{
 		variants: {
 			variant: {
 				default:
-					"bg-gradient-to-br from-brand-600 to-brand-700 text-white shadow-[0_8px_24px_-12px_oklch(0.43_0.18_245_/_0.55)] hover:from-brand-500 hover:to-brand-700 hover:shadow-[0_14px_32px_-12px_oklch(0.43_0.18_245_/_0.7)] focus-visible:ring-brand-500",
-				brand: "bg-gradient-to-br from-brand-600 to-brand-700 text-white shadow-[0_8px_24px_-12px_oklch(0.43_0.18_245_/_0.55)] hover:from-brand-500 hover:to-brand-700 hover:shadow-[0_14px_32px_-12px_oklch(0.43_0.18_245_/_0.7)] focus-visible:ring-brand-500",
+					"bg-brand-600 text-white hover:bg-brand-700 focus-visible:ring-brand-500",
+				brand: "bg-brand-600 text-white hover:bg-brand-700 focus-visible:ring-brand-500",
 				secondary:
 					"border border-slate-200 bg-white text-slate-900 hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 focus-visible:ring-brand-500",
 				outline:
@@ -22,7 +22,7 @@ const buttonVariants = cva(
 				destructive:
 					"bg-danger-600 text-white hover:bg-danger-700 focus-visible:ring-danger-500",
 				success:
-					"bg-success-600 text-white shadow-[0_8px_24px_-12px_oklch(0.58_0.16_155_/_0.55)] hover:bg-success-700 focus-visible:ring-success-500",
+					"bg-success-600 text-white hover:bg-success-700 focus-visible:ring-success-500",
 				link: "text-brand-700 underline-offset-4 hover:underline hover:text-brand-600 px-0",
 			},
 			size: {

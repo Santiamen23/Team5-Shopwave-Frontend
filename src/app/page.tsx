@@ -5,7 +5,11 @@ import Footer from "@/components/layout/Footer";
 import Hero from "@/components/layout/Hero";
 import Navbar from "@/components/layout/Navbar";
 import { ProductsSection } from "@/components/products/products-section";
+import { TrustStats } from "@/components/home/trust-stats";
+import { HomeCTA } from "@/components/home/home-cta";
 import { getProducts } from "@/services/product.service";
+import type { CatalogProduct } from "@/components/products/product-filters";
+import type { Product } from "@/models/product.model";
 
 interface CategoryTile {
 	href: string;
@@ -51,18 +55,63 @@ const CATEGORIES: CategoryTile[] = [
 	},
 ];
 
+function toCatalog(products: Product[]): CatalogProduct[] {
+	return products.map((product) => ({
+		id: product.id,
+		title: product.title,
+		price: product.price,
+		discountedPrice: product.discountedPrice,
+		discountPersent: product.discountPersent,
+		imageUrl: product.imageUrl,
+		brand: product.brand,
+		color: product.color,
+		quantity: product.quantity,
+		category: product.category,
+		createdAt: product.createdAt,
+	}));
+}
+
+function sortByCreatedDesc(products: CatalogProduct[]) {
+	return [...products].sort((a, b) => {
+		const aTime = a.createdAt ? Date.parse(a.createdAt) : 0;
+		const bTime = b.createdAt ? Date.parse(b.createdAt) : 0;
+		return bTime - aTime;
+	});
+}
+
 export default async function HomePage() {
-	const products = await getProducts().catch(() => []);
+	const products = (await getProducts().catch(() => [])) as Product[];
+
+	const catalogProducts = toCatalog(products);
+	const newestProducts = sortByCreatedDesc(catalogProducts);
+	const onSaleCount = catalogProducts.filter(
+		(product) => product.discountedPrice < product.price,
+	).length;
+	const totalBrands = new Set(
+		catalogProducts.map((product) => product.brand).filter(Boolean),
+	).size;
+	const totalCategories = new Set(
+		catalogProducts
+			.map((product) => product.category?.parentCategory?.parentCategory?.name)
+			.filter(Boolean),
+	).size;
 
 	return (
 		<main className="min-h-screen">
 			<Navbar />
 			<Hero />
 
+			<TrustStats
+				totalProducts={catalogProducts.length}
+				totalBrands={totalBrands}
+				totalCategories={Math.max(totalCategories, 1)}
+				onSaleCount={onSaleCount}
+			/>
+
 			<section className="px-4 pt-0 pb-8 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
 				<div className="mx-auto w-full max-w-7xl">
 					<ProductsSection
-						products={products}
+						products={newestProducts}
 						title="Productos destacados"
 						description="Una selección rápida para empezar a comprar sin recorrer todo el catálogo."
 						limit={12}
@@ -119,19 +168,7 @@ export default async function HomePage() {
 				</div>
 			</section>
 
-			<section className="px-4 py-10 sm:px-6 lg:px-8">
-				<div className="mx-auto w-full max-w-7xl">
-					<div className="rounded-[2rem] border border-dashed border-slate-300 bg-gradient-to-br from-white via-brand-50/40 to-info-50/40 p-8 text-center text-sm text-slate-600 sm:p-12">
-						<p className="text-base font-semibold text-slate-800">
-							Lo más buscado
-						</p>
-						<p className="mt-2 text-sm text-slate-500">
-							Aún no hay productos destacados en esta sección. Mientras tanto,
-							puedes explorar todo el catálogo.
-						</p>
-					</div>
-				</div>
-			</section>
+			<HomeCTA />
 
 			<Footer />
 		</main>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { CheckCircle2, CreditCard, MapPin, ShoppingBag, Lock } from "lucide-react";
@@ -13,10 +13,11 @@ import type { PaymentMethod } from "@/models/order.model";
 import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import { formatCurrency } from "@/utils/currency.util";
+import { validatePaymentDetails } from "@/utils/checkout.validation";
 import {
-	validatePaymentDetails,
-	validateShippingDetails,
-} from "@/utils/checkout.validation";
+	ShippingAddressSelector,
+	type AddressSelection,
+} from "./ShippingAddressSelector";
 
 const PAYMENT_METHODS: Array<{ value: PaymentMethod; label: string }> = [
 	{ value: "CREDIT_CARD", label: "Tarjeta de crédito" },
@@ -24,31 +25,11 @@ const PAYMENT_METHODS: Array<{ value: PaymentMethod; label: string }> = [
 	{ value: "PAYPAL", label: "PayPal" },
 ];
 
-interface ShippingFormState {
-	firstName: string;
-	lastName: string;
-	streetAddress: string;
-	city: string;
-	state: string;
-	zipCode: string;
-	mobile: string;
-}
-
 interface PaymentFormState {
 	method: PaymentMethod;
 	cardholderName: string;
 	cardNumber: string;
 }
-
-const EMPTY_SHIPPING: ShippingFormState = {
-	firstName: "",
-	lastName: "",
-	streetAddress: "",
-	city: "",
-	state: "",
-	zipCode: "",
-	mobile: "",
-};
 
 const EMPTY_PAYMENT: PaymentFormState = {
 	method: "CREDIT_CARD",
@@ -59,19 +40,7 @@ const EMPTY_PAYMENT: PaymentFormState = {
 export default function CheckoutPageClient() {
 	const { user } = useAuth();
 	const { cart, isLoading, checkout } = useCart();
-	const [shipping, setShipping] = useState<ShippingFormState>(() => {
-		if (!user) return EMPTY_SHIPPING;
-		const saved = user.addresses?.[0];
-		return {
-			firstName: user.firstName ?? "",
-			lastName: user.lastName ?? "",
-			streetAddress: saved?.streetAddress ?? "",
-			city: saved?.city ?? "",
-			state: saved?.state ?? "",
-			zipCode: saved?.zipCode ?? "",
-			mobile: saved?.mobile ?? user.mobile ?? "",
-		};
-	});
+	const [addressSelection, setAddressSelection] = useState<AddressSelection>(null);
 	const [payment, setPayment] = useState<PaymentFormState>(EMPTY_PAYMENT);
 	const [showShippingErrors, setShowShippingErrors] = useState(false);
 	const [showPaymentErrors, setShowPaymentErrors] = useState(false);
@@ -80,26 +49,21 @@ export default function CheckoutPageClient() {
 	const [error, setError] = useState<string | null>(null);
 	const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
-	const shippingErrors = useMemo(
-		() => validateShippingDetails(shipping),
-		[shipping],
-	);
+	const handleAddressChange = useCallback((selection: AddressSelection) => {
+		setAddressSelection(selection);
+	}, []);
 
 	const paymentErrors = useMemo(
 		() => validatePaymentDetails(payment.method, payment.cardholderName, payment.cardNumber),
 		[payment.method, payment.cardholderName, payment.cardNumber],
 	);
 
-	const shippingIsValid = Object.keys(shippingErrors).length === 0;
+	const shippingIsValid = addressSelection !== null;
 	const paymentIsValid = Object.keys(paymentErrors).length === 0;
 	const canCheckout =
 		cart.cartItems.length > 0 &&
 		!isProcessing &&
 		!receipt;
-
-	function handleShippingChange(field: keyof ShippingFormState, value: string) {
-		setShipping((prev) => ({ ...prev, [field]: value }));
-	}
 
 	function handlePaymentChange(field: keyof PaymentFormState, value: string) {
 		setPayment((prev) => ({ ...prev, [field]: value as PaymentFormState[typeof field] }));
@@ -109,9 +73,9 @@ export default function CheckoutPageClient() {
 		setError(null);
 		setStatusMessage(null);
 
-		if (!shippingIsValid) {
+		if (!addressSelection) {
 			setShowShippingErrors(true);
-			setError("Completa los datos de envío antes de continuar.");
+			setError("Selecciona o agrega una dirección de envío antes de continuar.");
 			return;
 		}
 
@@ -125,15 +89,11 @@ export default function CheckoutPageClient() {
 
 		try {
 			const checkoutReceipt = await checkout({
-				shipping: {
-					firstName: shipping.firstName,
-					lastName: shipping.lastName,
-					streetAddress: shipping.streetAddress,
-					city: shipping.city,
-					state: shipping.state,
-					zipCode: shipping.zipCode,
-					mobile: shipping.mobile,
-				},
+				shipping: addressSelection.address,
+				addressId:
+					addressSelection.type === "existing"
+						? addressSelection.addressId
+						: undefined,
 				paymentMethod: payment.method,
 				cardholderName: payment.cardholderName,
 				cardNumber: payment.cardNumber.replace(/\s+/g, ""),
@@ -204,66 +164,21 @@ export default function CheckoutPageClient() {
 								<MapPin className="h-4 w-4 text-brand-600" />
 								Datos de envío
 							</CardTitle>
-							<CardDescription>Estos campos se enviarán al backend en la orden.</CardDescription>
+							<CardDescription>
+								{user?.addresses?.length
+									? "Selecciona una dirección guardada o agrega una nueva."
+									: "Agrega la dirección donde quieres recibir tu pedido."}
+							</CardDescription>
 						</CardHeader>
-						<CardContent className="grid gap-4 text-sm text-slate-600 sm:grid-cols-2">
-							<FormField id="firstName" label="Nombre" required error={showShippingErrors ? shippingErrors.firstName : undefined}>
-								<Input
-									id="firstName"
-									value={shipping.firstName}
-									onChange={(event) => handleShippingChange("firstName", event.target.value)}
-									invalid={Boolean(showShippingErrors && shippingErrors.firstName)}
-								/>
-							</FormField>
-							<FormField id="lastName" label="Apellido" required error={showShippingErrors ? shippingErrors.lastName : undefined}>
-								<Input
-									id="lastName"
-									value={shipping.lastName}
-									onChange={(event) => handleShippingChange("lastName", event.target.value)}
-									invalid={Boolean(showShippingErrors && shippingErrors.lastName)}
-								/>
-							</FormField>
-							<FormField id="streetAddress" label="Dirección" required error={showShippingErrors ? shippingErrors.streetAddress : undefined} className="sm:col-span-2">
-								<Input
-									id="streetAddress"
-									value={shipping.streetAddress}
-									onChange={(event) => handleShippingChange("streetAddress", event.target.value)}
-									invalid={Boolean(showShippingErrors && shippingErrors.streetAddress)}
-								/>
-							</FormField>
-							<FormField id="city" label="Ciudad" required error={showShippingErrors ? shippingErrors.city : undefined}>
-								<Input
-									id="city"
-									value={shipping.city}
-									onChange={(event) => handleShippingChange("city", event.target.value)}
-									invalid={Boolean(showShippingErrors && shippingErrors.city)}
-								/>
-							</FormField>
-							<FormField id="state" label="Estado / Departamento" required error={showShippingErrors ? shippingErrors.state : undefined}>
-								<Input
-									id="state"
-									value={shipping.state}
-									onChange={(event) => handleShippingChange("state", event.target.value)}
-									invalid={Boolean(showShippingErrors && shippingErrors.state)}
-								/>
-							</FormField>
-							<FormField id="zipCode" label="Código postal" required error={showShippingErrors ? shippingErrors.zipCode : undefined}>
-								<Input
-									id="zipCode"
-									value={shipping.zipCode}
-									onChange={(event) => handleShippingChange("zipCode", event.target.value)}
-									invalid={Boolean(showShippingErrors && shippingErrors.zipCode)}
-								/>
-							</FormField>
-							<FormField id="mobile" label="Celular" required error={showShippingErrors ? shippingErrors.mobile : undefined}>
-								<Input
-									id="mobile"
-									type="tel"
-									value={shipping.mobile}
-									onChange={(event) => handleShippingChange("mobile", event.target.value)}
-									invalid={Boolean(showShippingErrors && shippingErrors.mobile)}
-								/>
-							</FormField>
+						<CardContent>
+							<ShippingAddressSelector
+								addresses={user?.addresses ?? []}
+								userFirstName={user?.firstName}
+								userLastName={user?.lastName}
+								userMobile={user?.mobile}
+								onChange={handleAddressChange}
+								showErrors={showShippingErrors}
+							/>
 						</CardContent>
 					</Card>
 
@@ -345,9 +260,11 @@ export default function CheckoutPageClient() {
 							<div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
 								<MapPin className="h-5 w-5 text-brand-600" />
 								<p>
-									{shippingIsValid
-										? "La dirección ingresada se enviará al backend en el payload de la orden."
-										: "Completa los datos de envío para habilitar el botón de compra."}
+									{addressSelection
+										? addressSelection.type === "existing"
+											? "Usarás una dirección guardada. No se creará una nueva."
+											: "Esta dirección se usará solo para este pedido."
+										: "Selecciona o agrega una dirección de envío para habilitar el botón de compra."}
 								</p>
 							</div>
 

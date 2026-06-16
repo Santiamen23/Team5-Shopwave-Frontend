@@ -58,6 +58,7 @@ export interface Order {
 }
 
 export interface CreateOrderPayload {
+	addressId?: number;
 	firstName: string;
 	lastName: string;
 	streetAddress: string;

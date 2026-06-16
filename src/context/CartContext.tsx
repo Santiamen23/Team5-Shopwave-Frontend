@@ -40,6 +40,7 @@ export interface CheckoutShippingDetails {
 
 export interface CheckoutInput {
 	shipping: CheckoutShippingDetails;
+	addressId?: number;
 	paymentMethod: import("@/models/order.model").PaymentMethod;
 	cardholderName: string;
 	cardNumber: string;
@@ -556,6 +557,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 		const order = await requestJson<Order>("/api/orders", {
 			method: "POST",
 			body: JSON.stringify({
+				...(input.addressId ? { addressId: input.addressId } : {}),
 				firstName: shipping.firstName,
 				lastName: shipping.lastName,
 				streetAddress: shipping.streetAddress,

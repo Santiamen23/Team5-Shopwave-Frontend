@@ -119,8 +119,7 @@ export function CreateProductForm({
 			<FormField
 				id="discountedPrice"
 				label="Precio con descuento"
-				required
-				error={errors.discountedPrice}
+				hint="Se calcula automáticamente aplicando el descuento al precio."
 			>
 				<Input
 					id="discountedPrice"
@@ -128,11 +127,10 @@ export function CreateProductForm({
 					min="0"
 					step="0.01"
 					value={data.discountedPrice}
-					onChange={(e) =>
-						onChange("discountedPrice", Number(e.target.value) || 0)
-					}
+					readOnly
+					disabled
 					placeholder="0.00"
-					invalid={Boolean(errors.discountedPrice)}
+					className="cursor-not-allowed bg-slate-50"
 				/>
 			</FormField>
 

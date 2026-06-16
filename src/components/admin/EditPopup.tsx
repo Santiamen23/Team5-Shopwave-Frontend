@@ -36,10 +36,20 @@ export function EditPopup({ product, onEdit }: EditPopupProps) {
 
 	const handleNumberChange = (field: keyof Product, value: string) => {
 		const parsedValue = value === "" ? 0 : Number(value);
-		setEditData((current) => ({
-			...current,
-			[field]: Number.isNaN(parsedValue) ? 0 : parsedValue,
-		}));
+		const safeValue = Number.isNaN(parsedValue) ? 0 : parsedValue;
+		setEditData((current) => {
+			const next: Product = { ...current, [field]: safeValue };
+
+			if (field === "price" || field === "discountPersent") {
+				const price = field === "price" ? safeValue : current.price;
+				const rawDiscount = field === "discountPersent" ? safeValue : current.discountPersent;
+				const clampedDiscount = Math.max(0, Math.min(100, rawDiscount));
+				next.discountedPrice =
+					Math.round(price * (1 - clampedDiscount / 100) * 100) / 100;
+			}
+
+			return next;
+		});
 	};
 
 	function clearFieldError(field: keyof EditProductFieldErrors) {
@@ -131,19 +141,16 @@ export function EditPopup({ product, onEdit }: EditPopupProps) {
 						<FormField
 							id="discountedPrice"
 							label="Precio con descuento"
-							required
-							error={errors.discountedPrice}
+							hint="Se calcula automáticamente aplicando el descuento al precio."
 						>
 							<Input
 								id="discountedPrice"
 								type="number"
 								step="0.01"
 								value={editData.discountedPrice}
-								onChange={(e) => {
-									handleNumberChange("discountedPrice", e.target.value);
-									clearFieldError("discountedPrice");
-								}}
-								invalid={Boolean(errors.discountedPrice)}
+								readOnly
+								disabled
+								className="cursor-not-allowed bg-slate-50"
 							/>
 						</FormField>
 						<FormField

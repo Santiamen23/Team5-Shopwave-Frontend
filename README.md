@@ -16,7 +16,7 @@ ShopWave Fusion es el frontend profesional de un e-commerce académico construid
 - Historial de órdenes para seguimiento de transacciones previas.
 - Perfil de usuario con acceso a información de sesión y datos asociados.
 
-### Módulo de Administrador
+### Módulo de Administrador (Nuevo)
 
 - Dashboard administrativo orientado a operación y monitoreo.
 - CRUD completo de productos con gestión de inventario y control de stock.
@@ -29,6 +29,46 @@ ShopWave Fusion es el frontend profesional de un e-commerce académico construid
 - Gestión explícita de estados de carga con loaders y skeletons.
 - Manejo robusto de errores con respuestas tipadas y mensajes controlados.
 - Protección de rutas mediante guards y capa de middleware/proxy en el frontend.
+
+#### Formulario de Autenticación Mejorado 
+- LoginForm con validación de formularios y UI moderna con iconos de Lucide.
+- RegisterForm con campos mejorados, soporte para número de móvil y validación en tiempo real.
+
+#### Componentes de Carrito y Checkout Mejorados 
+- CartPageClient con detalles de productos completos, controles de cantidad y eliminación.
+- CheckoutPageClient con selector de direcciones de envío y métodos de pago integrados.
+- ShippingAddressSelector para gestión eficiente de direcciones de entrega.
+
+#### Módulo de Administración Ampliado
+- AdminOrdersView con tabla de órdenes enriquecida, filtros avanzados y actualizaciones de estado.
+- Admin dashboard con vistas detalladas de órdenes, productos y rendimiento del sistema.
+- Paneles CRUD completos para gestión de inventario y control de stock.
+
+#### Componentes de Interfaz de Usuario Mejorados 
+- Hero y componentes de landing page con animaciones y diseño moderno.
+- Navbar con estilo mejorado y componentes de UI reutilizables.
+- Footer responsive con componentes de layout modular.
+
+#### Componentes de Productos Mejorados 
+- product-detail con información completa de productos y variantes.
+- ProductFiltersPanel y ProductFiltersSheet con filtros avanzados.
+- products-section y SortMenu con listados de productos ordenados.
+
+#### Componentes de Órdenes y Perfil Mejorados 
+- OrderHistoryView con detalles expandidos y visualización de pagos.
+- ProfileView con gestión integrada de direcciones y métodos de pago.
+- CustomerAvatar con información enriquecida de clientes.
+
+#### Contextos y Guards Mejorados 
+- AuthContext con administración mejorada de sesiones y gestión de tokens.
+- CartContext con validaciones de checkout y lógica de procesamiento mejorada.
+- ProductContext para gestión global de datos de productos.
+- AuthGuard y AdminGuard con control de acceso mejorado y redirecciones.
+
+#### Utilidades y Herramientas Mejoradas 
+- currency.util con formateo mejorado de monedas.
+- checkout.validation con validaciones mejoradas de formularios.
+- Funciones puras de lib/auth para manejo seguro de sesiones.
 
 ## Arquitectura de Software y Estructura de Carpetas
 
@@ -78,7 +118,16 @@ shopwavefusionfrontend/
 ```
 
 - `src/app/`: capa de enrutamiento del App Router. Aquí viven las páginas, layouts y route handlers del dominio funcional.
+- `src/admin/`: panel de control administrativo con gestión de usuarios y datos del sistema.
 - `src/components/`: biblioteca de componentes reutilizables y desacoplados por dominio visual y funcional.
+- `src/components/auth/`: formularios de autenticación (LoginForm, RegisterForm).
+- `src/components/cart/`: componentes de carrito y checkout (CartPageClient, CheckoutPageClient).
+- `src/components/home/`: componentes de landing page (Hero, home-cta, trust-stats).
+- `src/components/layout/`: componentes de layout (Navbar, Hero, Footer).
+- `src/components/orders/`: componentes de órdenes (OrderHistoryView, CustomerAvatar).
+- `src/components/products/`: componentes de productos (product-detail, ProductFiltersPanel, etc.).
+- `src/components/profile/`: componente de vista de perfil (ProfileView).
+- `src/components/ui/`: componentes de UI básicos (badge, button, input, etc.).
 - `src/context/`: estado global con Context API para sesión, carrito y datos compartidos de la aplicación.
 - `src/guards/`: componentes de protección de rutas que aplican control de acceso en cliente.
 - `src/hooks/`: lógica reutilizable de estado y negocio para auth, carrito y catálogo.
@@ -95,6 +144,9 @@ shopwavefusionfrontend/
 - **Framework:** Next.js con App Router.
 - **Lenguaje:** TypeScript.
 - **Estilos:** Tailwind CSS.
+- **Component Library:** shadcn/ui con componentes UI headless accesibles.
+- **Iconos:** Lucide React iconografía moderna y ligera.
+- **Herramientas UI:** tailwind-merge y tw-animate-css para clases utilitarias.
 - **Cliente HTTP:** Fetch API centralizada en servicios, con compatibilidad conceptual para Axios si el proyecto lo requiere.
 - **Seguridad:** JSON Web Tokens (JWT).
 - **Persistencia de sesión:** Cookies HTTP-only para el token de autenticación.
@@ -103,7 +155,7 @@ shopwavefusionfrontend/
 
 ### Requisitos
 
-- Node.js LTS.
+- Node.js LTS (v20 o superior recomendado para compatibilidad con Next.js 16.2.6).
 - Git.
 
 ### Instalación
@@ -136,6 +188,16 @@ shopwavefusionfrontend/
 4. Ajusta la URL de la API backend según tu entorno local o despliegue.
 
 > **Nota:** El frontend lee `NEXT_PUBLIC_API_URL` para resolver el backend. Si tu entorno ya usa `NEXT_PUBLIC_API_BASE_URL`, la capa de servicios también la soporta como fallback.
+
+### Actualización (2026)
+
+El proyecto ha evolucionado con nuevas dependencias en 2026:
+
+- **shadcn/ui** (v4.7.0) - Biblioteca moderna de componentes de UI con Tailwind CSS
+- **Lucide React** (v1.16.0) - Iconografía moderna y ligera integrada con React
+- **tailwind-merge** (v3.6.0) y **tw-animate-css** (v1.4.0) - Herramientas avanzadas de clases utilitarias y animaciones
+
+Estas dependencias proporcionan componentes UI accesibles, una amplia gama de iconos modernos y capacidades avanzadas de animación.
 
 ### Archivo `.env.local.example`
 

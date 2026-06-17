@@ -18,16 +18,16 @@ export function ProductCard({ product }: ProductCardProps) {
 
 	return (
 		<Card className="group overflow-hidden border-slate-200/80 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-[0_28px_60px_-32px_oklch(0.43_0.18_245_/_0.45)]">
-			<div className="relative aspect-[4/5] bg-slate-50 p-4 sm:aspect-square sm:p-5 lg:p-6">
+			<div className="relative aspect-square bg-slate-50 p-1.5 sm:p-2">
 				{onSale ? (
 					<Badge
 						variant="success"
-						className="absolute top-3 left-3 z-10 shadow-sm"
+						className="absolute top-1.5 left-1.5 z-10 px-1.5 py-0 text-[0.55rem] shadow-sm"
 					>
 						Oferta
 					</Badge>
 				) : null}
-				<div className="relative h-full w-full overflow-hidden rounded-2xl bg-white/80">
+				<div className="relative h-full w-full overflow-hidden rounded-lg bg-white/80">
 					<Image
 						src={product.imageUrl}
 						alt={product.title}
@@ -38,29 +38,31 @@ export function ProductCard({ product }: ProductCardProps) {
 					/>
 				</div>
 			</div>
-			<CardContent className="space-y-4 p-4 sm:p-5">
-				<div className="flex items-start justify-between gap-3">
-					<Badge variant="brand">{product.brand}</Badge>
-					<span className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-slate-500 sm:text-xs">
+			<CardContent className="space-y-1.5 p-2 sm:p-2.5">
+				<div className="flex items-start justify-between gap-1.5">
+					<Badge variant="brand" className="px-1.5 py-0 text-[0.6rem]">
+						{product.brand}
+					</Badge>
+					<span className="text-[0.55rem] font-semibold uppercase tracking-[0.14em] text-slate-500">
 						{product.color}
 					</span>
 				</div>
-				<div className="space-y-2">
-					<h3 className="line-clamp-2 text-sm font-semibold text-slate-950 sm:text-base">
+				<div className="space-y-1">
+					<h3 className="line-clamp-2 text-[0.7rem] font-semibold leading-tight text-slate-950 sm:text-xs">
 						{product.title}
 					</h3>
-					<div className="flex flex-wrap items-baseline gap-2 sm:gap-3">
-						<span className="text-lg font-semibold tracking-tight text-slate-950 sm:text-xl">
+					<div className="flex flex-wrap items-baseline gap-1">
+						<span className="text-sm font-semibold tracking-tight text-slate-950 sm:text-base">
 							{formatCurrency(product.discountedPrice)}
 						</span>
 						{onSale ? (
-							<span className="text-xs text-slate-400 line-through sm:text-sm">
+							<span className="text-[0.6rem] text-slate-400 line-through sm:text-[0.65rem]">
 								{formatCurrency(product.price)}
 							</span>
 						) : null}
 					</div>
 				</div>
-				<Button asChild className="w-full">
+				<Button asChild size="sm" className="h-7 w-full text-[0.7rem] sm:h-8 sm:text-xs">
 					<Link href={`/products/${product.id}`}>Ver detalle</Link>
 				</Button>
 			</CardContent>

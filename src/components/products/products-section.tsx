@@ -57,6 +57,7 @@ export function ProductsSection({
 	}));
 	const [currentPage, setCurrentPage] = useState(0);
 	const [pageSize, setPageSize] = useState(3);
+	const [isPaused, setIsPaused] = useState(false);
 	const deferredQuery = useDeferredValue(filters.query);
 
 	const facets = useMemo(() => extractFacets(products), [products]);
@@ -119,7 +120,7 @@ export function ProductsSection({
 	}, []);
 
 	useEffect(() => {
-		if (!isCarousel || totalPages <= 1) {
+		if (!isCarousel || totalPages <= 1 || isPaused) {
 			return;
 		}
 
@@ -128,7 +129,7 @@ export function ProductsSection({
 		}, 5000);
 
 		return () => window.clearInterval(intervalId);
-	}, [isCarousel, totalPages]);
+	}, [isCarousel, totalPages, isPaused, activePage]);
 
 	const handlePreviousPage = () => {
 		setCurrentPage((previousPage) => (previousPage - 1 + totalPages) % totalPages);
@@ -167,47 +168,58 @@ export function ProductsSection({
 			<CardContent className="space-y-6 p-4 sm:p-6 lg:p-8">
 				{showFilters ? (
 					<div className="space-y-4">
-						<div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-							{enableSearch ? (
-								<div className="flex-1">
-									<SearchBar
-										label="Buscar producto"
-										value={filters.query}
-										onChange={(event) =>
-											setFilters((prev) => ({ ...prev, query: event.target.value }))
-										}
-										placeholder="Busca por nombre, marca o color"
-										resultText={`${filteredProducts.length} de ${products.length} ${
-											filteredProducts.length === 1 ? "resultado" : "resultados"
-										}`}
-									/>
-								</div>
-							) : (
-								<div className="flex-1 text-sm text-slate-600">
-									<span className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-brand-700">
-										Resultados
-									</span>
-									<p className="mt-1 text-base font-semibold text-slate-900">
-										{filteredProducts.length} de {products.length} productos
-									</p>
-								</div>
-							)}
-							{enableFilters ? (
-								<div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-									<SortMenu
-										value={filters.sort}
-										onChange={(sort) =>
-											setFilters((prev) => ({ ...prev, sort }))
-										}
-									/>
-									<ProductFiltersSheet
-										filters={filters}
-										facets={facets}
-										onChange={setFilters}
-										onClear={handleClearFilters}
-										activeCount={activeCount}
-									/>
-								</div>
+						<div className="rounded-2xl border border-slate-200/80 bg-slate-50/40 p-2 sm:p-2.5">
+							<div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+								{enableSearch ? (
+									<div className="min-w-0 flex-1">
+										<SearchBar
+											value={filters.query}
+											onChange={(event) =>
+												setFilters((prev) => ({ ...prev, query: event.target.value }))
+											}
+											placeholder="Buscar por nombre, marca o color"
+											onClear={() =>
+												setFilters((prev) => ({ ...prev, query: "" }))
+											}
+										/>
+									</div>
+								) : null}
+								{enableFilters ? (
+									<div className="flex shrink-0 items-center gap-2">
+										<SortMenu
+											value={filters.sort}
+											onChange={(sort) =>
+												setFilters((prev) => ({ ...prev, sort }))
+											}
+										/>
+										<ProductFiltersSheet
+											filters={filters}
+											facets={facets}
+											onChange={setFilters}
+											onClear={handleClearFilters}
+											activeCount={activeCount}
+										/>
+									</div>
+								) : null}
+							</div>
+						</div>
+
+						<div className="flex flex-wrap items-center justify-between gap-3 px-1">
+							<p className="text-xs text-slate-500">
+								<span className="font-semibold text-slate-700">
+									{filteredProducts.length}
+								</span>{" "}
+								de {products.length}{" "}
+								{filteredProducts.length === 1 ? "producto" : "productos"}
+							</p>
+							{enableFilters && activeCount > 0 ? (
+								<button
+									type="button"
+									onClick={handleClearFilters}
+									className="text-xs font-semibold text-brand-700 transition-colors hover:text-brand-600"
+								>
+									Limpiar filtros
+								</button>
 							) : null}
 						</div>
 
@@ -222,7 +234,11 @@ export function ProductsSection({
 
 				{visibleProducts.length > 0 ? (
 					isCarousel ? (
-						<section className="space-y-4">
+						<section
+							className="space-y-4"
+							onMouseEnter={() => setIsPaused(true)}
+							onMouseLeave={() => setIsPaused(false)}
+						>
 							<div className="overflow-hidden">
 								<div
 									className="flex transition-transform duration-500 ease-out"
@@ -359,8 +375,8 @@ function ActiveFilterChips({
 	if (chips.length === 0) return null;
 
 	return (
-		<div className="flex flex-wrap items-center gap-2">
-			<span className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-slate-500">
+		<div className="flex flex-wrap items-center gap-1.5">
+			<span className="mr-1 text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-slate-400">
 				Activos
 			</span>
 			{chips.map((chip) => (
@@ -369,12 +385,14 @@ function ActiveFilterChips({
 					type="button"
 					onClick={chip.onRemove}
 					className={cn(
-						"inline-flex items-center gap-1.5 rounded-full border border-brand-200 bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700 transition-colors",
-						"hover:bg-brand-100",
+						"group inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white pl-3 pr-1.5 py-1 text-xs font-medium text-slate-700 transition-all duration-200",
+						"hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700",
 					)}
 				>
 					{chip.label}
-					<X className="h-3 w-3" />
+					<span className="grid h-4 w-4 place-items-center rounded-full bg-slate-100 text-slate-500 transition-colors group-hover:bg-brand-200 group-hover:text-brand-700">
+						<X className="h-2.5 w-2.5" />
+					</span>
 				</button>
 			))}
 		</div>

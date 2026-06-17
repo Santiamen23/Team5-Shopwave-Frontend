@@ -2,7 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Sparkles, Zap, ShieldCheck, Truck } from "lucide-react";
+import {
+	ShieldCheck,
+	Sparkles,
+	Truck,
+	Zap,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -11,28 +16,28 @@ export default function Hero() {
 	const { isAuthenticated, isLoading } = useAuth();
 
 	return (
-		<section className="px-4 pt-6 pb-4 sm:px-6 sm:pt-8 sm:pb-8 lg:px-8 lg:pt-10 lg:pb-12">
+		<section className="px-4 pt-6 pb-3 sm:px-6 sm:pt-7 sm:pb-4 lg:px-8 lg:pt-8 lg:pb-6">
 			<div className="mx-auto max-w-7xl">
-				<div className="relative overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/85 px-5 py-8 shadow-[0_28px_70px_-42px_oklch(0.18_0.02_250_/_0.22)] backdrop-blur sm:rounded-[2.5rem] sm:px-8 sm:py-10 lg:px-10 lg:py-14">
+				<div className="relative overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white/85 px-5 py-6 shadow-[0_28px_70px_-42px_oklch(0.18_0.02_250_/_0.22)] backdrop-blur sm:rounded-[2.5rem] sm:px-8 sm:py-8 lg:px-10 lg:py-10">
 					<div className="bg-grid-faint absolute inset-0 -z-10 opacity-60" />
 					<div className="absolute -top-32 -right-24 -z-10 h-72 w-72 rounded-full bg-gradient-to-br from-brand-400/40 to-info-500/30 blur-3xl" />
 					<div className="absolute -bottom-32 -left-24 -z-10 h-72 w-72 rounded-full bg-gradient-to-tr from-info-500/30 to-brand-300/40 blur-3xl" />
 
-					<div className="relative grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12">
-						<div className="max-w-2xl space-y-6 sm:space-y-8">
-							<div className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50/80 px-4 py-2 text-sm font-semibold text-brand-700 shadow-sm">
+					<div className="relative grid items-center gap-6 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10">
+						<div className="max-w-2xl space-y-4 sm:space-y-6">
+							<div className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-50/80 px-3 py-1.5 text-xs font-semibold text-brand-700 shadow-sm sm:px-4 sm:py-2 sm:text-sm">
 								<Sparkles className="h-4 w-4" />
 								<span>Tecnología seleccionada para comprar sin fricción</span>
 							</div>
 
-							<div className="space-y-5">
-								<h1 className="max-w-3xl text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl lg:text-6xl xl:text-[4.5rem] xl:leading-[1.05]">
+							<div className="space-y-4">
+								<h1 className="max-w-3xl text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl lg:text-5xl xl:text-[3.5rem] xl:leading-[1.05]">
 									Todo lo que necesitas en{" "}
 									<span className="text-brand-700">tecnología</span>, en una
 									tienda clara, rápida y lista para cualquier pantalla.
 								</h1>
 
-								<p className="max-w-2xl text-base leading-7 text-slate-600 sm:text-lg sm:leading-8">
+								<p className="max-w-2xl text-sm leading-6 text-slate-600 sm:text-base sm:leading-7">
 									Explora celulares, laptops, tablets y accesorios con fichas
 									claras, precios visibles y una experiencia responsive que
 									mantiene los detalles importantes a mano desde mobile, tablet
@@ -40,9 +45,9 @@ export default function Hero() {
 								</p>
 							</div>
 
-							<div className="flex flex-col gap-3 sm:flex-row">
+							<div className="flex flex-col gap-2 sm:flex-row">
 								<Button
-									size="xl"
+									size="lg"
 									className="w-full rounded-full sm:w-auto"
 									asChild
 								>
@@ -55,7 +60,7 @@ export default function Hero() {
 								{!isLoading && !isAuthenticated ? (
 									<Button
 										variant="outline"
-										size="xl"
+										size="lg"
 										className="w-full rounded-full sm:w-auto"
 										asChild
 									>
@@ -64,7 +69,7 @@ export default function Hero() {
 								) : null}
 							</div>
 
-							<div className="grid gap-3 pt-2 sm:grid-cols-3">
+							<div className="hidden gap-3 pt-1 sm:grid sm:grid-cols-3">
 								<FeatureTile
 									icon={<Zap className="h-4 w-4" />}
 									label="Catalogo"
@@ -84,9 +89,9 @@ export default function Hero() {
 						</div>
 
 						<div className="relative">
-							<div className="absolute -inset-4 -z-10 rounded-[2rem] bg-brand-700 opacity-95" />
-							<div className="rounded-[2rem] border border-white/15 bg-white/10 p-4 sm:p-5">
-								<div className="relative overflow-hidden rounded-[1.5rem] border border-white/15">
+							<div className="absolute -inset-3 -z-10 rounded-[1.75rem] bg-brand-700 opacity-95 sm:-inset-4 sm:rounded-[2rem]" />
+							<div className="rounded-[1.75rem] border border-white/15 bg-white/10 p-3 sm:rounded-[2rem] sm:p-4">
+								<div className="relative overflow-hidden rounded-[1.25rem] border border-white/15 sm:rounded-[1.5rem]">
 									<Image
 										src="https://cdn.thewirecutter.com/wp-content/media/2026/03/BG-IPHONE-5334-2X1.jpg?width=2048&quality=75&crop=2:1&auto=webp"
 										alt="Productos destacados"
@@ -94,11 +99,11 @@ export default function Hero() {
 										height={900}
 										unoptimized
 										sizes="(max-width: 1024px) 100vw, 45vw"
-										className="h-72 w-full object-cover sm:h-80 lg:h-[28rem]"
+										className="h-60 w-full object-cover sm:h-72 lg:h-80"
 									/>
-									<div className="absolute inset-0 bg-slate-950/60" />
+									<div className="absolute inset-0 bg-slate-950/55" />
 									<div className="absolute left-4 right-4 bottom-4 rounded-2xl border border-white/15 bg-slate-950/55 px-4 py-3 text-white backdrop-blur-sm">
-										<p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-brand-200">
+										<p className="text-[0.6rem] font-semibold uppercase tracking-[0.2em] text-brand-200">
 											ShopWave
 										</p>
 										<p className="mt-1 text-sm text-slate-100">

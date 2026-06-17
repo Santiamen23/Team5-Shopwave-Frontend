@@ -105,6 +105,28 @@ function CartIconButton() {
 	);
 }
 
+function MobileCartLink() {
+	const { cart } = useCart();
+	const itemCount = cart?.cartItems?.reduce(
+		(sum, item) => sum + (item.quantity ?? 0),
+		0,
+	) ?? 0;
+	return (
+		<Link
+			href="/cart"
+			className="relative flex items-center gap-2.5 rounded-2xl px-4 py-3 text-sm font-medium text-slate-600 transition-colors hover:bg-brand-50/60 hover:text-brand-700"
+		>
+			<ShoppingCart className="h-5 w-5" />
+			<span>Carrito</span>
+			{itemCount > 0 ? (
+				<span className="ml-auto grid h-5 min-w-[1.25rem] place-items-center rounded-full bg-brand-600 px-1.5 text-[11px] font-semibold text-white">
+					{itemCount > 99 ? "99+" : itemCount}
+				</span>
+			) : null}
+		</Link>
+	);
+}
+
 export default function Navbar() {
 	const pathname = usePathname();
 	const { user, isAuthenticated, isLoading, logout } = useAuth();
@@ -206,6 +228,8 @@ export default function Navbar() {
 										mobile
 									/>
 								))}
+
+								<MobileCartLink />
 
 								{isAuthenticated ? (
 									<div className="mt-3 space-y-2 rounded-2xl border border-slate-200 bg-slate-50 p-2">

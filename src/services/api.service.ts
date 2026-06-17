@@ -1,5 +1,7 @@
 const DEFAULT_API_BASE_URL = "http://localhost:8080";
 
+let missingEnvWarned = false;
+
 export type ApiQueryValue =
 	| string
 	| number
@@ -101,11 +103,25 @@ async function readResponseBody(response: Response) {
 }
 
 export function getApiBaseUrl() {
-	return (
-		process.env.NEXT_PUBLIC_API_BASE_URL ??
-		process.env.NEXT_PUBLIC_API_URL ??
-		DEFAULT_API_BASE_URL
-	);
+	const explicitUrl =
+		process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.NEXT_PUBLIC_API_URL;
+	const baseUrl = explicitUrl ?? DEFAULT_API_BASE_URL;
+
+	if (!explicitUrl && !missingEnvWarned) {
+		missingEnvWarned = true;
+		const message =
+			`[ShopWave] No se encontro NEXT_PUBLIC_API_BASE_URL ni NEXT_PUBLIC_API_URL. ` +
+			`Usando fallback local "${DEFAULT_API_BASE_URL}". ` +
+			`Configurala en .env.local (desarrollo) o en Project Settings > Environment Variables (Vercel).`;
+
+		if (process.env.NODE_ENV === "production") {
+			console.error(message);
+		} else {
+			console.warn(message);
+		}
+	}
+
+	return baseUrl;
 }
 
 export function buildQueryString(query?: ApiQueryParams) {

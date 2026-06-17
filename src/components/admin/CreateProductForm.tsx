@@ -32,10 +32,7 @@ export function CreateProductForm({
 	const sizes = data.size ?? [];
 
 	function handleAddSize() {
-		const newSizes: ProductSize[] = [
-			...sizes,
-			{ name: "", quantity: data.quantity || 1 },
-		];
+		const newSizes: ProductSize[] = [...sizes, { name: "" }];
 		onChange("size", newSizes);
 	}
 

@@ -21,8 +21,7 @@ export default function CartPageClient() {
 	const hasItems = cart.cartItems.length > 0;
 
 	function getAvailableItemQuantity(item: typeof cart.cartItems[number]) {
-		const sizeEntry = item.product.sizes?.find((size) => size.name === item.size);
-		return sizeEntry?.quantity ?? item.product.quantity;
+		return item.product.quantity ?? 0;
 	}
 
 	function showSuccess(message: string) {

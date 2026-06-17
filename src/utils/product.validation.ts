@@ -142,13 +142,8 @@ export function validateEditProduct(product: Product): EditProductFieldErrors {
 
 export function sanitizeCreateVariants(
 	sizes: ProductSize[],
-	globalQuantity: number,
 ): ProductSize[] {
-	const safeGlobalQuantity = Math.max(0, Math.floor(globalQuantity || 0));
 	return sizes
-		.map((size) => ({
-			name: size.name.trim(),
-			quantity: safeGlobalQuantity,
-		}))
+		.map((size) => ({ name: size.name.trim() }))
 		.filter((size) => size.name.length > 0);
 }

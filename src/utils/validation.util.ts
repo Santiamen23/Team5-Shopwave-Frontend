@@ -81,7 +81,7 @@ export function getInputBorderClass(hasError: unknown): string {
 		: "border-slate-200 focus:border-brand-500 focus:ring-brand-500/20";
 }
 
-export function validateProductVariants(sizes: { name: string; quantity: number }[]): string | null {
+export function validateProductVariants(sizes: { name: string }[]): string | null {
 	if (!Array.isArray(sizes) || sizes.length === 0) {
 		return "Debes agregar al menos una variante.";
 	}

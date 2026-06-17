@@ -51,7 +51,7 @@ export function CreatePopup({ onCreate }: CreatePopupProps) {
 
 		const payload: AdminCreateProductPayload = {
 			...data,
-			size: sanitizeCreateVariants(data.size, data.quantity),
+			size: sanitizeCreateVariants(data.size),
 		};
 
 		setIsSubmitting(true);

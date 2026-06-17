@@ -32,16 +32,12 @@ export function ProductDetail({ product }: ProductDetailProps) {
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const { addItem, isLoading: isCartLoading } = useCart();
 
-	function getStockForSize(sizeName: string) {
-		return Math.max(
-			availableSizes.find((size) => size.name === sizeName)?.quantity ??
-				product.quantity,
-			0,
-		);
+	function getStockForSize() {
+		return Math.max(product.quantity ?? 0, 0);
 	}
 
 	const hasDiscount = product.discountedPrice < product.price;
-	const remainingStock = getStockForSize(selectedSize);
+	const remainingStock = getStockForSize();
 
 	function clampQuantity(value: number) {
 		return Math.min(Math.max(value, 1), Math.max(remainingStock, 1));
@@ -56,7 +52,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
 	}
 
 	function handleSelectSize(sizeName: string) {
-		const nextStock = getStockForSize(sizeName);
+		const nextStock = getStockForSize();
 		setSelectedSize(sizeName);
 		setQuantity((current) => Math.min(Math.max(current, 1), Math.max(nextStock, 1)));
 	}
@@ -190,7 +186,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
 									{availableSizes.length > 0 ? (
 										availableSizes.map((size) => {
 											const isSelected = selectedSize === size.name;
-											const isDisabled = size.quantity <= 0;
 
 											return (
 												<Button
@@ -198,7 +193,6 @@ export function ProductDetail({ product }: ProductDetailProps) {
 													type="button"
 													variant={isSelected ? "default" : "secondary"}
 													size="sm"
-													disabled={isDisabled}
 													onClick={() => handleSelectSize(size.name)}
 													className="min-w-14 rounded-full sm:min-w-16"
 												>

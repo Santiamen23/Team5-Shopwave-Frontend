@@ -165,9 +165,8 @@ function isServerCartItem(item: CartItem) {
 	return item.userId !== null;
 }
 
-function getItemQuantity(product: Product, size: string) {
-	const sizeEntry = product.sizes?.find((item) => item.name === size);
-	return sizeEntry?.quantity ?? product.quantity;
+function getItemQuantity(product: Product) {
+	return product.quantity ?? 0;
 }
 
 function createCartItemFromProduct(product: Product, size: string, quantity: number): CartItem {
@@ -396,7 +395,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 				throw new Error("Selecciona una variante antes de agregar el producto.");
 			}
 
-			const availableQuantity = getItemQuantity(input.product, input.size);
+			const availableQuantity = getItemQuantity(input.product);
 
 			if (input.quantity < 1) {
 				throw new Error("La cantidad debe ser mayor a cero.");
@@ -446,7 +445,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 				return removeItem(cartItemId);
 			}
 
-			const availableQuantity = getItemQuantity(currentItem.product, currentItem.size);
+			const availableQuantity = getItemQuantity(currentItem.product);
 
 			if (availableQuantity > 0 && quantity > availableQuantity) {
 				throw new Error("La cantidad solicitada supera el stock disponible.");

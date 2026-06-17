@@ -1,6 +1,5 @@
 export interface ProductSize {
 	name: string;
-	quantity: number;
 }
 
 export interface ProductCategory {

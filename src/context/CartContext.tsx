@@ -556,14 +556,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 		const order = await requestJson<Order>("/api/orders", {
 			method: "POST",
 			body: JSON.stringify({
-				...(input.addressId ? { addressId: input.addressId } : {}),
-				firstName: shipping.firstName,
-				lastName: shipping.lastName,
-				streetAddress: shipping.streetAddress,
-				city: shipping.city,
-				state: shipping.state,
-				zipCode: shipping.zipCode,
-				mobile: shipping.mobile,
+				...(input.addressId
+					? { addressId: input.addressId }
+					: {
+							firstName: shipping.firstName,
+							lastName: shipping.lastName,
+							streetAddress: shipping.streetAddress,
+							city: shipping.city,
+							state: shipping.state,
+							zipCode: shipping.zipCode,
+							mobile: shipping.mobile,
+						}),
 				paymentMethod: input.paymentMethod,
 				status: "COMPLETED",
 				paymentId: `SW-${Date.now()}`,

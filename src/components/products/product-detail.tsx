@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 
 import {
+	ArrowLeft,
 	LogIn,
 	Minus,
 	Plus,
@@ -115,6 +116,19 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
 	return (
 		<section className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+			<div className="mb-4 sm:mb-6">
+				<Button
+					asChild
+					variant="ghost"
+					size="sm"
+					className="gap-1.5 text-slate-500 hover:text-brand-700"
+				>
+					<Link href="/products">
+						<ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+						Volver al catálogo
+					</Link>
+				</Button>
+			</div>
 			<div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
 				<Card className="border-slate-200/80 bg-white/95 xl:sticky xl:top-24 xl:self-start xl:!overflow-visible xl:!p-0 xl:max-h-[calc(100vh-7rem)]">
 					<div className="overflow-hidden rounded-2xl">

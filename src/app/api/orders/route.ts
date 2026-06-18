@@ -26,6 +26,7 @@ export async function POST(request: Request) {
     const order: Order = await createOrder(payload, token);
     return NextResponse.json(order);
   } catch (error) {
+    console.error("[BFF /api/orders POST] Error al llamar al backend:", error);
     const message = error instanceof Error ? error.message : "No se pudo crear la orden.";
     return NextResponse.json({ message }, { status: 500 });
   }

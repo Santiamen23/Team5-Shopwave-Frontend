@@ -51,6 +51,7 @@ export async function POST(request: Request) {
 			);
 		}
 
+		console.error("[BFF /api/auth/register] Error al llamar al backend:", error);
 		return NextResponse.json(
 			{ message: "No se pudo completar el registro." },
 			{ status: 500 },

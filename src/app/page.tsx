@@ -80,7 +80,12 @@ function sortByCreatedDesc(products: CatalogProduct[]) {
 }
 
 export default async function HomePage() {
-	const products = (await getProducts().catch(() => [])) as Product[];
+	let products: Product[] = [];
+	try {
+		products = await getProducts();
+	} catch (error) {
+		console.error("[HomePage] Error cargando productos:", error);
+	}
 
 	const catalogProducts = toCatalog(products);
 	const newestProducts = sortByCreatedDesc(catalogProducts);

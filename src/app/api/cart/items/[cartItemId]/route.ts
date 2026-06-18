@@ -24,6 +24,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
     const cart = await getCart(token);
     return NextResponse.json(cart);
   } catch (error) {
+    console.error("[BFF /api/cart/items/:id PUT] Error al llamar al backend:", error);
     const message = error instanceof Error ? error.message : "No se pudo actualizar el carrito.";
     const status = error instanceof ApiError ? error.status : 500;
     return NextResponse.json({ message }, { status });
@@ -43,6 +44,7 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
     const cart = await getCart(token);
     return NextResponse.json(cart);
   } catch (error) {
+    console.error("[BFF /api/cart/items/:id DELETE] Error al llamar al backend:", error);
     const message = error instanceof Error ? error.message : "No se pudo eliminar el artículo.";
     const status = error instanceof ApiError ? error.status : 500;
     return NextResponse.json({ message }, { status });

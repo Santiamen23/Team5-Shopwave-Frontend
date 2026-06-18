@@ -23,7 +23,12 @@ function buildInitialFilters(params: {
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
 	const params = await searchParams;
-	const products = await getProducts().catch(() => []);
+	let products = [];
+	try {
+		products = await getProducts();
+	} catch (error) {
+		console.error("[ProductsPage] Error cargando productos:", error);
+	}
 	const initialFilters = buildInitialFilters(params);
 
 	return (

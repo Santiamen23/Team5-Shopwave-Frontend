@@ -72,6 +72,7 @@ export async function POST(request: Request) {
 			);
 		}
 
+		console.error("[BFF /api/auth/login] Error al llamar al backend:", error);
 		return NextResponse.json(
 			{ message: "No se pudo iniciar sesión." },
 			{ status: 500 },

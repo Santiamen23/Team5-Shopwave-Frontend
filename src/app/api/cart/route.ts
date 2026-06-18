@@ -14,6 +14,7 @@ export async function GET() {
     const cart = await getCart(token);
     return NextResponse.json(cart);
   } catch (error) {
+    console.error("[BFF /api/cart] Error al llamar al backend:", error);
     const message = error instanceof Error ? error.message : "No se pudo cargar el carrito.";
     return NextResponse.json({ message }, { status: 500 });
   }

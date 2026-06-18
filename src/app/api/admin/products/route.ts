@@ -12,7 +12,8 @@ import {
 } from "@/services/admin-product.service";
 import { ApiError } from "@/services/api.service";
 
-function createErrorResponse(error: unknown, fallbackMessage: string) {
+function createErrorResponse(error: unknown, fallbackMessage: string, route: string) {
+  console.error(`[BFF ${route}] Error al llamar al backend:`, error);
   const status = error instanceof ApiError ? error.status : 500;
   const message = error instanceof Error ? error.message : fallbackMessage;
 
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
     const product = await createAdminProduct(payload as AdminCreateProductPayload, jwt);
     return NextResponse.json(product);
   } catch (error) {
-    return createErrorResponse(error, "Parametros incompletos o servidor caido.");
+    return createErrorResponse(error, "Parametros incompletos o servidor caido.", "/api/admin/products POST");
   }
 }
 
@@ -53,7 +54,7 @@ export async function PATCH(request: Request) {
     const product = await updateAdminProduct(payload.id, payload, jwt);
     return NextResponse.json(product);
   } catch (error) {
-    return createErrorResponse(error, "Parametros incompletos o servidor caido.");
+    return createErrorResponse(error, "Parametros incompletos o servidor caido.", "/api/admin/products PATCH");
   }
 }
 
@@ -69,6 +70,6 @@ export async function DELETE(request: Request) {
     const reponse = await deleteAdminProduct(payload, jwt);
     return NextResponse.json(reponse);
   } catch (error) {
-    return createErrorResponse(error, "Producto no encontrado o servidor caido.");
+    return createErrorResponse(error, "Producto no encontrado o servidor caido.", "/api/admin/products DELETE");
   }
 }

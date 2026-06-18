@@ -34,11 +34,13 @@ export async function POST(request: Request) {
         const cart: Cart = await addCartItem(payload, token);
         return NextResponse.json(cart);
       } catch (retryError) {
+        console.error("[BFF /api/cart/add] Error al reintentar addCartItem:", retryError);
         const message = retryError instanceof Error ? retryError.message : "No se pudo agregar el producto al carrito.";
         return NextResponse.json({ message }, { status: 500 });
       }
     }
 
+    console.error("[BFF /api/cart/add] Error al llamar al backend:", error);
     const message = error instanceof Error ? error.message : "No se pudo agregar el producto al carrito.";
     return NextResponse.json({ message }, { status: 500 });
   }

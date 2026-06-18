@@ -121,19 +121,19 @@ export function ProductList() {
 					icon={<Sparkles className="h-4 w-4" />}
 					label="En oferta"
 					value={stats.onSale}
-					tone="warning"
+					tone="brand-soft"
 				/>
 				<StatTile
 					icon={<AlertTriangle className="h-4 w-4" />}
 					label="Stock bajo"
 					value={stats.lowStock}
-					tone="warning"
+					tone="brand-tint"
 				/>
 				<StatTile
 					icon={<Banknote className="h-4 w-4" />}
 					label="Valor inventario"
 					value={formatCurrency(stats.totalValue)}
-					tone="brand"
+					tone="brand-deep"
 				/>
 			</div>
 
@@ -240,24 +240,31 @@ function StatTile({
 	icon: React.ReactNode;
 	label: string;
 	value: string | number;
-	tone: "brand" | "warning";
+	tone: "brand" | "brand-soft" | "brand-tint" | "brand-deep";
 }) {
-	const toneClasses: Record<typeof tone, string> = {
+	const tileClasses: Record<typeof tone, string> = {
 		brand: "bg-brand-50 text-brand-700",
-		warning: "bg-warning-50 text-warning-700",
+		"brand-soft": "bg-brand-50/60 text-brand-700",
+		"brand-tint": "bg-brand-100/50 text-brand-700",
+		"brand-deep": "bg-brand-100/70 text-brand-800",
+	};
+	const iconClasses: Record<typeof tone, string> = {
+		brand: "text-brand-600 ring-brand-100",
+		"brand-soft": "text-brand-700 ring-brand-200",
+		"brand-tint": "text-brand-700 ring-brand-200/70",
+		"brand-deep": "text-brand-800 ring-brand-300/60",
 	};
 	return (
 		<div
 			className={cn(
 				"flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50 p-4 transition-shadow hover:shadow-md",
-				toneClasses[tone],
+				tileClasses[tone],
 			)}
 		>
 			<span
 				className={cn(
 					"grid h-10 w-10 place-items-center rounded-xl bg-white ring-1",
-					tone === "brand" && "text-brand-600 ring-brand-100",
-					tone === "warning" && "text-warning-600 ring-warning-500/20",
+					iconClasses[tone],
 				)}
 			>
 				{icon}

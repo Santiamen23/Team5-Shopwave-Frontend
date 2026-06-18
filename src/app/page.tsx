@@ -112,6 +112,7 @@ export default async function HomePage() {
 				<div className="mx-auto w-full max-w-7xl">
 					<ProductsSection
 						products={newestProducts}
+						eyebrow="Destacados"
 						title="Productos destacados"
 						description="Una selección rápida para empezar a comprar sin recorrer todo el catálogo."
 						limit={12}

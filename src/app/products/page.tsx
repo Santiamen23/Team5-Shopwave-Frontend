@@ -33,6 +33,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 				<div className="mx-auto">
 					<ProductsSection
 						products={products}
+						eyebrow="Tienda"
 						title="Catálogo de productos"
 						description="Filtra por stock, categoría, marca, color o rango de precio, y ordena como prefieras."
 						enableSearch

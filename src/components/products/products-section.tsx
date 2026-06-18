@@ -23,12 +23,13 @@ import {
 	type CatalogProduct,
 	type ProductFilters,
 } from "./product-filters";
-import { X } from "lucide-react";
+import { ShoppingBag, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ProductsSectionProps {
 	products: CatalogProduct[];
 	title?: string;
+	eyebrow?: string;
 	description?: string;
 	emptyMessage?: string;
 	limit?: number;
@@ -42,6 +43,7 @@ interface ProductsSectionProps {
 export function ProductsSection({
 	products,
 	title,
+	eyebrow,
 	description,
 	emptyMessage = "No se pudieron cargar productos.",
 	limit,
@@ -150,18 +152,28 @@ export function ProductsSection({
 					<div className="bg-grid-faint absolute inset-0 opacity-30" />
 					<div className="absolute -top-16 -right-12 h-44 w-44 rounded-full bg-white/15 blur-3xl" />
 					<div className="absolute -bottom-20 -left-10 h-44 w-44 rounded-full bg-info-500/30 blur-3xl" />
-					<div className="relative space-y-2">
-						{title ? (
-							<CardTitle className="text-2xl font-semibold tracking-tight text-white drop-shadow-sm sm:text-3xl lg:text-4xl">
-								{title}
-							</CardTitle>
-						) : null}
-						{description ? (
-							<CardDescription className="max-w-2xl text-sm text-brand-100/90 sm:text-base">
-								{description}
-							</CardDescription>
-						) : null}
+					<div className="relative flex items-center gap-3">
+						<div className="grid h-10 w-10 place-items-center rounded-xl bg-white/15 text-white">
+							<ShoppingBag className="h-5 w-5" />
+						</div>
+						<div className="space-y-1.5">
+							{eyebrow ? (
+								<p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-brand-100/90">
+									{eyebrow}
+								</p>
+							) : null}
+							{title ? (
+								<CardTitle className="text-2xl font-semibold tracking-tight text-white drop-shadow-sm sm:text-3xl">
+									{title}
+								</CardTitle>
+							) : null}
+						</div>
 					</div>
+					{description ? (
+						<CardDescription className="relative mt-2 max-w-xl text-sm text-brand-100/90 sm:text-base">
+							{description}
+						</CardDescription>
+					) : null}
 				</CardHeader>
 			) : null}
 

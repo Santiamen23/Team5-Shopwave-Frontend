@@ -1,6 +1,7 @@
 import Navbar from "@/components/layout/Navbar";
 import { ProductsSection } from "@/components/products/products-section";
 import { getProducts } from "@/services/product.service";
+import type { Product } from "@/models/product.model";
 import type { ProductFilters } from "@/components/products/product-filters";
 
 interface ProductsPageProps {
@@ -23,7 +24,7 @@ function buildInitialFilters(params: {
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
 	const params = await searchParams;
-	let products = [];
+	let products: Product[] = [];
 	try {
 		products = await getProducts();
 	} catch (error) {

@@ -1,9 +1,18 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
-import { Minus, Plus, ShoppingCart, Truck, ShieldCheck, RotateCcw } from "lucide-react";
+import {
+	LogIn,
+	Minus,
+	Plus,
+	ShoppingCart,
+	Truck,
+	ShieldCheck,
+	RotateCcw,
+} from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,6 +24,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/hooks/useAuth";
 import { useCart } from "@/hooks/useCart";
 import type { Product } from "@/models/product.model";
 import { formatCurrency } from "@/utils/currency.util";
@@ -31,6 +41,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
 	const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const { addItem, isLoading: isCartLoading } = useCart();
+	const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
 
 	function getStockForSize() {
 		return Math.max(product.quantity ?? 0, 0);
@@ -61,6 +72,11 @@ export function ProductDetail({ product }: ProductDetailProps) {
 		setSubmitError(null);
 		setSubmitSuccess(null);
 
+		if (!isAuthenticated) {
+			setSubmitError("Inicia sesión para agregar productos al carrito.");
+			return;
+		}
+
 		if (!selectedSize) {
 			setSubmitError("Selecciona un talle antes de agregar el producto.");
 			return;
@@ -89,31 +105,38 @@ export function ProductDetail({ product }: ProductDetailProps) {
 		}
 	}
 
-	const isAddDisabled = isCartLoading || isSubmitting || remainingStock <= 0;
+	const isAddDisabled =
+		!isAuthenticated ||
+		isAuthLoading ||
+		isCartLoading ||
+		isSubmitting ||
+		remainingStock <= 0;
 	const isIncreaseDisabled = remainingStock <= 0 || quantity >= remainingStock;
 
 	return (
 		<section className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
 			<div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-				<Card className="overflow-hidden border-slate-200/80 bg-white/95 xl:sticky xl:top-24">
-					<div className="relative aspect-[4/3] bg-slate-50 p-4 sm:p-6 lg:p-8">
-						{hasDiscount ? (
-							<Badge
-								variant="success"
-								className="absolute top-4 right-4 z-10 shadow-md"
-							>
-								-{product.discountPersent}%
-							</Badge>
-						) : null}
-						<div className="relative flex h-full min-h-[18rem] items-center justify-center overflow-hidden rounded-[1.5rem] bg-white/80 shadow-[0_20px_70px_-35px_oklch(0.18_0.02_250_/_0.35)] sm:min-h-[24rem] lg:rounded-[2rem]">
-							<Image
-								src={product.imageUrl}
-								alt={product.title}
-								fill
-								unoptimized
-								sizes="(max-width: 1024px) 100vw, 55vw"
-								className="object-cover"
-							/>
+				<Card className="border-slate-200/80 bg-white/95 xl:sticky xl:top-24 xl:self-start xl:!overflow-visible xl:!p-0 xl:max-h-[calc(100vh-7rem)]">
+					<div className="overflow-hidden rounded-2xl">
+						<div className="relative aspect-[4/3] bg-slate-50 p-3 sm:p-4 lg:p-6">
+							{hasDiscount ? (
+								<Badge
+									variant="success"
+									className="absolute top-4 right-4 z-10 shadow-md"
+								>
+									-{product.discountPersent}%
+								</Badge>
+							) : null}
+							<div className="relative h-full w-full overflow-hidden rounded-[1.5rem] bg-white/80 shadow-[0_20px_70px_-35px_oklch(0.18_0.02_250_/_0.35)] lg:rounded-[2rem]">
+								<Image
+									src={product.imageUrl}
+									alt={product.title}
+									fill
+									unoptimized
+									sizes="(max-width: 1024px) 100vw, 55vw"
+									className="object-contain p-2"
+								/>
+							</div>
 						</div>
 					</div>
 				</Card>
@@ -246,17 +269,35 @@ export function ProductDetail({ product }: ProductDetailProps) {
 								</div>
 							</div>
 
-							<div>
-								<Button
-									type="button"
-									size="lg"
-									className="w-full"
-									onClick={() => void handleAddToCart()}
-									disabled={isAddDisabled}
-								>
-									<ShoppingCart className="h-4 w-4" />
-									{isSubmitting ? "Agregando..." : "Agregar al carrito"}
-								</Button>
+							<div className="space-y-2">
+								{!isAuthenticated && !isAuthLoading ? (
+									<>
+										<Button
+											asChild
+											size="lg"
+											className="w-full"
+										>
+											<Link href={`/login?next=/products/${product.id}`}>
+												<LogIn className="h-4 w-4" />
+												Inicia sesión para comprar
+											</Link>
+										</Button>
+										<p className="text-center text-xs text-slate-500">
+											Necesitas una cuenta para guardar productos en el carrito.
+										</p>
+									</>
+								) : (
+									<Button
+										type="button"
+										size="lg"
+										className="w-full"
+										onClick={() => void handleAddToCart()}
+										disabled={isAddDisabled}
+									>
+										<ShoppingCart className="h-4 w-4" />
+										{isSubmitting ? "Agregando..." : "Agregar al carrito"}
+									</Button>
+								)}
 							</div>
 
 							{submitError ? (

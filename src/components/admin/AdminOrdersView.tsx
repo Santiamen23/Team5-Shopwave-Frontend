@@ -3,6 +3,7 @@
 import { useDeferredValue, useMemo, useState } from "react";
 import {
 	AlertTriangle,
+	Ban,
 	CalendarDays,
 	Inbox,
 	MapPin,
@@ -127,6 +128,13 @@ export default function AdminOrdersView({ initialOrders, jwt }: AdminOrdersViewP
 		id: number,
 		action: "confirm" | "ship" | "deliver" | "cancel",
 	) => {
+		if (action === "cancel") {
+			const confirmed = confirm(
+				"¿Cancelar esta orden? Se marcará como cancelada y el stock de los productos será liberado.",
+			);
+			if (!confirmed) return;
+		}
+
 		setLoadingId(id);
 		try {
 			let updatedOrder: Order;
@@ -305,7 +313,7 @@ export default function AdminOrdersView({ initialOrders, jwt }: AdminOrdersViewP
 												? `${order.shippingAddress.streetAddress}, ${order.shippingAddress.city}`
 												: "Sin dirección asignada"}
 										</div>
-										<div className="flex items-center gap-2">
+										<div className="flex flex-wrap items-center gap-2">
 											<Button
 												size="sm"
 												variant="outline"
@@ -318,7 +326,7 @@ export default function AdminOrdersView({ initialOrders, jwt }: AdminOrdersViewP
 											</Button>
 											<Button
 												size="sm"
-												variant="outline"
+												variant="success"
 												disabled={isBusy}
 												onClick={() => handleUpdateStatus(order.id, "deliver")}
 												className="text-xs"
@@ -326,6 +334,18 @@ export default function AdminOrdersView({ initialOrders, jwt }: AdminOrdersViewP
 												<PackageCheck className="h-3.5 w-3.5" />
 												Entregar
 											</Button>
+											{canCancel ? (
+												<Button
+													size="sm"
+													variant="destructive"
+													disabled={isBusy}
+													onClick={() => handleUpdateStatus(order.id, "cancel")}
+													className="text-xs"
+												>
+													<Ban className="h-3.5 w-3.5" />
+													Cancelar
+												</Button>
+											) : null}
 											<DropdownMenu>
 												<DropdownMenuTrigger asChild>
 													<Button
@@ -362,14 +382,6 @@ export default function AdminOrdersView({ initialOrders, jwt }: AdminOrdersViewP
 														Marcar como entregada
 													</DropdownMenuItem>
 													<DropdownMenuSeparator />
-													{canCancel ? (
-														<DropdownMenuItem
-															onClick={() => handleUpdateStatus(order.id, "cancel")}
-														>
-															<AlertTriangle className="h-4 w-4" />
-															Cancelar orden
-														</DropdownMenuItem>
-													) : null}
 													<DropdownMenuItem
 														variant="destructive"
 														onClick={() => handleDeleteOrder(order.id)}

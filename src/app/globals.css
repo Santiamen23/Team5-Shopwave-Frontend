@@ -40,40 +40,40 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
 
-  --color-brand-50: var(--brand-50);
-  --color-brand-100: var(--brand-100);
-  --color-brand-200: var(--brand-200);
-  --color-brand-300: var(--brand-300);
-  --color-brand-400: var(--brand-400);
-  --color-brand-500: var(--brand-500);
-  --color-brand-600: var(--brand-600);
-  --color-brand-700: var(--brand-700);
-  --color-brand-800: var(--brand-800);
-  --color-brand-900: var(--brand-900);
-  --color-brand-950: var(--brand-950);
+  --color-brand-50: oklch(0.97 0.02 245);
+  --color-brand-100: oklch(0.94 0.04 245);
+  --color-brand-200: oklch(0.88 0.07 245);
+  --color-brand-300: oklch(0.79 0.11 245);
+  --color-brand-400: oklch(0.68 0.15 245);
+  --color-brand-500: oklch(0.59 0.18 245);
+  --color-brand-600: oklch(0.51 0.19 245);
+  --color-brand-700: oklch(0.43 0.18 245);
+  --color-brand-800: oklch(0.36 0.15 245);
+  --color-brand-900: oklch(0.28 0.11 245);
+  --color-brand-950: oklch(0.20 0.08 245);
 
-  --color-success-50: var(--success-50);
-  --color-success-500: var(--success-500);
-  --color-success-600: var(--success-600);
-  --color-success-700: var(--success-700);
+  --color-success-50: oklch(0.97 0.04 155);
+  --color-success-500: oklch(0.66 0.16 155);
+  --color-success-600: oklch(0.58 0.16 155);
+  --color-success-700: oklch(0.50 0.15 155);
 
-  --color-warning-50: var(--warning-50);
-  --color-warning-500: var(--warning-500);
-  --color-warning-600: var(--warning-600);
-  --color-warning-700: var(--warning-700);
+  --color-warning-50: oklch(0.98 0.04 85);
+  --color-warning-500: oklch(0.79 0.16 85);
+  --color-warning-600: oklch(0.71 0.16 70);
+  --color-warning-700: oklch(0.62 0.16 60);
 
-  --color-info-50: var(--info-50);
-  --color-info-500: var(--info-500);
-  --color-info-700: var(--info-700);
+  --color-info-50: oklch(0.97 0.04 220);
+  --color-info-500: oklch(0.65 0.15 220);
+  --color-info-700: oklch(0.48 0.15 220);
 
-  --color-danger-50: var(--danger-50);
-  --color-danger-500: var(--danger-500);
-  --color-danger-600: var(--danger-600);
-  --color-danger-700: var(--danger-700);
+  --color-danger-50: oklch(0.97 0.04 25);
+  --color-danger-500: oklch(0.65 0.22 25);
+  --color-danger-600: oklch(0.58 0.22 25);
+  --color-danger-700: oklch(0.50 0.20 25);
 
-  --shadow-brand-soft: var(--shadow-brand-soft);
-  --shadow-brand-strong: var(--shadow-brand-strong);
-  --shadow-glow: var(--shadow-glow);
+  --shadow-brand-soft: 0 8px 24px -10px oklch(0.51 0.19 245 / 0.35);
+  --shadow-brand-strong: 0 18px 50px -18px oklch(0.43 0.18 245 / 0.45);
+  --shadow-glow: 0 0 0 4px oklch(0.94 0.04 245 / 0.65);
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);

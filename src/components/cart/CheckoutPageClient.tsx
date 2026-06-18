@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { CheckCircle2, CreditCard, MapPin, ShoppingBag, Lock } from "lucide-react";
@@ -57,6 +57,12 @@ export default function CheckoutPageClient() {
 		() => validatePaymentDetails(payment.method, payment.cardholderName, payment.cardNumber),
 		[payment.method, payment.cardholderName, payment.cardNumber],
 	);
+
+	useEffect(() => {
+		if (receipt) {
+			window.scrollTo({ top: 0, behavior: "smooth" });
+		}
+	}, [receipt]);
 
 	const shippingIsValid = addressSelection !== null;
 	const paymentIsValid = Object.keys(paymentErrors).length === 0;

@@ -199,7 +199,6 @@ export default function Navbar() {
 				</div>
 
 				<div className="flex items-center gap-1 md:hidden">
-					<CartIconButton />
 					<Sheet>
 						<SheetTrigger asChild>
 							<Button size="icon" variant="ghost" aria-label="Abrir menú">
